@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tera-X | HiveLab PCL Test Bed</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero" id="top">
+      <nav class="nav">
+        <div class="logo">Tera-X</div>
+        <ul class="nav__links">
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#drivers">Science Drivers</a></li>
+          <li><a href="#architecture">Architecture</a></li>
+          <li><a href="#community">Community</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="hero__content">
+        <p class="eyebrow">Cloud ↔ Laboratory Continuum</p>
+        <h1>HiveLab: A Programmable Cloud Laboratory Node by Tera-X</h1>
+        <p>
+          Tera-X leads the NSF PCL Test Bed effort with HiveLab, a cloud-native,
+          human-in-the-loop environment that fuses autonomous experimentation,
+          digital twins, and transparent governance across semiconductors,
+          biotechnology, and soft robotics.
+        </p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="#capabilities">Explore Capabilities</a>
+          <a class="btn btn--ghost" href="#governance">See Governance Model</a>
+        </div>
+      </div>
+      <div class="hero__glow" aria-hidden="true"></div>
+    </header>
+
+    <main>
+      <section id="overview" class="section">
+        <div class="section__header">
+          <p class="eyebrow">01 · Introduction</p>
+          <h2>Programmable Cloud Laboratory (PCL) Test Bed: HiveLab</h2>
+        </div>
+        <div class="grid two-col">
+          <p>
+            HiveLab is a fully programmable, cloud-accessible laboratory node
+            located in Element Labs at UW–Madison’s University Research Park.
+            It interconnects Tera-X with the UW CHIPS Center, Madison College’s
+            MOSAIC program, UConn, Redwood EDA, Liquid Instruments, Microsanj,
+            Elephas, and Unicorn Biotechnologies. The node demonstrates how
+            automation, AI, and human oversight co-exist to deliver transparent,
+            reproducible science.
+          </p>
+          <p>
+            Any qualified researcher can sign in, compose a workflow around
+            calibrated instruments, and operate within a digital twin–informed
+            safety envelope. HiveLab prioritizes reproducibility, provenance,
+            and human decision points—automation amplifies scientific judgment
+            instead of replacing it.
+          </p>
+        </div>
+      </section>
+
+      <section id="drivers" class="section section--panel">
+        <div class="section__header">
+          <p class="eyebrow">02 · Science Drivers</p>
+          <h2>Three intersecting domains anchor HiveLab’s mission.</h2>
+        </div>
+        <div class="grid three-col cards">
+          <article class="card">
+            <h3>Semiconductor & Photonic Reliability</h3>
+            <p>
+              Multi-modal stress–measure–relax workflows map reliability
+              landscapes of GaN power devices and photonic structures. Thermal
+              imagers, fast electrical instruments, and digital twins align to
+              capture coupled thermal–electrical behavior.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Biotechnology Microenvironments</h3>
+            <p>
+              Microfluidics, imaging, and autonomous design interrogate cell and
+              organoid responses to chemical, mechanical, and electrical
+              stimuli. Safety-aware AI planners suggest new assays while humans
+              approve every critical step.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Soft Actuators & Compliant Materials</h3>
+            <p>
+              Robotic fixtures, force sensors, and high-speed optics explore
+              nonlinear deformation spaces. Reduced-order twins and learned
+              surrogates adapt as the system uncovers new failure envelopes.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="architecture" class="section">
+        <div class="section__header">
+          <p class="eyebrow">03 · Architecture</p>
+          <h2>Layered Node architecture connecting cloud logic to lab hardware.</h2>
+        </div>
+        <div class="grid two-col">
+          <div>
+            <h3>Instrumentation Layer</h3>
+            <p>
+              Thermal imagers, fast electrical characterization, optical and
+              fluorescence microscopes, robotic stages, microfluidics, and soft
+              actuator rigs connect through FPGA-enabled adapters that apply
+              sanity checks before orchestration takes control.
+            </p>
+            <h3>Orchestration & Metadata</h3>
+            <p>
+              Workflows are executed as directed graphs of actions and safety
+              checks. Every instrument touch writes structured metadata—calibrations,
+              firmware, samples, and environment—creating replayable experiment logs.
+            </p>
+          </div>
+          <div>
+            <h3>Digital Twins & Analytics</h3>
+            <p>
+              Twins expose prediction APIs, uncertainty estimates, and suggested
+              next steps. They gate AI planners and flag anomalies when behavior
+              departs from validated envelopes.
+            </p>
+            <h3>Human-in-the-Loop Portal</h3>
+            <p>
+              Researchers edit workflows, monitor live data, approve adaptive
+              actions, and review provenance via the cloud portal. Notifications
+              surface anomalies or boundary crossings instantly.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="capabilities" class="section section--panel">
+        <div class="section__header">
+          <p class="eyebrow">04 · Node Capabilities</p>
+          <h2>Integrated toolsets tuned for autonomy and reproducibility.</h2>
+        </div>
+        <div class="grid three-col cards">
+          <article class="card">
+            <h3>Semiconductor & Materials</h3>
+            <p>
+              Microsanj thermal imaging, synchronized electrical test stands,
+              optical diagnostics, and stress cycling routines produce rich
+              datasets for reliability digital twins.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Biotechnology Workflows</h3>
+            <p>
+              Controlled environmental chambers, microfluidic gradient builders,
+              automated dispensers, and live-cell imaging support long horizon,
+              adaptive assays inspired by Elephas and Unicorn Biotechnologies.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Soft Materials & Robotics</h3>
+            <p>
+              Force/displacement sensing, optical tracking, and FPGA-processed
+              signals quantify nonlinear behavior for UConn’s soft actuator
+              studies and broader compliant material discovery.
+            </p>
+          </article>
+        </div>
+        <div class="callout">
+          <h3>FPGA-Enhanced Data Pathways</h3>
+          <p>
+            Liquid Instruments and Redwood EDA provide reconfigurable kernels
+            for feature extraction, event detection, and low-latency control,
+            ensuring cloud-scale autonomy without sacrificing fidelity.
+          </p>
+        </div>
+      </section>
+
+      <section id="ai" class="section">
+        <div class="section__header">
+          <p class="eyebrow">05 · AI & Data Standards</p>
+          <h2>Guardrailed AI planning, transparent data lifecycle.</h2>
+        </div>
+        <div class="grid two-col">
+          <div>
+            <h3>Workflow Planning</h3>
+            <p>
+              Bayesian optimization, reinforcement learners, and gradient-free
+              searches explore parameter spaces. Visual rationales explain every
+              suggestion before it reaches a human approval gate.
+            </p>
+            <h3>Data Integration</h3>
+            <p>
+              Structured schemas unify instrument configs, sample metadata,
+              calibration histories, and digital twin versions—aligned with PCL
+              standards for cross-node reproducibility.
+            </p>
+          </div>
+          <div>
+            <h3>Model Stewardship</h3>
+            <p>
+              Twins are versioned, validated, and refined when deviations appear.
+              AI safety policies prevent self-modifying behavior or unsanctioned
+              instrument control.
+            </p>
+            <h3>Security & Governance</h3>
+            <p>
+              Encrypted comms, isolated control planes, drift detection, and HITL
+              authority ensure no single agent can execute unsafe actions.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="community" class="section section--panel">
+        <div class="section__header">
+          <p class="eyebrow">06 · Community Integration</p>
+          <h2>National access, workforce pipelines, and open resources.</h2>
+        </div>
+        <div class="grid three-col cards">
+          <article class="card">
+            <h3>User Community</h3>
+            <p>
+              Supports R1 labs, PUIs, R2s, community colleges, industry, and
+              national labs with tailored onboarding and supervised modes.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Cross-Node Collaboration</h3>
+            <p>
+              Participates in PCL working groups on metadata, APIs, and safety;
+              shares workflows for cross-site benchmarking.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Outreach & Open Assets</h3>
+            <p>
+              Publishes workflow templates, annotated datasets, reproducibility
+              studies, and training content that raise national competency in
+              automated experimentation.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="workforce" class="section">
+        <div class="section__header">
+          <p class="eyebrow">07 · Workforce Development</p>
+          <h2>Training technicians, students, and professionals on real workflows.</h2>
+        </div>
+        <div class="grid two-col">
+          <div>
+            <h3>Technician & Undergraduate Pipelines</h3>
+            <p>
+              Madison College MOSAIC and UW undergraduate modules teach workflow
+              design, data interpretation, and instrumentation through the same
+              remote interfaces used by national researchers.
+            </p>
+          </div>
+          <div>
+            <h3>Graduate & Professional Programs</h3>
+            <p>
+              Cross-institution graduate cohorts and professional workshops focus
+              on AI governance, metadata, and reproducible automation—preparing
+              leaders for future autonomous labs.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="governance" class="section section--panel">
+        <div class="section__header">
+          <p class="eyebrow">08 · Governance & Access</p>
+          <h2>Transparent policies with humans authorizing every consequential step.</h2>
+        </div>
+        <div class="grid three-col cards">
+          <article class="card">
+            <h3>Access Policies</h3>
+            <p>
+              Tiered permissions move users from supervised to advanced modes as
+              they demonstrate proficiency. All actions remain logged for audit.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Human-in-the-Loop Authority</h3>
+            <p>
+              Cloud portal surfaces live data, twin predictions, and safety
+              envelopes; humans approve or halt adaptive actions in real time.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Governance Board</h3>
+            <p>
+              Representatives from Tera-X, UW CHIPS, UConn, Madison College, and
+              partners oversee policies, safety, and performance metrics.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="sustainability" class="section">
+        <div class="section__header">
+          <p class="eyebrow">09 · Sustainability & Impact</p>
+          <h2>Long-term viability backed by modular design and partnerships.</h2>
+        </div>
+        <div class="grid two-col">
+          <div>
+            <h3>Technical & Financial Pathways</h3>
+            <p>
+              Modular hardware, cloud-native orchestration, and versioned twins
+              simplify upgrades. Fee-for-service programs and industry projects
+              sustain operations beyond NSF funding.
+            </p>
+          </div>
+          <div>
+            <h3>Broader Impacts</h3>
+            <p>
+              Democratizes advanced instruments, strengthens the semiconductor and
+              biotech workforce, and models trustworthy autonomous experimentation
+              with reproducible, metadata-rich datasets.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="data-security" class="section section--panel">
+        <div class="section__header">
+          <p class="eyebrow">10 · Data Lifecycle & Security</p>
+          <h2>End-to-end provenance with layered safety.</h2>
+        </div>
+        <div class="grid three-col cards">
+          <article class="card">
+            <h3>Provenance</h3>
+            <p>
+              Raw streams carry timestamps, calibrations, and environmental
+              markers. Metadata accumulates at every workflow step for replayable
+              history decades into the future.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Cyber & Physical Security</h3>
+            <p>
+              Encrypted communication, facility controls, and instrument interlocks
+              protect sensitive experiments and materials.
+            </p>
+          </article>
+          <article class="card">
+            <h3>AI Safety</h3>
+            <p>
+              Policy-constrained models, drift detection, and cross-node standards
+              prevent unsafe behavior and ensure interoperable governance.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="interoperability" class="section">
+        <div class="section__header">
+          <p class="eyebrow">11 · Interoperability & Facilities</p>
+          <h2>Designed to plug into the national PCL ecosystem.</h2>
+        </div>
+        <div class="grid two-col">
+          <div>
+            <h3>Standards Alignment</h3>
+            <p>
+              Uniform APIs, workflow export formats, and digital twin annotations
+              enable cross-node execution and validation.
+            </p>
+          </div>
+          <div>
+            <h3>Facilities & Resources</h3>
+            <p>
+              Element Labs, UW CHIPS, Madison College MOSAIC, UConn, Redwood EDA,
+              Liquid Instruments, Microsanj, Elephas, and Unicorn Biotechnologies
+              contribute instrumentation and expertise.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="management" class="section section--panel">
+        <div class="section__header">
+          <p class="eyebrow">12 · Management & Risk</p>
+          <h2>Clear leadership with proactive mitigation.</h2>
+        </div>
+        <div class="grid three-col cards">
+          <article class="card">
+            <h3>Leadership</h3>
+            <p>
+              PI Daniel van der Weide leads Tera-X with >50% commitment. Technical
+              leads span Redwood EDA, Liquid Instruments, UW CHIPS, UConn, Elephas,
+              Unicorn Biotechnologies, and Microsanj.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Risk Mitigation</h3>
+            <p>
+              Modular design, fault detection, digital twin safety envelopes, and
+              preventive maintenance address technical, scientific, and operational
+              risks.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Evaluation Metrics</h3>
+            <p>
+              Workflow reliability, model fidelity, reproducibility, adoption,
+              workforce impact, and scientific output define success.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="ip" class="section">
+        <div class="section__header">
+          <p class="eyebrow">13 · IP & Partnerships</p>
+          <h2>Open science balanced with translational pathways.</h2>
+        </div>
+        <div class="grid two-col">
+          <div>
+            <h3>IP & Data Sharing</h3>
+            <p>
+              Publicly funded workflows publish data after optional embargoes.
+              Users retain ownership of proprietary designs, while platform-level
+              software stays with Tera-X and partners.
+            </p>
+          </div>
+          <div>
+            <h3>Industry Translation</h3>
+            <p>
+              Semiconductor, biotech, instrumentation, and robotics partners plug
+              in specialized hardware, validate workflows, and create direct
+              technology transfer channels.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="section section--cta">
+        <div class="cta">
+          <p class="eyebrow">Ready to collaborate?</p>
+          <h2>Connect with Tera-X to access HiveLab or co-design new workflows.</h2>
+          <p>
+            Whether you are validating GaN devices, probing organoid responses, or
+            mapping soft actuator envelopes, HiveLab provides the trusted bridge
+            between cloud intelligence and laboratory ground truth.
+          </p>
+          <a class="btn btn--primary" href="mailto:info@tera-x.com">info@tera-x.com</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>© <span id="year"></span> Tera-X · HiveLab Programmable Cloud Laboratory</p>
+      <a href="#top">Back to top ↑</a>
+    </footer>
+
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
