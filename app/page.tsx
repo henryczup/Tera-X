@@ -84,37 +84,27 @@ export default function HiveLabLanding() {
   const heroWords = heroHeadline.split(" ")
 
   return (
-    <div className="relative min-h-screen bg-background overflow-hidden">
+    <div className="relative min-h-screen bg-background overflow-hidden pt-20">
       <AnimatedSiteFrame />
       {/* Navigation */}
-      <nav className="border-b border-border bg-background/95 backdrop-blur-xl sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-lg">T</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xl font-bold">Tera-X</span>
-                </div>
+      <nav className="border-b border-border/60 bg-white/95 backdrop-blur-xl shadow-sm fixed top-0 left-0 right-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="flex items-center h-20 gap-8">
+            <div className="flex items-center gap-3">
+              <div className="relative h-12 w-36 sm:h-14 sm:w-48">
+                <Image src="/tera-x-logo.png" alt="Tera-X logo" fill className="object-contain" priority />
               </div>
             </div>
-            <div className="hidden md:flex items-center gap-8">
-              <a href="#platform" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <div className="hidden md:flex items-center gap-10 absolute left-1/2 -translate-x-1/2">
+              <a href="#platform" className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
                 Platform
               </a>
-              <a href="#capabilities" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <a href="#capabilities" className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
                 Capabilities
               </a>
-              <a href="#community" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <a href="#community" className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
                 Community
               </a>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button size="sm">
-                Contact Us
-              </Button>
             </div>
           </div>
         </div>
