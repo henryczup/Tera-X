@@ -32,12 +32,14 @@ const communityPartners = [
 
 const heroHeadline = "Cloud-connected autonomous labs."
 
+const defaultEase: [number, number, number, number] = [0.22, 0.61, 0.36, 1]
+
 const sectionFade = {
   hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: "easeOut" },
+    transition: { duration: 0.6, ease: defaultEase },
   },
 }
 
@@ -56,7 +58,7 @@ const childFade = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.4, ease: "easeOut" },
+    transition: { duration: 0.4, ease: defaultEase },
   },
 }
 
