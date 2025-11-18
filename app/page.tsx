@@ -109,10 +109,6 @@ function NetworkVisualization() {
     }
   }, [])
 
-  // Calculate positions on horizontal gridlines
-  // Grid parameters match the SVG viewBox
-  const centerY = 250
-
   return (
     <div className="relative w-full h-96 mt-20">
       {/* Globe grid background */}
@@ -139,7 +135,6 @@ function NetworkVisualization() {
             const numHorizontal = 7
             
             const lines: React.ReactElement[] = []
-            const poleX = centerX
             const poleY = centerY - radiusY
 
             // Horizontal latitude lines
