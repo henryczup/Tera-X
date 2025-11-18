@@ -111,7 +111,7 @@ function NetworkVisualization() {
   }, [])
 
   return (
-    <div className="relative w-full h-96 mt-20">
+    <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem] mt-12 sm:mt-16 md:mt-20">
       {/* Globe grid background */}
       <div className="absolute inset-0 opacity-40">
         <svg 
@@ -333,7 +333,7 @@ export default function HomePage() {
             top: 0,
             left: 'max(1.5rem, calc((100% - 75rem) / 2))',
             right: 'max(1.5rem, calc((100% - 75rem) / 2))',
-            height: 'calc(20vh - 0.5rem)',
+            height: 'clamp(8rem, 20vh, 12rem)',
             background: 'rgba(0, 0, 0, 0.3)',
             zIndex: 15
           }}
@@ -362,16 +362,16 @@ export default function HomePage() {
           className="section-connector-line left-1" 
           style={{ 
             zIndex: 20,
-            top: 'calc(20vh - 0.5rem)',
-            height: 'calc(100% - 20vh + 0.5rem)'
+            top: 'clamp(8rem, 20vh, 12rem)',
+            height: 'calc(100% - clamp(8rem, 20vh, 12rem))'
           }}
         ></div>
         <div 
           className="section-connector-line right-1" 
           style={{ 
             zIndex: 20,
-            top: 'calc(20vh - 0.5rem)',
-            height: 'calc(100% - 20vh + 0.5rem)'
+            top: 'clamp(8rem, 20vh, 12rem)',
+            height: 'calc(100% - clamp(8rem, 20vh, 12rem))'
           }}
         ></div>
         {/* Horizontal separator line - full width like section separators - only visible when scrolled */}
@@ -393,7 +393,7 @@ export default function HomePage() {
             background: 'rgba(255, 255, 255, 0.2)',
             left: 'max(1.5rem, calc((100% - 75rem) / 2))',
             right: 'max(1.5rem, calc((100% - 75rem) / 2))',
-            top: 'calc(20vh - 0.5rem)',
+            top: 'clamp(8rem, 20vh, 12rem)',
             zIndex: 21
           }}
         ></div>
@@ -526,7 +526,7 @@ export default function HomePage() {
 
           {/* Constrained line animations - Absolute (contained in hero section) */}
          <div className="absolute inset-0 z-[2] flex justify-center pointer-events-none">
-           <div className="relative w-full max-w-[75rem] px-6 lg:px-16 h-screen">
+           <div className="relative w-full max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 min-h-screen">
              <svg
                className="absolute inset-0 w-full h-full hero-animation-svg"
                viewBox="0 0 1200 800"
@@ -1239,7 +1239,7 @@ export default function HomePage() {
 
               {/* Mobile menu button */}
               <button 
-                className="md:hidden text-foreground p-2  hover:bg-white/10 transition-colors" 
+                className="md:hidden text-foreground p-2  hover:bg-black/5 dark:hover:bg-white/10 transition-colors" 
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 aria-label="Toggle menu"
               >
@@ -1290,7 +1290,7 @@ export default function HomePage() {
               </a>
               <div className="pt-4 border-t border-border mt-4 flex items-center justify-between gap-4">
                 <ThemeToggle />
-                <ShimmerButton className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5  text-sm font-medium shadow-lg w-full">
+                <ShimmerButton className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 min-h-[44px] sm:min-h-0 text-sm font-medium shadow-lg w-full">
                   Contact Us
                 </ShimmerButton>
               </div>
@@ -1299,12 +1299,12 @@ export default function HomePage() {
         )}
 
         {/* Main Content */}
-        <main className="relative z-10 flex flex-col items-center min-h-screen max-w-[75rem] mx-auto px-6 lg:px-16 pt-32 sm:pt-36 lg:pt-40">
+        <main className="relative z-10 flex flex-col items-center min-h-screen max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 pt-32 sm:pt-36 lg:pt-40">
           {/* Spotlight effect behind hero text */}
           <div 
             className="absolute pointer-events-none"
             style={{
-              top: 'calc(20vh + 2rem)',
+              top: 'clamp(10rem, 20vh + 2rem, 14rem)',
               left: '50%',
               transform: 'translateX(-50%)',
               width: '100%',
@@ -1319,7 +1319,7 @@ export default function HomePage() {
             <div 
               className="absolute"
               style={{
-                top: 'calc(20vh - 0.5rem)',
+                top: 'clamp(8rem, 20vh, 12rem)',
                 marginTop: '1px'
               }}
             >
@@ -1327,14 +1327,14 @@ export default function HomePage() {
                 <span className="text-foreground text-xs md:text-xs">Coming Soon.</span>
               </div>
             </div>
-            <div className="h-16 sm:h-20"></div>
+            <div className="h-20 sm:h-24 md:h-28 lg:h-32"></div>
 
 
-          <h1 className="text-foreground text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-4 sm:mb-6 text-center mt-4 sm:mt-6">
+          <h1 className="text-foreground text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight mb-4 sm:mb-6 text-center">
            AI Accelerated Experimentation
           </h1>
 
-          <p className="text-muted-foreground text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-10 max-w-2xl text-pretty leading-relaxed text-center">
+          <p className="text-muted-foreground text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl mb-8 sm:mb-10 max-w-2xl text-pretty leading-relaxed text-center">
           HiveLab: A Safe,  Programmable Cloud Laboratory.
 
           </p>
@@ -1354,7 +1354,7 @@ export default function HomePage() {
             />
             <button
               type="submit"
-              className="group relative bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 sm:px-8 py-2.5 sm:py-3  text-sm sm:text-base font-semibold flex items-center justify-center gap-2 backdrop-blur-sm border border-orange-400/30 shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 whitespace-nowrap"
+              className="group relative bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 sm:px-8 py-2.5 sm:py-3 min-h-[44px] sm:min-h-0 text-sm sm:text-base font-semibold flex items-center justify-center gap-2 backdrop-blur-sm border border-orange-400/30 shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 whitespace-nowrap"
             >
               Join the waiting list
               <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 group-hover:-rotate-12 transition-transform duration-300" />
@@ -1365,7 +1365,7 @@ export default function HomePage() {
       </div>
 
       {/* Trusted by section */}
-      <section className="relative z-10 py-16 lg:py-20 bg-[var(--tera-bg)] section-connector">
+      <section className="relative z-10 py-8 sm:py-12 md:py-16 lg:py-20 xl:py-24 bg-[var(--tera-bg)] section-connector">
         <div className="section-connector-line left-1"></div>
         <div className="section-connector-line right-1"></div>
         <div
@@ -1379,16 +1379,26 @@ export default function HomePage() {
             zIndex: 21,
           }}
         ></div>
-        <div className="max-w-[75rem] mx-auto">
-          <div className="text-center mb-10 lg:mb-12 px-6 lg:px-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-foreground leading-tight tracking-tight mb-4">
+        <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto">
+          <div className="text-center mb-10 lg:mb-12 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-foreground leading-tight tracking-tight mb-4">
               In collaboration with forward‑looking partners
             </h2>
             <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-2xl mx-auto">
             Teams advancing semiconductor reliability, biotechnology, and soft robotics on reproducible, model‑informed test beds.
             </p>
           </div>
-          <div className="grid grid-cols-3 border border-border bg-transparent">
+        </div>
+        {/* Logo grid - breaks out of container to align with vertical lines */}
+        <div 
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 border border-border bg-transparent"
+          style={{ 
+            marginLeft: 'max(1.5rem, calc((100% - 75rem) / 2))',
+            marginRight: 'max(1.5rem, calc((100% - 75rem) / 2))',
+            width: 'calc(100% - max(1.5rem, calc((100% - 75rem) / 2)) * 2)',
+            maxWidth: '75rem'
+          }}
+        >
             {[{
               name: "UW–Madison CHIPS",
               src: "/logo/uw-madisoon_logo.png",
@@ -1440,12 +1450,12 @@ export default function HomePage() {
                 href={logo.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center border border-border/50 bg-black/20 dark:bg-black px-6 py-6 sm:px-8 sm:py-8 hover:bg-accent/50 transition-colors"
+                className="flex items-center justify-center border border-border/50 bg-black px-6 py-6 sm:px-8 sm:py-8 hover:bg-accent/50 transition-colors"
               >
                 <div
                   className="relative w-full flex items-center justify-center opacity-90"
                   style={{
-                    maxWidth: logo.name === "Liquid Instruments" ? 340 : 240,
+                    maxWidth: logo.name === "Liquid Instruments" ? 'min(340px, 100%)' : 'min(240px, 100%)',
                     height: logo.name === "Liquid Instruments" ? 136 : 96,
                   }}
                 >
@@ -1459,12 +1469,11 @@ export default function HomePage() {
                 </div>
               </a>
             ))}
-          </div>
         </div>
       </section>
 
       {/* Network Visualization Section */}
-      <section className="relative z-10 py-24 lg:py-32 bg-[var(--tera-bg)] section-connector">
+      <section className="relative z-10 py-12 sm:py-16 md:py-20 lg:py-24 xl:py-32 bg-[var(--tera-bg)] section-connector">
         <div className="section-connector-line left-1"></div>
         <div className="section-connector-line right-1"></div>
         {/* Horizontal separator line - connects to vertical lines */}
@@ -1472,17 +1481,17 @@ export default function HomePage() {
           className="absolute pointer-events-none"
           style={{ 
             height: '1px', 
-            background: 'rgba(255, 255, 255, 0.2)',
+            background: 'var(--border)',
             left: 'max(1.5rem, calc((100% - 75rem) / 2))',
             right: 'max(1.5rem, calc((100% - 75rem) / 2))',
             top: 0,
             zIndex: 21
           }}
         ></div>
-        <div className="max-w-[75rem] mx-auto px-6 lg:px-16">
+        <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
           {/* Header Text */}
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-normal text-foreground leading-tight tracking-tight mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-foreground leading-tight tracking-tight mb-6">
               Utilize A Network of Nodes To Scale Your Experiments
             </h2>
             <p className="text-muted-foreground text-lg lg:text-xl max-w-2xl mx-auto mb-8">
@@ -1491,10 +1500,10 @@ export default function HomePage() {
             
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <ShimmerButton background="var(--accent)" className="hover:bg-white/10 text-foreground dark:text-white px-6 py-3  font-medium border border-border">
+              <ShimmerButton background="var(--accent)" className="hover:bg-black/5 dark:hover:bg-white/10 text-foreground dark:text-white px-6 py-3 min-h-[44px] sm:min-h-0 font-medium border border-border">
                 More about Infrastructure
               </ShimmerButton>
-              <button className="bg-accent/50 backdrop-blur-sm border border-border text-foreground dark:text-white px-6 py-3  font-medium hover:bg-white/10 transition-all duration-300">
+              <button className="bg-accent/50 backdrop-blur-sm border border-border text-foreground dark:text-white px-6 py-3 min-h-[44px] sm:min-h-0 font-medium hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300">
                 Learn about Enterprise
               </button>
             </div>
@@ -1509,19 +1518,19 @@ export default function HomePage() {
       <section id="science-drivers" className="relative z-10 py-0 scroll-mt-20 section-connector">
         <div className="section-connector-line left-1"></div>
         <div className="section-connector-line right-1"></div>
-        <div className="max-w-[75rem] mx-auto px-6 lg:px-16">
+        <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
           <div className="border-t border-b border-border p-8 lg:p-12">
             <div className="max-w-3xl mb-16 bg-accent/50 backdrop-blur-sm border border-border/50  p-6 lg:p-8">
-              <h2 className="text-4xl lg:text-5xl font-normal text-foreground leading-tight tracking-tight mb-8">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-foreground leading-tight tracking-tight mb-8">
                 Multi-Domain Science Drivers
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed">
                 HiveLab is explicitly multi-domain. It is not a narrowly scoped test stand, but rather a programmable environment where three science drivers intersect.
               </p>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Science Driver 1 */}
-              <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
                 <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                   <Zap className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                 </div>
@@ -1533,7 +1542,7 @@ export default function HomePage() {
                 </p>
               </div>
               {/* Science Driver 2 */}
-              <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
                 <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                   <Microscope className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                 </div>
@@ -1545,7 +1554,7 @@ export default function HomePage() {
                 </p>
               </div>
               {/* Science Driver 3 */}
-              <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
                 <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                   <Layers className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                 </div>
@@ -1565,10 +1574,10 @@ export default function HomePage() {
       <section id="architecture" className="relative z-10 py-0 scroll-mt-20 section-connector">
         <div className="section-connector-line left-1"></div>
         <div className="section-connector-line right-1"></div>
-        <div className="max-w-[75rem] mx-auto px-6 lg:px-16">
+        <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
           <div className="border-t border-b border-border p-8 lg:p-12">
           <div className="max-w-3xl mb-16 bg-accent/50 backdrop-blur-sm border border-border/50  p-6 lg:p-8">
-            <h2 className="text-4xl lg:text-5xl font-normal text-foreground leading-tight tracking-tight mb-8">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-foreground leading-tight tracking-tight mb-8">
               Node Capabilities
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed">
@@ -1770,10 +1779,10 @@ export default function HomePage() {
       <section id="workforce-development" className="relative z-10 py-0 scroll-mt-20 section-connector">
         <div className="section-connector-line left-1"></div>
         <div className="section-connector-line right-1"></div>
-        <div className="max-w-[75rem] mx-auto px-6 lg:px-16">
+        <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
           <div className="border-t border-b border-border p-8 lg:p-12">
             <div className="max-w-3xl mb-16 bg-accent/50 backdrop-blur-sm border border-border/50  p-6 lg:p-8">
-              <h2 className="text-4xl lg:text-5xl font-normal text-foreground leading-tight tracking-tight mb-8">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-foreground leading-tight tracking-tight mb-8">
                 Workforce Development
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed">
@@ -2092,12 +2101,12 @@ export default function HomePage() {
 
 
       {/* Capabilities Section */}
-      <section id="capabilities" className="relative z-10 py-24 lg:py-32 scroll-mt-20 section-connector">
+      <section id="capabilities" className="relative z-10 py-12 sm:py-16 md:py-20 lg:py-24 xl:py-32 scroll-mt-20 section-connector">
         <div className="section-connector-line left-1"></div>
         <div className="section-connector-line right-1"></div>
-        <div className="max-w-[75rem] mx-auto px-6 lg:px-16 py-8 lg:py-12">
+        <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-8 lg:py-12">
             <div className="max-w-3xl mb-16 bg-accent/50 backdrop-blur-sm border border-border/50  p-6 lg:p-8">
-              <h2 className="text-4xl lg:text-5xl font-normal text-foreground leading-tight tracking-tight mb-8">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-foreground leading-tight tracking-tight mb-8">
                 Accessible to Every Researcher
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed">
@@ -2105,13 +2114,13 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8 mt-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
               {/* Use Case 1: Parameter Exploration */}
-              <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
                 <h3 className="text-2xl font-semibold text-foreground tracking-tight mb-4">
                   Explore Parameter Spaces
                 </h3>
-                <div className="w-full h-[300px] mb-6 border border-border bg-card/60 relative ">
+                <div className="w-full h-48 sm:h-64 md:h-80 lg:h-[300px] mb-6 border border-border bg-card/60 relative ">
                   <Image
                     src="/ChatGPT Image Nov 18, 2025, 04_16_46 PM.png"
                     alt="3D parameter space visualization cube with sampled points"
@@ -2144,17 +2153,17 @@ export default function HomePage() {
                     <span>Reproducible</span>
                   </div>
                 </div>
-                <a href="#" className="inline-flex items-center justify-center px-5 h-9 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold tracking-wider  hover:from-orange-600 hover:to-orange-700 transition-all hover:-translate-y-0.5">
+                <a href="#" className="inline-flex items-center justify-center px-5 min-h-[44px] sm:h-9 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold tracking-wider  hover:from-orange-600 hover:to-orange-700 transition-all hover:-translate-y-0.5">
                   Learn More
                 </a>
               </div>
 
               {/* Use Case 2: Critical Validation */}
-              <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
                 <h3 className="text-2xl font-semibold text-foreground tracking-tight mb-4">
                   Validate Critical Experiments
                 </h3>
-                <div className="w-full h-[300px] mb-6 border border-border bg-card/60 relative overflow-hidden">
+                <div className="w-full h-48 sm:h-64 md:h-80 lg:h-[300px] mb-6 border border-border bg-card/60 relative overflow-hidden">
                   <Image
                     src="/ChatGPT Image Nov 18, 2025, 04_19_18 PM.png"
                     alt="Safety envelope visualization with shield and validated configurations"
@@ -2187,7 +2196,7 @@ export default function HomePage() {
                     <span>Audit trail</span>
                   </div>
                 </div>
-                <a href="#" className="inline-flex items-center justify-center px-5 h-9 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold tracking-wider uppercase  hover:from-orange-600 hover:to-orange-700 transition-all hover:-translate-y-0.5">
+                <a href="#" className="inline-flex items-center justify-center px-5 min-h-[44px] sm:h-9 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold tracking-wider uppercase  hover:from-orange-600 hover:to-orange-700 transition-all hover:-translate-y-0.5">
                   Learn More
                 </a>
               </div>
@@ -2196,13 +2205,13 @@ export default function HomePage() {
         </section>
 
         {/* Bottom CTA Section */}
-        <section className="relative z-10 py-16 lg:py-20 bg-[var(--tera-bg)] section-connector">
+        <section className="relative z-10 py-8 sm:py-12 md:py-16 lg:py-20 xl:py-24 bg-[var(--tera-bg)] section-connector">
           <div className="section-connector-line left-1"></div>
           <div className="section-connector-line right-1"></div>
-          <div className="max-w-[75rem] mx-auto px-6 lg:px-16">
+          <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
             <div className=" py-10 lg:py-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
               <div className="max-w-xl">
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal text-foreground leading-tight tracking-tight mb-4">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-foreground leading-tight tracking-tight mb-4">
                   Bring model-informed automation to your next experiment.
                 </h2>
                 <p className="text-muted-foreground text-sm sm:text-base lg:text-lg leading-relaxed">
@@ -2224,7 +2233,7 @@ export default function HomePage() {
                 />
                 <button
                   type="submit"
-                  className="group relative bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base font-semibold flex items-center justify-center gap-2 backdrop-blur-sm border border-orange-400/30 shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 whitespace-nowrap"
+                  className="group relative bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 sm:px-8 py-2.5 sm:py-3 min-h-[44px] sm:min-h-0 text-sm sm:text-base font-semibold flex items-center justify-center gap-2 backdrop-blur-sm border border-orange-400/30 shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 whitespace-nowrap"
                 >
                   Join the waiting list
                   <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 group-hover:-rotate-12 transition-transform duration-300" />
@@ -2237,7 +2246,7 @@ export default function HomePage() {
 
         {/* Footer */}
         <footer className="relative z-10 border-t border-border bg-background">
-          <div className="max-w-[75rem] mx-auto px-6 lg:px-16 py-6 lg:py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-muted-foreground">
+          <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-6 lg:py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-muted-foreground">
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
               <span className="text-muted-foreground font-medium">HiveLab</span>
               <span className="hidden sm:inline text-muted-foreground/50">•</span>
