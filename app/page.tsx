@@ -1232,7 +1232,7 @@ export default function HomePage() {
             </nav>
 
             <div className="flex items-center gap-3">
-              <ShimmerButton className="hidden md:flex bg-orange-500 hover:bg-orange-600 text-white px-4 lg:px-6 py-2  text-sm lg:text-base font-medium shadow-lg">
+              <ShimmerButton className="hidden md:flex bg-orange-500 hover:bg-orange-600 text-white dark:text-white px-4 lg:px-6 py-2  text-sm lg:text-base font-medium shadow-lg">
                 Contact Us
               </ShimmerButton>
 
@@ -1439,7 +1439,7 @@ export default function HomePage() {
                 href={logo.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center border border-border/50 bg-foreground/10 px-6 py-6 sm:px-8 sm:py-8 hover:bg-accent/50 transition-colors"
+                className="flex items-center justify-center border border-border/50 bg-black/20 dark:bg-black px-6 py-6 sm:px-8 sm:py-8 hover:bg-accent/50 transition-colors"
               >
                 <div
                   className="relative w-full flex items-center justify-center opacity-90"
@@ -1490,10 +1490,10 @@ export default function HomePage() {
             
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <ShimmerButton background="var(--accent)" className="hover:bg-white/10 text-foreground px-6 py-3  font-medium border border-border">
+              <ShimmerButton background="var(--accent)" className="hover:bg-white/10 text-foreground dark:text-white px-6 py-3  font-medium border border-border">
                 More about Infrastructure
               </ShimmerButton>
-              <button className="bg-accent/50 backdrop-blur-sm border border-border text-foreground px-6 py-3  font-medium hover:bg-white/10 transition-all duration-300">
+              <button className="bg-accent/50 backdrop-blur-sm border border-border text-foreground dark:text-white px-6 py-3  font-medium hover:bg-white/10 transition-all duration-300">
                 Learn about Enterprise
               </button>
             </div>
