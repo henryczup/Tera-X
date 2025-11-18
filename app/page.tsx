@@ -1385,71 +1385,82 @@ export default function HomePage() {
         <div className="max-w-[75rem] mx-auto">
           <div className="text-center mb-10 lg:mb-12 px-6 lg:px-16">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-4">
-              Trusted by forward-looking teams
+              In collaboration with forward‑looking partners
             </h2>
             <p className="text-white/70 text-sm sm:text-base md:text-lg max-w-2xl mx-auto">
-              Organizations building the next generation of experimental platforms.
+            Teams advancing semiconductor reliability, biotechnology, and soft robotics on reproducible, model‑informed test beds.
             </p>
           </div>
           <div className="grid grid-cols-3 border border-white/20 bg-white/5/0">
-            {[
-              {
-                name: "Logo 1",
-                src: "/logo/648a3efbb2ac3008cadec94e_logo-1-col-invert.svg",
-              },
-              {
-                name: "Elephas",
-                src: "/logo/elephas-logo.svg",
-              },
-              {
-                name: "URP Park",
-                src: "/logo/URP_Park_logo_CMYK_white-text-whiteoutline-1 (1).png",
-              },
-              {
-                name: "Output 1",
-                src: "/logo/output-onlinepngtools.png",
-              },
-              {
-                name: "Output 2",
-                src: "/logo/output-onlinepngtools (1).png",
-              },
-              {
-                name: "Design",
-                src: "/logo/Untitled design (1).png",
-              },
-              {
-                name: "Generated",
-                src: "/logo/Generated Image November 18, 2025 - 10_25AM.png",
-              },
-              {
-                name: "Horizontal Reversed",
-                src: "/logo/Horizontal_ReversedOut_width_143px.png",
-              },
-              {
-                name: "UConn",
-                src: "/logo/uconn-wordmark-stacked-white.png",
-              },
+            {[{
+              name: "UW–Madison CHIPS",
+              src: "/logo/uw-madisoon_logo.png",
+              href: "https://chips.wisc.edu/",
+            },
+            {
+              name: "University Research Park / Element Labs",
+              src: "/logo/universty_research_park_logo.png",
+              href: "https://universityresearchpark.org/introducing-element-labs/",
+            },
+            {
+              name: "UConn Soft Materials",
+              src: "/logo/uconn_logo.png",
+              href: "https://polymer.ims.uconn.edu/wang-research-group-video/",
+            },
+            {
+              name: "Madison College",
+              src: "/logo/madison_tech_logo.png",
+              href: "https://madisoncollege.edu/",
+            },
+            {
+              name: "Redwood EDA",
+              src: "/logo/redwood_eda_logo.png",
+              href: "https://www.redwoodeda.com/",
+            },
+            {
+              name: "Liquid Instruments",
+              src: "/logo/liquid_inst_logo.png",
+              href: "https://liquidinstruments.com/",
+            },
+            {
+              name: "Elephas",
+              src: "/logo/elephas-logo.svg",
+              href: "https://elephas.com/",
+            },
+            {
+              name: "Unicorn Biotechnologies",
+              src: "/logo/unicon_bio_logo.svg",
+              href: "https://www.unicornb.io/",
+            },
+            {
+              name: "Microsanj",
+              src: "/logo/microsanj_logo.png",
+              href: "https://microsanj.com/",
+            },
             ].map((logo) => (
-              <div
+              <a
                 key={logo.src}
-                className="flex items-center justify-center border border-white/10 bg-black/40 px-6 py-6 sm:px-8 sm:py-8"
+                href={logo.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center border border-white/10 bg-black/40 px-6 py-6 sm:px-8 sm:py-8 hover:bg-white/5 transition-colors"
               >
                 <div
                   className="relative w-full flex items-center justify-center opacity-90"
                   style={{
-                    maxWidth: logo.name === "Design" ? 220 : 180,
-                    height: logo.name === "Design" ? 96 : 64,
+                    maxWidth: logo.name === "Liquid Instruments" ? 340 : 240,
+                    height: logo.name === "Liquid Instruments" ? 136 : 96,
                   }}
                 >
                   <Image
                     src={logo.src}
-                    alt={logo.name}
+                    alt={logo.name + " logo"}
                     fill
                     sizes="(min-width: 1024px) 140px, 33vw"
                     className="object-contain"
                   />
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         </div>
@@ -1503,55 +1514,52 @@ export default function HomePage() {
         <div className="section-connector-line right-1"></div>
         <div className="max-w-[75rem] mx-auto px-6 lg:px-16">
           <div className="border-t border-b border-white/20 p-8 lg:p-12">
-          <div className="max-w-3xl mb-16 bg-white/5 backdrop-blur-sm border border-white/10  p-6 lg:p-8">
-            <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-8">
-              Multi-Domain Science Drivers
-            </h2>
-            <p className="text-white/70 text-lg leading-relaxed">
-              HiveLab is explicitly multi-domain. It is not a narrowly scoped test stand, but rather a programmable environment where three science drivers intersect.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Science Driver 1 */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
-              <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
-                <Zap className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
-              </div>
-              <h3 className="text-xl font-semibold text-white tracking-tight mb-4">
-                Semiconductor & Photonic Reliability
-              </h3>
-              <p className="text-white/70 leading-relaxed">
-                Thermal and electrical reliability in semiconductor and photonic devices.
+            <div className="max-w-3xl mb-16 bg-white/5 backdrop-blur-sm border border-white/10  p-6 lg:p-8">
+              <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-8">
+                Multi-Domain Science Drivers
+              </h2>
+              <p className="text-white/70 text-lg leading-relaxed">
+                HiveLab is explicitly multi-domain. It is not a narrowly scoped test stand, but rather a programmable environment where three science drivers intersect.
               </p>
             </div>
-
-            {/* Science Driver 2 */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
-              <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
-                <Microscope className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
+            <div className="grid md:grid-cols-3 gap-6">
+              {/* Science Driver 1 */}
+              <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+                <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
+                  <Zap className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
+                </div>
+                <h3 className="text-xl font-semibold text-white tracking-tight mb-4">
+                  Semiconductor & Photonic Reliability
+                </h3>
+                <p className="text-white/70 leading-relaxed">
+                  Thermal and electrical reliability in semiconductor and photonic devices.
+                </p>
               </div>
-              <h3 className="text-xl font-semibold text-white uppercase tracking-tight mb-4">
-                Biological Systems
-              </h3>
-              <p className="text-white/70 leading-relaxed">
-                Microenvironmental control and functional readouts in biological systems.
-              </p>
-            </div>
-
-            {/* Science Driver 3 */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
-              <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
-                <Layers className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
+              {/* Science Driver 2 */}
+              <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+                <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
+                  <Microscope className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
+                </div>
+                <h3 className="text-xl font-semibold text-white tracking-tight mb-4">
+                  Biological Systems
+                </h3>
+                <p className="text-white/70 leading-relaxed">
+                  Microenvironmental control and functional readouts in biological systems.
+                </p>
               </div>
-              <h3 className="text-xl font-semibold text-white uppercase tracking-tight mb-4">
-                Soft Actuators & Materials
-              </h3>
-              <p className="text-white/70 leading-relaxed">
-                Nonlinear behavior and failure envelopes in soft actuators and compliant materials.
-              </p>
+              {/* Science Driver 3 */}
+              <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+                <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
+                  <Layers className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
+                </div>
+                <h3 className="text-xl font-semibold text-white tracking-tight mb-4">
+                  Soft Actuators & Materials
+                </h3>
+                <p className="text-white/70 leading-relaxed">
+                  Nonlinear behavior and failure envelopes in soft actuators and compliant materials.
+                </p>
+              </div>
             </div>
-          </div>
           </div>
         </div>
       </section>
@@ -1940,7 +1948,7 @@ export default function HomePage() {
                     <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                       <Users className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                     </div>
-                    <h3 className="text-2xl font-semibold text-white uppercase tracking-tight mb-4">
+                    <h3 className="text-2xl font-semibold text-white tracking-tight mb-4">
                       Technician Pipeline through Madison College and MOSAIC
                     </h3>
                     <p className="text-white/70 leading-relaxed mb-6">
@@ -1975,7 +1983,7 @@ export default function HomePage() {
                     <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                       <BookOpen className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                     </div>
-                    <h3 className="text-2xl font-semibold text-white uppercase tracking-tight mb-4">
+                    <h3 className="text-2xl font-semibold text-white tracking-tight mb-4">
                       Undergraduate Education
                     </h3>
                     <p className="text-white/70 leading-relaxed mb-6">
@@ -2014,7 +2022,7 @@ export default function HomePage() {
                     <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                       <GraduationCap className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                     </div>
-                    <h3 className="text-2xl font-semibold text-white uppercase tracking-tight mb-4">
+                    <h3 className="text-2xl font-semibold text-white tracking-tight mb-4">
                       Graduate Training and Cross-Institutional Collaboration
                     </h3>
                     <p className="text-white/70 leading-relaxed mb-6">
@@ -2049,7 +2057,7 @@ export default function HomePage() {
                     <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                       <Briefcase className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                     </div>
-                    <h3 className="text-2xl font-semibold text-white uppercase tracking-tight mb-4">
+                    <h3 className="text-2xl font-semibold text-white tracking-tight mb-4">
                       Professional Development for Scientists and Engineers
                     </h3>
                     <p className="text-white/70 leading-relaxed mb-6">
@@ -2103,11 +2111,17 @@ export default function HomePage() {
             <div className="grid md:grid-cols-2 gap-8 mt-8">
               {/* Use Case 1: Parameter Exploration */}
               <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
-                <h3 className="text-2xl font-semibold text-white uppercase tracking-tight mb-4">
+                <h3 className="text-2xl font-semibold text-white tracking-tight mb-4">
                   Explore Parameter Spaces
                 </h3>
-                <div className="w-full h-[300px] bg-gradient-to-br from-orange-500/10 via-orange-600/5 to-orange-500/10  flex items-center justify-center text-white/40 text-sm mb-6 border border-white/20">
-                  Parameter Space Visualization
+                <div className="w-full h-[300px] mb-6 border border-white/20 bg-black/60 relative ">
+                  <Image
+                    src="/ChatGPT Image Nov 18, 2025, 11_47_22 AM.png"
+                    alt="3D parameter space visualization cube with sampled points"
+                    fill
+                    className="object-contain opacity-90"
+                    sizes="(min-width: 1024px) 50vw, 100vw"
+                  />
                 </div>
                 <p className="text-white/70 leading-relaxed mb-6">
                   For some users, this may mean exploring parameter spaces that would take months, if ever, to scan manually. HiveLab enables rapid iteration across vast experimental landscapes, accelerating discovery through intelligent automation.
@@ -2126,18 +2140,24 @@ export default function HomePage() {
                     <span>Reproducible</span>
                   </div>
                 </div>
-                <a href="#" className="inline-flex items-center justify-center px-5 h-9 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold tracking-wider uppercase  hover:from-orange-600 hover:to-orange-700 transition-all hover:-translate-y-0.5">
+                <a href="#" className="inline-flex items-center justify-center px-5 h-9 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold tracking-wider  hover:from-orange-600 hover:to-orange-700 transition-all hover:-translate-y-0.5">
                   Learn More
                 </a>
               </div>
 
               {/* Use Case 2: Critical Validation */}
               <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
-                <h3 className="text-2xl font-semibold text-white uppercase tracking-tight mb-4">
+                <h3 className="text-2xl font-semibold text-white tracking-tight mb-4">
                   Validate Critical Experiments
                 </h3>
-                <div className="w-full h-[300px] bg-gradient-to-br from-orange-500/10 via-orange-600/5 to-orange-500/10  flex items-center justify-center text-white/40 text-sm mb-6 border border-white/20">
-                  Safety Envelope Visualization
+                <div className="w-full h-[300px] mb-6 border border-white/20 bg-black/60 relative overflow-hidden">
+                  <Image
+                    src="/ChatGPT Image Nov 18, 2025, 12_04_17 PM.png"
+                    alt="Safety envelope visualization with shield and validated configurations"
+                    fill
+                    className="object-contain opacity-90"
+                    sizes="(min-width: 1024px) 50vw, 100vw"
+                  />
                 </div>
                 <p className="text-white/70 leading-relaxed mb-6">
                   For others, it may mean validating a single critical experiment under conditions that must not be misconfigured, such as a thermal reliability test on a new power device or a live cell assay with precious biological material.
@@ -2161,8 +2181,68 @@ export default function HomePage() {
                 </a>
               </div>
             </div>
-        </div>
-      </section>
-    </div>
-  )
-}
+          </div>
+        </section>
+
+        {/* Bottom CTA Section */}
+        <section className="relative z-10 py-16 lg:py-20 bg-[var(--tera-bg)] section-connector">
+          <div className="section-connector-line left-1"></div>
+          <div className="section-connector-line right-1"></div>
+          <div className="max-w-[75rem] mx-auto px-6 lg:px-16">
+            <div className=" py-10 lg:py-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+              <div className="max-w-xl">
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-4">
+                  Bring model-informed automation to your next experiment.
+                </h2>
+                <p className="text-white/70 text-sm sm:text-base lg:text-lg leading-relaxed">
+                  Share a problem you are working on in semiconductors, biotechnology, or soft robotics, and we will explore how HiveLab can host a safe, reproducible workflow around it.
+                </p>
+              </div>
+              <form
+                className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto max-w-md"
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  // Handle form submission
+                }}
+              >
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="flex-1 bg-white/5 backdrop-blur-sm border border-white/20 px-4 sm:px-6 py-2.5 sm:py-3 text-white placeholder:text-white/40 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/30 transition-all duration-300"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="group relative bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base font-semibold flex items-center justify-center gap-2 backdrop-blur-sm border border-orange-400/30 shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 whitespace-nowrap"
+                >
+                  Join the waiting list
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 group-hover:-rotate-12 transition-transform duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="relative z-10 border-t border-white/20 bg-black/90">
+          <div className="max-w-[75rem] mx-auto px-6 lg:px-16 py-6 lg:py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-white/60">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
+              <span className="text-white/80 font-medium">HiveLab</span>
+              <span className="hidden sm:inline text-white/40">•</span>
+              <span>Programmable cloud laboratory for model-informed experimentation.</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-white/40"> {new Date().getFullYear()} Tera-X.</span>
+              <div className="hidden sm:flex items-center gap-4">
+                <a href="#capabilities" className="hover:text-white transition-colors">Capabilities</a>
+                <a href="#science-drivers" className="hover:text-white transition-colors">Science</a>
+                <a href="#workforce-development" className="hover:text-white transition-colors">Workforce</a>
+              </div>
+            </div>
+          </div>
+        </footer>
+
+      </div>
+    )
+  }
