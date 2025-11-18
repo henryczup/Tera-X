@@ -121,7 +121,7 @@ function NetworkVisualization() {
         >
           <defs>
             <linearGradient id="glowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#f97316" stopOpacity="0" />
+              <stop offset="0%" stopColor="#f97316ff" stopOpacity="0" />
               <stop offset="50%" stopColor="#f97316" stopOpacity="1" />
               <stop offset="100%" stopColor="#f97316" stopOpacity="0" />
             </linearGradient>
@@ -1177,15 +1177,26 @@ export default function HomePage() {
                 e.preventDefault()
                 window.scrollTo({ top: 0, behavior: "smooth" })
               }}
-              className="text-white text-2xl sm:text-3xl tracking-tighter hover:text-white/80 transition-colors"
+              className="flex items-center gap-3 text-white text-2xl sm:text-3xl tracking-tighter hover:text-white/80 transition-colors"
             >
-              <LineShadowText className="italic font-light" shadowColor="white">
-                Tera
-              </LineShadowText>
-              -
-              <LineShadowText className="italic font-light" shadowColor="white">
-                X
-              </LineShadowText>
+              {/* <div className="relative h-8 w-8 sm:h-9 sm:w-9">
+                <Image
+                  src="/tera-x-logo.png"
+                  alt="Tera-X logo"
+                  fill
+                  sizes="36px"
+                  className="object-contain"
+                />
+              </div> */}
+              <div className="flex items-baseline gap-1">
+                <LineShadowText className="italic font-light" shadowColor="white">
+                  Tera
+                </LineShadowText>
+                -
+                <LineShadowText className="italic font-light" shadowColor="white">
+                  X
+                </LineShadowText>
+              </div>
             </a>
 
             <nav className="hidden md:flex items-center space-x-1">
