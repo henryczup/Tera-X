@@ -1,8 +1,8 @@
 "use client"
 
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { ArrowRight, Menu, FlaskConical, Shield, Database, Repeat, Search, CheckCircle2, Cpu, Cloud, Brain, Zap, Microscope, Layers, X, CircuitBoard, Beaker, Gauge, Network, PlayCircle, GraduationCap, Users, BookOpen, Briefcase, Triangle } from "lucide-react"
+import { ArrowRight } from "lucide-react"
+import { Menu, FlaskConical, Shield, Database, Repeat, Search, CheckCircle2, Cpu, Cloud, Brain, Zap, Microscope, Layers, X, CircuitBoard, Beaker, Gauge, Network, PlayCircle, GraduationCap, Users, BookOpen, Briefcase } from "lucide-react"
 import { LineShadowText } from "@/components/line-shadow-text"
 import { ShimmerButton } from "@/components/shimmer-button"
 import { useState, useEffect, useRef } from "react"
@@ -111,14 +111,7 @@ function NetworkVisualization() {
 
   // Calculate positions on horizontal gridlines
   // Grid parameters match the SVG viewBox
-  const centerX = 400
   const centerY = 250
-  const radiusX = 300
-  const radiusY = 200
-  const numHorizontal = 7
-  const numVertical = 13
-  const poleY = centerY - radiusY
-  
 
   return (
     <div className="relative w-full h-96 mt-20">
@@ -298,7 +291,6 @@ function NetworkVisualization() {
           })()}
         </svg>
       </div>
-
     </div>
   )
 }
@@ -307,9 +299,6 @@ export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeWorkforceTab, setActiveWorkforceTab] = useState("technician")
   const [scrolled, setScrolled] = useState(false)
-  const [networkAnimationActive, setNetworkAnimationActive] = useState(false)
-  const [highlightedLinePath, setHighlightedLinePath] = useState<string | null>(null)
-  const [highlightedLineKey, setHighlightedLineKey] = useState(0)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -339,7 +328,6 @@ export default function HomePage() {
     <div id="top" className="min-h-screen relative overflow-hidden">
       <div className="absolute inset-0 bg-[var(--tera-bg)]"></div>
       
-
       {/* Hero Section with Background */}
       <div className="relative min-h-screen overflow-hidden section-connector bg-transparent">
         {/* Dark overlay outside the box - top (between vertical lines) */}
