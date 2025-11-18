@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react"
 import { Menu, FlaskConical, Shield, Database, Repeat, Search, CheckCircle2, Cpu, Cloud, Brain, Zap, Microscope, Layers, X, CircuitBoard, Beaker, Gauge, Network, PlayCircle, GraduationCap, Users, BookOpen, Briefcase } from "lucide-react"
 import { LineShadowText } from "@/components/line-shadow-text"
 import { ShimmerButton } from "@/components/shimmer-button"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { useState, useEffect, useRef } from "react"
 import { gsap } from "gsap"
 
@@ -121,9 +122,9 @@ function NetworkVisualization() {
         >
           <defs>
             <linearGradient id="glowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#f97316ff" stopOpacity="0" />
-              <stop offset="50%" stopColor="#f97316" stopOpacity="1" />
-              <stop offset="100%" stopColor="#f97316" stopOpacity="0" />
+              <stop offset="0%" stopColor="var(--tera-accent)" stopOpacity="0" />
+              <stop offset="50%" stopColor="var(--tera-accent)" stopOpacity="1" />
+              <stop offset="100%" stopColor="var(--tera-accent)" stopOpacity="0" />
             </linearGradient>
           </defs>
           {(() => {
@@ -157,7 +158,7 @@ function NetworkVisualization() {
                       ref={(el) => { if (el) gridLineRefs.current.set(lineKey, el) }}
                       d={pathD}
                       fill="none"
-                      stroke="rgba(255, 255, 255, 0.6)"
+                      stroke="var(--border)"
                       strokeWidth="1.5"
                       opacity={1}
                     />
@@ -170,7 +171,7 @@ function NetworkVisualization() {
                         strokeWidth="2.5"
                         strokeLinecap="round"
                         style={{
-                          filter: 'drop-shadow(0 0 6px rgba(249, 115, 22, 0.8))'
+                          filter: 'drop-shadow(0 0 6px var(--tera-accent))'
                         }}
                       />
                     )}
@@ -271,11 +272,11 @@ function NetworkVisualization() {
                     ref={(el) => { if (el) orangeLineRefs.current.set(i, el) }}
                     d={pathD}
                     fill="none"
-                    stroke="#ff6b00"
+                    stroke="var(--tera-accent)"
                     strokeWidth="2"
                     strokeLinecap="round"
                     style={{
-                      filter: 'drop-shadow(0 0 8px rgba(255, 107, 0, 0.9))'
+                      filter: 'drop-shadow(0 0 8px var(--tera-accent))'
                     }}
                   />
                 </g>
@@ -1167,7 +1168,7 @@ export default function HomePage() {
         {/* Header Navigation */}
         <header 
           className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-            scrolled ? "border-b border-white/20 backdrop-blur-md bg-[var(--tera-bg)]/80" : ""
+            scrolled ? "border-b border-border backdrop-blur-md bg-[var(--tera-bg)]/80" : ""
           }`}
         >
           <div className="w-full flex items-center justify-between px-4 sm:px-4 lg:px-6 h-16 lg:h-20">
@@ -1177,7 +1178,7 @@ export default function HomePage() {
                 e.preventDefault()
                 window.scrollTo({ top: 0, behavior: "smooth" })
               }}
-              className="flex items-center gap-3 text-white text-2xl sm:text-3xl tracking-tighter hover:text-white/80 transition-colors"
+              className="flex items-center gap-3 text-foreground text-2xl sm:text-3xl tracking-tighter hover:text-muted-foreground transition-colors"
             >
               {/* <div className="relative h-8 w-8 sm:h-9 sm:w-9">
                 <Image
@@ -1203,28 +1204,28 @@ export default function HomePage() {
               <a 
                 href="#capabilities" 
                 onClick={(e) => handleNavClick(e, "capabilities")}
-                className="px-4 py-2 text-white/80 hover:text-white transition-colors text-sm lg:text-base  hover:bg-white/5"
+                className="px-4 py-2 text-foreground hover:text-foreground/80 transition-colors text-sm lg:text-base  hover:bg-accent/50"
               >
                 Capabilities
               </a>
               <a 
                 href="#science-drivers" 
                 onClick={(e) => handleNavClick(e, "science-drivers")}
-                className="px-4 py-2 text-white/80 hover:text-white transition-colors text-sm lg:text-base  hover:bg-white/5"
+                className="px-4 py-2 text-foreground hover:text-foreground/80 transition-colors text-sm lg:text-base  hover:bg-accent/50"
               >
                 Science Drivers
               </a>
               <a 
                 href="#architecture" 
                 onClick={(e) => handleNavClick(e, "architecture")}
-                className="px-4 py-2 text-white/80 hover:text-white transition-colors text-sm lg:text-base  hover:bg-white/5"
+                className="px-4 py-2 text-foreground hover:text-foreground/80 transition-colors text-sm lg:text-base  hover:bg-accent/50"
               >
                 Architecture
               </a>
               <a 
                 href="#workforce-development" 
                 onClick={(e) => handleNavClick(e, "workforce-development")}
-                className="px-4 py-2 text-white/80 hover:text-white transition-colors text-sm lg:text-base  hover:bg-white/5"
+                className="px-4 py-2 text-foreground hover:text-foreground/80 transition-colors text-sm lg:text-base  hover:bg-accent/50"
               >
                 Workforce
               </a>
@@ -1237,7 +1238,7 @@ export default function HomePage() {
 
               {/* Mobile menu button */}
               <button 
-                className="md:hidden text-white p-2  hover:bg-white/10 transition-colors" 
+                className="md:hidden text-foreground p-2  hover:bg-white/10 transition-colors" 
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 aria-label="Toggle menu"
               >
@@ -1252,7 +1253,7 @@ export default function HomePage() {
         </header>
 
         {mobileMenuOpen && (
-          <div className={`md:hidden fixed top-16 lg:top-20 left-0 right-0 backdrop-blur-md border-b border-white/20 z-40 shadow-xl transition-all duration-300 ${
+          <div className={`md:hidden fixed top-16 lg:top-20 left-0 right-0 backdrop-blur-md border-b border-border z-40 shadow-xl transition-all duration-300 ${
             scrolled 
               ? "bg-transparent" 
               : "bg-[var(--tera-bg)]/95"
@@ -1260,33 +1261,34 @@ export default function HomePage() {
             <nav className="flex flex-col px-6 py-6 space-y-1">
               <a 
                 href="#capabilities" 
-                className="px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors " 
+                className="px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors " 
                 onClick={(e) => handleNavClick(e, "capabilities")}
               >
                 Capabilities
               </a>
               <a 
                 href="#science-drivers" 
-                className="px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors " 
+                className="px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors " 
                 onClick={(e) => handleNavClick(e, "science-drivers")}
               >
                 Science Drivers
               </a>
               <a 
                 href="#architecture" 
-                className="px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors " 
+                className="px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors " 
                 onClick={(e) => handleNavClick(e, "architecture")}
               >
                 Architecture
               </a>
               <a 
                 href="#workforce-development" 
-                className="px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors " 
+                className="px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors " 
                 onClick={(e) => handleNavClick(e, "workforce-development")}
               >
                 Workforce
               </a>
-              <div className="pt-4 border-t border-white/20 mt-4">
+              <div className="pt-4 border-t border-border mt-4 flex items-center justify-between gap-4">
+                <ThemeToggle />
                 <ShimmerButton className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5  text-sm font-medium shadow-lg w-full">
                   Contact Us
                 </ShimmerButton>
@@ -1320,18 +1322,18 @@ export default function HomePage() {
                 marginTop: '1px'
               }}
             >
-              <div className="inline-flex items-center bg-transparent backdrop-blur-sm border-x border-b border-white/20 px-3 sm:px-4 py-2">
-                <span className="text-white text-xs md:text-xs">Coming Soon.</span>
+              <div className="inline-flex items-center bg-transparent backdrop-blur-sm border-x border-b border-border px-3 sm:px-4 py-2">
+                <span className="text-foreground text-xs md:text-xs">Coming Soon.</span>
               </div>
             </div>
             <div className="h-16 sm:h-20"></div>
 
 
-          <h1 className="text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-4 sm:mb-6 text-center mt-4 sm:mt-6">
+          <h1 className="text-foreground text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-4 sm:mb-6 text-center mt-4 sm:mt-6">
            AI Accelerated Experimentation
           </h1>
 
-          <p className="text-white/70 text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-10 max-w-2xl text-pretty leading-relaxed text-center">
+          <p className="text-muted-foreground text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-10 max-w-2xl text-pretty leading-relaxed text-center">
           HiveLab: A Safe,  Programmable Cloud Laboratory.
 
           </p>
@@ -1346,7 +1348,7 @@ export default function HomePage() {
             <input
               type="email"
               placeholder="Enter your email"
-              className="flex-1 bg-white/5 backdrop-blur-sm border border-white/20  px-4 sm:px-6 py-2.5 sm:py-3 text-white placeholder:text-white/40 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/30 transition-all duration-300"
+              className="flex-1 bg-accent/50 backdrop-blur-sm border border-border  px-4 sm:px-6 py-2.5 sm:py-3 text-foreground placeholder:text-muted-foreground/50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/30 transition-all duration-300"
               required
             />
             <button
@@ -1378,14 +1380,14 @@ export default function HomePage() {
         ></div>
         <div className="max-w-[75rem] mx-auto">
           <div className="text-center mb-10 lg:mb-12 px-6 lg:px-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-foreground leading-tight tracking-tight mb-4">
               In collaboration with forward‑looking partners
             </h2>
-            <p className="text-white/70 text-sm sm:text-base md:text-lg max-w-2xl mx-auto">
+            <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-2xl mx-auto">
             Teams advancing semiconductor reliability, biotechnology, and soft robotics on reproducible, model‑informed test beds.
             </p>
           </div>
-          <div className="grid grid-cols-3 border border-white/20 bg-white/5/0">
+          <div className="grid grid-cols-3 border border-border bg-transparent">
             {[{
               name: "UW–Madison CHIPS",
               src: "/logo/uw-madisoon_logo.png",
@@ -1437,7 +1439,7 @@ export default function HomePage() {
                 href={logo.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center border border-white/10 bg-black/40 px-6 py-6 sm:px-8 sm:py-8 hover:bg-white/5 transition-colors"
+                className="flex items-center justify-center border border-border/50 bg-foreground/10 px-6 py-6 sm:px-8 sm:py-8 hover:bg-accent/50 transition-colors"
               >
                 <div
                   className="relative w-full flex items-center justify-center opacity-90"
@@ -1479,19 +1481,19 @@ export default function HomePage() {
         <div className="max-w-[75rem] mx-auto px-6 lg:px-16">
           {/* Header Text */}
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-6">
+            <h2 className="text-4xl lg:text-5xl font-normal text-foreground leading-tight tracking-tight mb-6">
               Utilize A Network of Nodes To Scale Your Experiments
             </h2>
-            <p className="text-white/70 text-lg lg:text-xl max-w-2xl mx-auto mb-8">
+            <p className="text-muted-foreground text-lg lg:text-xl max-w-2xl mx-auto mb-8">
               When you push code to HiveLab, we make it instantly available across our network of nodes.
             </p>
             
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <ShimmerButton className="bg-white/5 hover:bg-white/10 text-white px-6 py-3  font-medium border border-white/20">
+              <ShimmerButton background="var(--accent)" className="hover:bg-white/10 text-foreground px-6 py-3  font-medium border border-border">
                 More about Infrastructure
               </ShimmerButton>
-              <button className="bg-white/5 backdrop-blur-sm border border-white/20 text-white px-6 py-3  font-medium hover:bg-white/10 transition-all duration-300">
+              <button className="bg-accent/50 backdrop-blur-sm border border-border text-foreground px-6 py-3  font-medium hover:bg-white/10 transition-all duration-300">
                 Learn about Enterprise
               </button>
             </div>
@@ -1507,49 +1509,49 @@ export default function HomePage() {
         <div className="section-connector-line left-1"></div>
         <div className="section-connector-line right-1"></div>
         <div className="max-w-[75rem] mx-auto px-6 lg:px-16">
-          <div className="border-t border-b border-white/20 p-8 lg:p-12">
-            <div className="max-w-3xl mb-16 bg-white/5 backdrop-blur-sm border border-white/10  p-6 lg:p-8">
-              <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-8">
+          <div className="border-t border-b border-border p-8 lg:p-12">
+            <div className="max-w-3xl mb-16 bg-accent/50 backdrop-blur-sm border border-border/50  p-6 lg:p-8">
+              <h2 className="text-4xl lg:text-5xl font-normal text-foreground leading-tight tracking-tight mb-8">
                 Multi-Domain Science Drivers
               </h2>
-              <p className="text-white/70 text-lg leading-relaxed">
+              <p className="text-muted-foreground text-lg leading-relaxed">
                 HiveLab is explicitly multi-domain. It is not a narrowly scoped test stand, but rather a programmable environment where three science drivers intersect.
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
               {/* Science Driver 1 */}
-              <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
                 <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                   <Zap className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                 </div>
-                <h3 className="text-xl font-semibold text-white tracking-tight mb-4">
+                <h3 className="text-xl font-semibold text-foreground tracking-tight mb-4">
                   Semiconductor & Photonic Reliability
                 </h3>
-                <p className="text-white/70 leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed">
                   Thermal and electrical reliability in semiconductor and photonic devices.
                 </p>
               </div>
               {/* Science Driver 2 */}
-              <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
                 <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                   <Microscope className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                 </div>
-                <h3 className="text-xl font-semibold text-white tracking-tight mb-4">
+                <h3 className="text-xl font-semibold text-foreground tracking-tight mb-4">
                   Biological Systems
                 </h3>
-                <p className="text-white/70 leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed">
                   Microenvironmental control and functional readouts in biological systems.
                 </p>
               </div>
               {/* Science Driver 3 */}
-              <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
                 <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                   <Layers className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                 </div>
-                <h3 className="text-xl font-semibold text-white tracking-tight mb-4">
+                <h3 className="text-xl font-semibold text-foreground tracking-tight mb-4">
                   Soft Actuators & Materials
                 </h3>
-                <p className="text-white/70 leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed">
                   Nonlinear behavior and failure envelopes in soft actuators and compliant materials.
                 </p>
               </div>
@@ -1563,42 +1565,42 @@ export default function HomePage() {
         <div className="section-connector-line left-1"></div>
         <div className="section-connector-line right-1"></div>
         <div className="max-w-[75rem] mx-auto px-6 lg:px-16">
-          <div className="border-t border-b border-white/20 p-8 lg:p-12">
-          <div className="max-w-3xl mb-16 bg-white/5 backdrop-blur-sm border border-white/10  p-6 lg:p-8">
-            <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-8">
+          <div className="border-t border-b border-border p-8 lg:p-12">
+          <div className="max-w-3xl mb-16 bg-accent/50 backdrop-blur-sm border border-border/50  p-6 lg:p-8">
+            <h2 className="text-4xl lg:text-5xl font-normal text-foreground leading-tight tracking-tight mb-8">
               Node Capabilities
             </h2>
-            <p className="text-white/70 text-lg leading-relaxed">
+            <p className="text-muted-foreground text-lg leading-relaxed">
               HiveLab is designed to run many kinds of science experiments with both automation and human oversight. Everything works together as one system. It is not just a collection of tools. It is an environment where instruments, sensors, and software are coordinated so experiments are reliable, repeatable, and easy to control.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {/* Capability 1: Semiconductor and Materials */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+            <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
               <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                 <CircuitBoard className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
               </div>
-              <h3 className="text-xl font-semibold text-white tracking-tight mb-4">
+              <h3 className="text-xl font-semibold text-foreground tracking-tight mb-4">
                 Semiconductor and Materials
               </h3>
-              <p className="text-white/70 leading-relaxed text-sm mb-4">
+              <p className="text-muted-foreground leading-relaxed text-sm mb-4">
                 This part of HiveLab studies electronic materials and devices.
               </p>
               <div className="space-y-2">
-                <div className="flex items-start gap-2 text-white/60 text-xs">
+                <div className="flex items-start gap-2 text-muted-foreground text-xs">
                   <Zap className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                   <span>Thermal cameras can measure very small temperature changes at tiny scales, smaller than a micron.</span>
                 </div>
-                <div className="flex items-start gap-2 text-white/60 text-xs">
+                <div className="flex items-start gap-2 text-muted-foreground text-xs">
                   <Search className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                   <span>The system can test electronics using fast and programmable electrical signals.</span>
                 </div>
-                <div className="flex items-start gap-2 text-white/60 text-xs">
+                <div className="flex items-start gap-2 text-muted-foreground text-xs">
                   <Repeat className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                   <span>It collects different types of data at the same time, such as electrical, thermal, and optical measurements.</span>
                 </div>
-                <div className="flex items-start gap-2 text-white/60 text-xs">
+                <div className="flex items-start gap-2 text-muted-foreground text-xs">
                   <Repeat className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                   <span>It can quickly switch between stressing a device and letting it rest and recover.</span>
                 </div>
@@ -1606,34 +1608,34 @@ export default function HomePage() {
             </div>
 
             {/* Capability 2: Biotechnology */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+            <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
               <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                 <Beaker className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
               </div>
-              <h3 className="text-xl font-semibold text-white tracking-tight mb-4">
+              <h3 className="text-xl font-semibold text-foreground tracking-tight mb-4">
                 Biotechnology and Microenvironment Control
               </h3>
-              <p className="text-white/70 leading-relaxed text-sm mb-4">
+              <p className="text-muted-foreground leading-relaxed text-sm mb-4">
                 This part supports biological experiments that require precise conditions.
               </p>
               <div className="space-y-2">
-                <div className="flex items-start gap-2 text-white/60 text-xs">
+                <div className="flex items-start gap-2 text-muted-foreground text-xs">
                   <Microscope className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                   <span>It can control temperature, chemicals, light, fluids, and mechanical forces with high precision.</span>
                 </div>
-                <div className="flex items-start gap-2 text-white/60 text-xs">
+                <div className="flex items-start gap-2 text-muted-foreground text-xs">
                   <FlaskConical className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                   <span>It works with microfluidic devices, controlled chambers, automated dispensers, and imaging systems.</span>
                 </div>
-                <div className="flex items-start gap-2 text-white/60 text-xs">
+                <div className="flex items-start gap-2 text-muted-foreground text-xs">
                   <CheckCircle2 className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                   <span>Cameras and sensors can watch cells over time to see how they respond.</span>
                 </div>
-                <div className="flex items-start gap-2 text-white/60 text-xs">
+                <div className="flex items-start gap-2 text-muted-foreground text-xs">
                   <Repeat className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                   <span>It can follow fixed protocols or adjust conditions in real time.</span>
                 </div>
-                <div className="flex items-start gap-2 text-white/60 text-xs">
+                <div className="flex items-start gap-2 text-muted-foreground text-xs">
                   <CheckCircle2 className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                   <span>Built-in calibration keeps experiments consistent and repeatable.</span>
                 </div>
@@ -1641,34 +1643,34 @@ export default function HomePage() {
             </div>
 
             {/* Capability 3: Soft Materials */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+            <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
               <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                 <Gauge className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
               </div>
-              <h3 className="text-xl font-semibold text-white tracking-tight mb-4">
+              <h3 className="text-xl font-semibold text-foreground tracking-tight mb-4">
                 Soft Materials and Robotics
               </h3>
-              <p className="text-white/70 leading-relaxed text-sm mb-4">
+              <p className="text-muted-foreground leading-relaxed text-sm mb-4">
                 This area studies flexible materials and soft robotic parts.
               </p>
               <div className="space-y-2">
-                <div className="flex items-start gap-2 text-white/60 text-xs">
+                <div className="flex items-start gap-2 text-muted-foreground text-xs">
                   <Layers className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                   <span>Sensors, trackers, and high-speed cameras measure stretching, bending, damping, and wear.</span>
                 </div>
-                <div className="flex items-start gap-2 text-white/60 text-xs">
+                <div className="flex items-start gap-2 text-muted-foreground text-xs">
                   <Database className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                   <span>Robotic tools can twist, pull, push, or apply repeated forces to materials.</span>
                 </div>
-                <div className="flex items-start gap-2 text-white/60 text-xs">
+                <div className="flex items-start gap-2 text-muted-foreground text-xs">
                   <Brain className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                   <span>It can run many tests with different settings to understand how materials behave.</span>
                 </div>
-                <div className="flex items-start gap-2 text-white/60 text-xs">
+                <div className="flex items-start gap-2 text-muted-foreground text-xs">
                   <Database className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                   <span>The data supports digital twin models that simulate material behavior.</span>
                 </div>
-                <div className="flex items-start gap-2 text-white/60 text-xs">
+                <div className="flex items-start gap-2 text-muted-foreground text-xs">
                   <Brain className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                   <span>Machine learning helps identify patterns in how soft actuators perform.</span>
                 </div>
@@ -1676,34 +1678,34 @@ export default function HomePage() {
             </div>
 
             {/* Capability 4: FPGA Enhanced */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1 md:col-span-2 lg:col-span-1">
+            <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1 md:col-span-2 lg:col-span-1">
               <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                 <Network className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
               </div>
-              <h3 className="text-xl font-semibold text-white tracking-tight mb-4">
+              <h3 className="text-xl font-semibold text-foreground tracking-tight mb-4">
                 FPGA Enhanced Data Pathways
               </h3>
-              <p className="text-white/70 leading-relaxed text-sm mb-4">
+              <p className="text-muted-foreground leading-relaxed text-sm mb-4">
                 FPGA devices are special computer chips placed near the sensors.
               </p>
               <div className="space-y-2">
-                <div className="flex items-start gap-2 text-white/60 text-xs">
+                <div className="flex items-start gap-2 text-muted-foreground text-xs">
                   <Cpu className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                   <span>They clean and filter data before sending it to the cloud.</span>
                 </div>
-                <div className="flex items-start gap-2 text-white/60 text-xs">
+                <div className="flex items-start gap-2 text-muted-foreground text-xs">
                   <Zap className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                   <span>They pick out important features and detect events in real time.</span>
                 </div>
-                <div className="flex items-start gap-2 text-white/60 text-xs">
+                <div className="flex items-start gap-2 text-muted-foreground text-xs">
                   <Cloud className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                   <span>This reduces the amount of data that needs to be transmitted while keeping important details.</span>
                 </div>
-                <div className="flex items-start gap-2 text-white/60 text-xs">
+                <div className="flex items-start gap-2 text-muted-foreground text-xs">
                   <Zap className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                   <span>It improves the speed of the workflow when network bandwidth is limited.</span>
                 </div>
-                <div className="flex items-start gap-2 text-white/60 text-xs">
+                <div className="flex items-start gap-2 text-muted-foreground text-xs">
                   <Cloud className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                   <span>The FPGA programs can be updated from the cloud.</span>
                 </div>
@@ -1711,43 +1713,43 @@ export default function HomePage() {
             </div>
 
             {/* Capability 5: Autonomous Execution */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1 md:col-span-2 lg:col-span-2">
+            <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1 md:col-span-2 lg:col-span-2">
               <div className="flex items-start gap-6">
                 <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center flex-shrink-0">
                   <PlayCircle className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-white tracking-tight mb-4">
+                  <h3 className="text-xl font-semibold text-foreground tracking-tight mb-4">
                     Autonomous and Semi Autonomous Experiment Execution
                   </h3>
-                  <p className="text-white/70 leading-relaxed text-sm mb-6">
+                  <p className="text-muted-foreground leading-relaxed text-sm mb-6">
                     HiveLab can run experiments on its own or with human control.
                   </p>
                   <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="bg-white/5  p-4 border border-white/20">
+                    <div className="bg-accent/50  p-4 border border-border">
                       <div className="flex items-center gap-2 mb-2">
                         <Repeat className="w-4 h-4 text-orange-400" strokeWidth={1.5} />
-                        <span className="text-white text-sm font-semibold">Autonomous Mode</span>
+                        <span className="text-foreground text-sm font-semibold">Autonomous Mode</span>
                       </div>
-                      <p className="text-white/60 text-xs leading-relaxed mb-2">
+                      <p className="text-muted-foreground text-xs leading-relaxed mb-2">
                         The system can automatically handle tasks such as:
                       </p>
-                      <ul className="text-white/60 text-xs leading-relaxed space-y-1 list-disc list-inside">
+                      <ul className="text-muted-foreground text-xs leading-relaxed space-y-1 list-disc list-inside">
                         <li>Calibrating equipment</li>
                         <li>Running long term stability tests</li>
                         <li>Performing high throughput scans</li>
                         <li>Adjusting experiments based on results</li>
                       </ul>
                     </div>
-                    <div className="bg-white/5  p-4 border border-white/20">
+                    <div className="bg-accent/50  p-4 border border-border">
                       <div className="flex items-center gap-2 mb-2">
                         <Shield className="w-4 h-4 text-orange-400" strokeWidth={1.5} />
-                        <span className="text-white text-sm font-semibold">Semi Autonomous Mode</span>
+                        <span className="text-foreground text-sm font-semibold">Semi Autonomous Mode</span>
                       </div>
-                      <p className="text-white/60 text-xs leading-relaxed mb-2">
+                      <p className="text-muted-foreground text-xs leading-relaxed mb-2">
                         Humans stay involved in key decisions. They can:
                       </p>
-                      <ul className="text-white/60 text-xs leading-relaxed space-y-1 list-disc list-inside">
+                      <ul className="text-muted-foreground text-xs leading-relaxed space-y-1 list-disc list-inside">
                         <li>Approve changes</li>
                         <li>Adjust experimental parameters</li>
                         <li>Pause or stop experiments when necessary</li>
@@ -1768,12 +1770,12 @@ export default function HomePage() {
         <div className="section-connector-line left-1"></div>
         <div className="section-connector-line right-1"></div>
         <div className="max-w-[75rem] mx-auto px-6 lg:px-16">
-          <div className="border-t border-b border-white/20 p-8 lg:p-12">
-            <div className="max-w-3xl mb-16 bg-white/5 backdrop-blur-sm border border-white/10  p-6 lg:p-8">
-              <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-8">
+          <div className="border-t border-b border-border p-8 lg:p-12">
+            <div className="max-w-3xl mb-16 bg-accent/50 backdrop-blur-sm border border-border/50  p-6 lg:p-8">
+              <h2 className="text-4xl lg:text-5xl font-normal text-foreground leading-tight tracking-tight mb-8">
                 Workforce Development
               </h2>
-              <p className="text-white/70 text-lg leading-relaxed">
+              <p className="text-muted-foreground text-lg leading-relaxed">
                 Workforce development is a defining strength of HiveLab because it integrates professional, academic, and technical training across multiple institutions.
               </p>
             </div>
@@ -1786,33 +1788,33 @@ export default function HomePage() {
                     className={`text-left group px-4 py-3  transition-all duration-300 border ${
                       activeWorkforceTab === "technician"
                         ? "bg-orange-500/10 border-orange-500/30"
-                        : "hover:bg-white/5 border-white/20"
+                        : "hover:bg-accent/50 border-border"
                     }`}
                   >
                     <div className="flex items-center gap-3 mb-2">
                       <div className={`w-10 h-10  flex items-center justify-center ${
                         activeWorkforceTab === "technician"
                           ? "bg-orange-500/20"
-                          : "bg-white/5"
+                          : "bg-accent/50"
                       }`}>
                         <Users className={`w-5 h-5 ${
                           activeWorkforceTab === "technician"
                             ? "text-orange-400"
-                            : "text-white/60"
+                            : "text-muted-foreground"
                         }`} strokeWidth={1.5} />
                       </div>
                       <h3 className={`text-xl font-semibold ${
                         activeWorkforceTab === "technician"
-                          ? "text-white"
-                          : "text-white/70 group-hover:text-white"
+                          ? "text-foreground"
+                          : "text-muted-foreground group-hover:text-foreground"
                       }`}>
                         Technician Pipeline
                       </h3>
                     </div>
                     <p className={`text-sm leading-relaxed ${
                       activeWorkforceTab === "technician"
-                        ? "text-white/80"
-                        : "text-white/60"
+                        ? "text-muted-foreground"
+                        : "text-muted-foreground"
                     }`}>
                       Through Madison College and MOSAIC
                     </p>
@@ -1823,33 +1825,33 @@ export default function HomePage() {
                     className={`text-left group px-4 py-3  transition-all duration-300 border ${
                       activeWorkforceTab === "undergraduate"
                         ? "bg-orange-500/10 border-orange-500/30"
-                        : "hover:bg-white/5 border-white/20"
+                        : "hover:bg-accent/50 border-border"
                     }`}
                   >
                     <div className="flex items-center gap-3 mb-2">
                       <div className={`w-10 h-10  flex items-center justify-center ${
                         activeWorkforceTab === "undergraduate"
                           ? "bg-orange-500/20"
-                          : "bg-white/5"
+                          : "bg-accent/50"
                       }`}>
                         <BookOpen className={`w-5 h-5 ${
                           activeWorkforceTab === "undergraduate"
                             ? "text-orange-400"
-                            : "text-white/60"
+                            : "text-muted-foreground"
                         }`} strokeWidth={1.5} />
                       </div>
                       <h3 className={`text-xl font-semibold ${
                         activeWorkforceTab === "undergraduate"
-                          ? "text-white"
-                          : "text-white/70 group-hover:text-white"
+                          ? "text-foreground"
+                          : "text-muted-foreground group-hover:text-foreground"
                       }`}>
                         Undergraduate Education
                       </h3>
                     </div>
                     <p className={`text-sm leading-relaxed ${
                       activeWorkforceTab === "undergraduate"
-                        ? "text-white/80"
-                        : "text-white/60"
+                        ? "text-muted-foreground"
+                        : "text-muted-foreground"
                     }`}>
                       Workflow design, data interpretation, and digital twins
                     </p>
@@ -1860,33 +1862,33 @@ export default function HomePage() {
                     className={`text-left group px-4 py-3  transition-all duration-300 border ${
                       activeWorkforceTab === "graduate"
                         ? "bg-orange-500/10 border-orange-500/30"
-                        : "hover:bg-white/5 border-white/20"
+                        : "hover:bg-accent/50 border-border"
                     }`}
                   >
                     <div className="flex items-center gap-3 mb-2">
                       <div className={`w-10 h-10  flex items-center justify-center ${
                         activeWorkforceTab === "graduate"
                           ? "bg-orange-500/20"
-                          : "bg-white/5"
+                          : "bg-accent/50"
                       }`}>
                         <GraduationCap className={`w-5 h-5 ${
                           activeWorkforceTab === "graduate"
                             ? "text-orange-400"
-                            : "text-white/60"
+                            : "text-muted-foreground"
                         }`} strokeWidth={1.5} />
                       </div>
                       <h3 className={`text-xl font-semibold ${
                         activeWorkforceTab === "graduate"
-                          ? "text-white"
-                          : "text-white/70 group-hover:text-white"
+                          ? "text-foreground"
+                          : "text-muted-foreground group-hover:text-foreground"
                       }`}>
                         Graduate Training
                       </h3>
                     </div>
                     <p className={`text-sm leading-relaxed ${
                       activeWorkforceTab === "graduate"
-                        ? "text-white/80"
-                        : "text-white/60"
+                        ? "text-muted-foreground"
+                        : "text-muted-foreground"
                     }`}>
                       Cross-institutional collaboration and high-throughput studies
                     </p>
@@ -1897,33 +1899,33 @@ export default function HomePage() {
                     className={`text-left group px-4 py-3  transition-all duration-300 border ${
                       activeWorkforceTab === "professional"
                         ? "bg-orange-500/10 border-orange-500/30"
-                        : "hover:bg-white/5 border-white/20"
+                        : "hover:bg-accent/50 border-border"
                     }`}
                   >
                     <div className="flex items-center gap-3 mb-2">
                       <div className={`w-10 h-10  flex items-center justify-center ${
                         activeWorkforceTab === "professional"
                           ? "bg-orange-500/20"
-                          : "bg-white/5"
+                          : "bg-accent/50"
                       }`}>
                         <Briefcase className={`w-5 h-5 ${
                           activeWorkforceTab === "professional"
                             ? "text-orange-400"
-                            : "text-white/60"
+                            : "text-muted-foreground"
                         }`} strokeWidth={1.5} />
                       </div>
                       <h3 className={`text-xl font-semibold ${
                         activeWorkforceTab === "professional"
-                          ? "text-white"
-                          : "text-white/70 group-hover:text-white"
+                          ? "text-foreground"
+                          : "text-muted-foreground group-hover:text-foreground"
                       }`}>
                         Professional Development
                       </h3>
                     </div>
                     <p className={`text-sm leading-relaxed ${
                       activeWorkforceTab === "professional"
-                        ? "text-white/80"
-                        : "text-white/60"
+                        ? "text-muted-foreground"
+                        : "text-muted-foreground"
                     }`}>
                       Workshops for scientists and engineers
                     </p>
@@ -1932,7 +1934,7 @@ export default function HomePage() {
               </div>
 
               <div className="lg:w-1/2">
-                <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 lg:p-10 min-h-[400px] relative">
+                <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 lg:p-10 min-h-[400px] relative">
                   {/* Technician Pipeline Content */}
                   <div className={`transition-all duration-300 ${
                     activeWorkforceTab === "technician" 
@@ -1942,26 +1944,26 @@ export default function HomePage() {
                     <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                       <Users className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                     </div>
-                    <h3 className="text-2xl font-semibold text-white tracking-tight mb-4">
+                    <h3 className="text-2xl font-semibold text-foreground tracking-tight mb-4">
                       Technician Pipeline through Madison College and MOSAIC
                     </h3>
-                    <p className="text-white/70 leading-relaxed mb-6">
+                    <p className="text-muted-foreground leading-relaxed mb-6">
                       HiveLab is housed in Element Labs, which also houses the MOSAIC program. Students from Madison College learn on the same platforms that support national research workflows. This ensures that technician training aligns with actual industry practice, including automated test systems, microelectronics handling, biological workflows, and robotics.
                     </p>
                     <div className="flex flex-wrap gap-4">
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <Cpu className="w-4 h-4" strokeWidth={1.5} />
                         <span>Automated test systems</span>
                       </div>
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <CircuitBoard className="w-4 h-4" strokeWidth={1.5} />
                         <span>Microelectronics handling</span>
                       </div>
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <Beaker className="w-4 h-4" strokeWidth={1.5} />
                         <span>Biological workflows</span>
                       </div>
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <Gauge className="w-4 h-4" strokeWidth={1.5} />
                         <span>Robotics</span>
                       </div>
@@ -1977,30 +1979,30 @@ export default function HomePage() {
                     <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                       <BookOpen className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                     </div>
-                    <h3 className="text-2xl font-semibold text-white tracking-tight mb-4">
+                    <h3 className="text-2xl font-semibold text-foreground tracking-tight mb-4">
                       Undergraduate Education
                     </h3>
-                    <p className="text-white/70 leading-relaxed mb-6">
+                    <p className="text-muted-foreground leading-relaxed mb-6">
                       HiveLab supports undergraduate modules on workflow design, data interpretation, digital twins, hardware interfacing, and scientific reproducibility. Because the Node is accessible through the cloud, undergraduates can operate instruments safely and remotely while learning about automation and modeling.
                     </p>
                     <div className="flex flex-wrap gap-4">
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <Repeat className="w-4 h-4" strokeWidth={1.5} />
                         <span>Workflow design</span>
                       </div>
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <Database className="w-4 h-4" strokeWidth={1.5} />
                         <span>Data interpretation</span>
                       </div>
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <Layers className="w-4 h-4" strokeWidth={1.5} />
                         <span>Digital twins</span>
                       </div>
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <Cpu className="w-4 h-4" strokeWidth={1.5} />
                         <span>Hardware interfacing</span>
                       </div>
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <CheckCircle2 className="w-4 h-4" strokeWidth={1.5} />
                         <span>Scientific reproducibility</span>
                       </div>
@@ -2016,26 +2018,26 @@ export default function HomePage() {
                     <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                       <GraduationCap className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                     </div>
-                    <h3 className="text-2xl font-semibold text-white tracking-tight mb-4">
+                    <h3 className="text-2xl font-semibold text-foreground tracking-tight mb-4">
                       Graduate Training and Cross-Institutional Collaboration
                     </h3>
-                    <p className="text-white/70 leading-relaxed mb-6">
+                    <p className="text-muted-foreground leading-relaxed mb-6">
                       Graduate students from UW-Madison, UConn, and partner institutions will use HiveLab to conduct high throughput studies and perform model integrated experiments. This training prepares them to lead autonomous laboratory environments in industry or academia.
                     </p>
                     <div className="flex flex-wrap gap-4">
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <Zap className="w-4 h-4" strokeWidth={1.5} />
                         <span>High throughput studies</span>
                       </div>
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <Brain className="w-4 h-4" strokeWidth={1.5} />
                         <span>Model integrated experiments</span>
                       </div>
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <Network className="w-4 h-4" strokeWidth={1.5} />
                         <span>Cross-institutional collaboration</span>
                       </div>
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <PlayCircle className="w-4 h-4" strokeWidth={1.5} />
                         <span>Autonomous laboratory leadership</span>
                       </div>
@@ -2051,30 +2053,30 @@ export default function HomePage() {
                     <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                       <Briefcase className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                     </div>
-                    <h3 className="text-2xl font-semibold text-white tracking-tight mb-4">
+                    <h3 className="text-2xl font-semibold text-foreground tracking-tight mb-4">
                       Professional Development for Scientists and Engineers
                     </h3>
-                    <p className="text-white/70 leading-relaxed mb-6">
+                    <p className="text-muted-foreground leading-relaxed mb-6">
                       HiveLab hosts workshops on AI governance, metadata design, scientific communication, and reproducible automation. These learning opportunities are aligned with the national need for a workforce capable of building and operating trustworthy autonomous laboratories.
                     </p>
                     <div className="flex flex-wrap gap-4">
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <Brain className="w-4 h-4" strokeWidth={1.5} />
                         <span>AI governance</span>
                       </div>
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <Database className="w-4 h-4" strokeWidth={1.5} />
                         <span>Metadata design</span>
                       </div>
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <Search className="w-4 h-4" strokeWidth={1.5} />
                         <span>Scientific communication</span>
                       </div>
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <Repeat className="w-4 h-4" strokeWidth={1.5} />
                         <span>Reproducible automation</span>
                       </div>
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <Shield className="w-4 h-4" strokeWidth={1.5} />
                         <span>Trustworthy autonomous labs</span>
                       </div>
@@ -2093,43 +2095,50 @@ export default function HomePage() {
         <div className="section-connector-line left-1"></div>
         <div className="section-connector-line right-1"></div>
         <div className="max-w-[75rem] mx-auto px-6 lg:px-16 py-8 lg:py-12">
-            <div className="max-w-3xl mb-16 bg-white/5 backdrop-blur-sm border border-white/10  p-6 lg:p-8">
-              <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-8">
+            <div className="max-w-3xl mb-16 bg-accent/50 backdrop-blur-sm border border-border/50  p-6 lg:p-8">
+              <h2 className="text-4xl lg:text-5xl font-normal text-foreground leading-tight tracking-tight mb-8">
                 Accessible to Every Researcher
               </h2>
-              <p className="text-white/70 text-lg leading-relaxed">
+              <p className="text-muted-foreground text-lg leading-relaxed">
                 Any qualified researcher, regardless of institution type, can log into HiveLab, build a workflow around real, calibrated instruments, run it under a digital twin informed safety envelope, and walk away with high-quality, well-documented data that can be replayed, audited, and reproduced.
               </p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-8 mt-8">
               {/* Use Case 1: Parameter Exploration */}
-              <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
-                <h3 className="text-2xl font-semibold text-white tracking-tight mb-4">
+              <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+                <h3 className="text-2xl font-semibold text-foreground tracking-tight mb-4">
                   Explore Parameter Spaces
                 </h3>
-                <div className="w-full h-[300px] mb-6 border border-white/20 bg-black/60 relative ">
+                <div className="w-full h-[300px] mb-6 border border-border bg-card/60 relative ">
+                  <Image
+                    src="/ChatGPT Image Nov 18, 2025, 04_16_46 PM.png"
+                    alt="3D parameter space visualization cube with sampled points"
+                    fill
+                    className="object-contain opacity-90 dark:hidden"
+                    sizes="(min-width: 1024px) 50vw, 100vw"
+                  />
                   <Image
                     src="/ChatGPT Image Nov 18, 2025, 11_47_22 AM.png"
                     alt="3D parameter space visualization cube with sampled points"
                     fill
-                    className="object-contain opacity-90"
+                    className="object-contain opacity-90 hidden dark:block"
                     sizes="(min-width: 1024px) 50vw, 100vw"
                   />
                 </div>
-                <p className="text-white/70 leading-relaxed mb-6">
+                <p className="text-muted-foreground leading-relaxed mb-6">
                   For some users, this may mean exploring parameter spaces that would take months, if ever, to scan manually. HiveLab enables rapid iteration across vast experimental landscapes, accelerating discovery through intelligent automation.
                 </p>
                 <div className="flex flex-wrap gap-4 mb-6">
-                  <div className="flex items-center gap-2 text-white/60 text-sm">
+                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
                     <FlaskConical className="w-4 h-4" strokeWidth={1.5} />
                     <span>Automated workflows</span>
                   </div>
-                  <div className="flex items-center gap-2 text-white/60 text-sm">
+                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
                     <Database className="w-4 h-4" strokeWidth={1.5} />
                     <span>High-throughput</span>
                   </div>
-                  <div className="flex items-center gap-2 text-white/60 text-sm">
+                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
                     <Repeat className="w-4 h-4" strokeWidth={1.5} />
                     <span>Reproducible</span>
                   </div>
@@ -2140,32 +2149,39 @@ export default function HomePage() {
               </div>
 
               {/* Use Case 2: Critical Validation */}
-              <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
-                <h3 className="text-2xl font-semibold text-white tracking-tight mb-4">
+              <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+                <h3 className="text-2xl font-semibold text-foreground tracking-tight mb-4">
                   Validate Critical Experiments
                 </h3>
-                <div className="w-full h-[300px] mb-6 border border-white/20 bg-black/60 relative overflow-hidden">
+                <div className="w-full h-[300px] mb-6 border border-border bg-card/60 relative overflow-hidden">
+                  <Image
+                    src="/ChatGPT Image Nov 18, 2025, 04_19_18 PM.png"
+                    alt="Safety envelope visualization with shield and validated configurations"
+                    fill
+                    className="object-contain opacity-90 dark:hidden"
+                    sizes="(min-width: 1024px) 50vw, 100vw"
+                  />
                   <Image
                     src="/ChatGPT Image Nov 18, 2025, 12_04_17 PM.png"
                     alt="Safety envelope visualization with shield and validated configurations"
                     fill
-                    className="object-contain opacity-90"
+                    className="object-contain opacity-90 hidden dark:block"
                     sizes="(min-width: 1024px) 50vw, 100vw"
                   />
                 </div>
-                <p className="text-white/70 leading-relaxed mb-6">
+                <p className="text-muted-foreground leading-relaxed mb-6">
                   For others, it may mean validating a single critical experiment under conditions that must not be misconfigured, such as a thermal reliability test on a new power device or a live cell assay with precious biological material.
                 </p>
                 <div className="flex flex-wrap gap-4 mb-6">
-                  <div className="flex items-center gap-2 text-white/60 text-sm">
+                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
                     <Shield className="w-4 h-4" strokeWidth={1.5} />
                     <span>Safety envelope</span>
                   </div>
-                  <div className="flex items-center gap-2 text-white/60 text-sm">
+                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
                     <CheckCircle2 className="w-4 h-4" strokeWidth={1.5} />
                     <span>Validated configs</span>
                   </div>
-                  <div className="flex items-center gap-2 text-white/60 text-sm">
+                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
                     <Database className="w-4 h-4" strokeWidth={1.5} />
                     <span>Audit trail</span>
                   </div>
@@ -2185,10 +2201,10 @@ export default function HomePage() {
           <div className="max-w-[75rem] mx-auto px-6 lg:px-16">
             <div className=" py-10 lg:py-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
               <div className="max-w-xl">
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-4">
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal text-foreground leading-tight tracking-tight mb-4">
                   Bring model-informed automation to your next experiment.
                 </h2>
-                <p className="text-white/70 text-sm sm:text-base lg:text-lg leading-relaxed">
+                <p className="text-muted-foreground text-sm sm:text-base lg:text-lg leading-relaxed">
                   Share a problem you are working on in semiconductors, biotechnology, or soft robotics, and we will explore how HiveLab can host a safe, reproducible workflow around it.
                 </p>
               </div>
@@ -2202,7 +2218,7 @@ export default function HomePage() {
                 <input
                   type="email"
                   placeholder="Enter your email"
-                  className="flex-1 bg-white/5 backdrop-blur-sm border border-white/20 px-4 sm:px-6 py-2.5 sm:py-3 text-white placeholder:text-white/40 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/30 transition-all duration-300"
+                  className="flex-1 bg-accent/50 backdrop-blur-sm border border-border px-4 sm:px-6 py-2.5 sm:py-3 text-foreground placeholder:text-muted-foreground/50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/30 transition-all duration-300"
                   required
                 />
                 <button
@@ -2219,19 +2235,19 @@ export default function HomePage() {
         </section>
 
         {/* Footer */}
-        <footer className="relative z-10 border-t border-white/20 bg-black/90">
-          <div className="max-w-[75rem] mx-auto px-6 lg:px-16 py-6 lg:py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-white/60">
+        <footer className="relative z-10 border-t border-border bg-background">
+          <div className="max-w-[75rem] mx-auto px-6 lg:px-16 py-6 lg:py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-muted-foreground">
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
-              <span className="text-white/80 font-medium">HiveLab</span>
-              <span className="hidden sm:inline text-white/40">•</span>
+              <span className="text-muted-foreground font-medium">HiveLab</span>
+              <span className="hidden sm:inline text-muted-foreground/50">•</span>
               <span>Programmable cloud laboratory for model-informed experimentation.</span>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-white/40"> {new Date().getFullYear()} Tera-X.</span>
+              <span className="text-muted-foreground/50"> {new Date().getFullYear()} Tera-X.</span>
               <div className="hidden sm:flex items-center gap-4">
-                <a href="#capabilities" className="hover:text-white transition-colors">Capabilities</a>
-                <a href="#science-drivers" className="hover:text-white transition-colors">Science</a>
-                <a href="#workforce-development" className="hover:text-white transition-colors">Workforce</a>
+                <a href="#capabilities" className="hover:text-foreground transition-colors">Capabilities</a>
+                <a href="#science-drivers" className="hover:text-foreground transition-colors">Science</a>
+                <a href="#workforce-development" className="hover:text-foreground transition-colors">Workforce</a>
               </div>
             </div>
           </div>
