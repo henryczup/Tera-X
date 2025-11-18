@@ -19,7 +19,7 @@ function NetworkVisualization() {
     setGlowingLines([])
   }, [])
 
-  // Animate all orange lines with GSAP - loops continuously with collapse animation
+  // Animate all orange lines with GSAP - loops continuously
   useEffect(() => {
     const orangeLines = Array.from(orangeLineRefs.current.entries())
     
@@ -30,6 +30,7 @@ function NetworkVisualization() {
           const fullPathLength = path.getTotalLength()
           
           if (fullPathLength === 0 || !isFinite(fullPathLength)) {
+            console.warn(`Orange line ${index} has invalid length:`, fullPathLength)
             return
           }
           
@@ -38,12 +39,11 @@ function NetworkVisualization() {
           const endPathLength = fullPathLength * endRatio
           
           // Set initial state - line is fully hidden
-          // strokeDasharray format: "dash gap" - we want dash to be the length, gap to be large
+          // Use strokeDasharray with the visible length, and strokeDashoffset to hide it initially
           gsap.set(path, {
-            strokeDasharray: `${endPathLength} ${fullPathLength}`,
+            strokeDasharray: endPathLength,
             strokeDashoffset: endPathLength,
-            opacity: 1,
-            visibility: 'visible'
+            opacity: 1
           })
           
           // Random delay for each line to create staggered effect
@@ -63,7 +63,6 @@ function NetworkVisualization() {
           .to({}, { duration: 1 })
           // Reset back to start
           .set(path, {
-            strokeDasharray: `${endPathLength} ${fullPathLength}`,
             strokeDashoffset: endPathLength
           })
           .to({}, { duration: 0.3 })
@@ -305,7 +304,6 @@ function NetworkVisualization() {
 
 export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [activeLayer, setActiveLayer] = useState("physical")
   const [activeWorkforceTab, setActiveWorkforceTab] = useState("technician")
   const [scrolled, setScrolled] = useState(false)
   const [networkAnimationActive, setNetworkAnimationActive] = useState(false)
@@ -348,8 +346,8 @@ export default function HomePage() {
           className="absolute pointer-events-none"
           style={{ 
             top: 0,
-            left: 'max(1.5rem, calc((100% - 1200px) / 2))',
-            right: 'max(1.5rem, calc((100% - 1200px) / 2))',
+            left: 'max(1.5rem, calc((100% - 75rem) / 2))',
+            right: 'max(1.5rem, calc((100% - 75rem) / 2))',
             height: 'calc(20vh - 0.5rem)',
             background: 'rgba(0, 0, 0, 0.3)',
             zIndex: 15
@@ -360,7 +358,7 @@ export default function HomePage() {
           className="absolute top-0 bottom-0 pointer-events-none"
           style={{ 
             left: 0,
-            right: 'calc(100% - max(1.5rem, calc((100% - 1200px) / 2)))',
+            right: 'calc(100% - max(1.5rem, calc((100% - 75rem) / 2)))',
             background: 'rgba(0, 0, 0, 0.3)',
             zIndex: 15
           }}
@@ -369,7 +367,7 @@ export default function HomePage() {
         <div 
           className="absolute top-0 bottom-0 pointer-events-none"
           style={{ 
-            left: 'calc(100% - max(1.5rem, calc((100% - 1200px) / 2)))',
+            left: 'calc(100% - max(1.5rem, calc((100% - 75rem) / 2)))',
             right: 0,
             background: 'rgba(0, 0, 0, 0.3)',
             zIndex: 15
@@ -408,14 +406,14 @@ export default function HomePage() {
           style={{ 
             height: '1px', 
             background: 'rgba(255, 255, 255, 0.2)',
-            left: 'max(1.5rem, calc((100% - 1200px) / 2))',
-            right: 'max(1.5rem, calc((100% - 1200px) / 2))',
+            left: 'max(1.5rem, calc((100% - 75rem) / 2))',
+            right: 'max(1.5rem, calc((100% - 75rem) / 2))',
             top: 'calc(20vh - 0.5rem)',
             zIndex: 21
           }}
         ></div>
-          {/* Full-width background gradients and spotlight - Fixed */}
-         <div className="fixed inset-0 z-[1] pointer-events-none">
+          {/* Full-width background gradients and spotlight - Absolute (contained in hero section) */}
+         <div className="absolute inset-0 z-[1] pointer-events-none">
            <svg
              className="absolute inset-0 w-full h-full"
              viewBox="0 0 1200 800"
@@ -541,9 +539,9 @@ export default function HomePage() {
             </svg>
           </div>
 
-          {/* Constrained line animations - Fixed */}
-         <div className="fixed inset-0 z-[2] flex justify-center pointer-events-none">
-           <div className="relative w-full max-w-[1200px] px-6 lg:px-16 h-screen">
+          {/* Constrained line animations - Absolute (contained in hero section) */}
+         <div className="absolute inset-0 z-[2] flex justify-center pointer-events-none">
+           <div className="relative w-full max-w-[75rem] px-6 lg:px-16 h-screen">
              <svg
                className="absolute inset-0 w-full h-full"
                viewBox="0 0 1200 800"
@@ -1210,41 +1208,41 @@ export default function HomePage() {
               <a 
                 href="#capabilities" 
                 onClick={(e) => handleNavClick(e, "capabilities")}
-                className="px-4 py-2 text-white/80 hover:text-white transition-colors text-sm lg:text-base rounded-lg hover:bg-white/5"
+                className="px-4 py-2 text-white/80 hover:text-white transition-colors text-sm lg:text-base  hover:bg-white/5"
               >
                 Capabilities
               </a>
               <a 
                 href="#science-drivers" 
                 onClick={(e) => handleNavClick(e, "science-drivers")}
-                className="px-4 py-2 text-white/80 hover:text-white transition-colors text-sm lg:text-base rounded-lg hover:bg-white/5"
+                className="px-4 py-2 text-white/80 hover:text-white transition-colors text-sm lg:text-base  hover:bg-white/5"
               >
                 Science Drivers
               </a>
               <a 
                 href="#architecture" 
                 onClick={(e) => handleNavClick(e, "architecture")}
-                className="px-4 py-2 text-white/80 hover:text-white transition-colors text-sm lg:text-base rounded-lg hover:bg-white/5"
+                className="px-4 py-2 text-white/80 hover:text-white transition-colors text-sm lg:text-base  hover:bg-white/5"
               >
                 Architecture
               </a>
               <a 
                 href="#workforce-development" 
                 onClick={(e) => handleNavClick(e, "workforce-development")}
-                className="px-4 py-2 text-white/80 hover:text-white transition-colors text-sm lg:text-base rounded-lg hover:bg-white/5"
+                className="px-4 py-2 text-white/80 hover:text-white transition-colors text-sm lg:text-base  hover:bg-white/5"
               >
                 Workforce
               </a>
             </nav>
 
             <div className="flex items-center gap-3">
-              <ShimmerButton className="hidden md:flex bg-orange-500 hover:bg-orange-600 text-white px-4 lg:px-6 py-2 rounded-xl text-sm lg:text-base font-medium shadow-lg">
+              <ShimmerButton className="hidden md:flex bg-orange-500 hover:bg-orange-600 text-white px-4 lg:px-6 py-2  text-sm lg:text-base font-medium shadow-lg">
                 Contact Us
               </ShimmerButton>
 
               {/* Mobile menu button */}
               <button 
-                className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition-colors" 
+                className="md:hidden text-white p-2  hover:bg-white/10 transition-colors" 
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 aria-label="Toggle menu"
               >
@@ -1267,34 +1265,34 @@ export default function HomePage() {
             <nav className="flex flex-col px-6 py-6 space-y-1">
               <a 
                 href="#capabilities" 
-                className="px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors rounded-lg" 
+                className="px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors " 
                 onClick={(e) => handleNavClick(e, "capabilities")}
               >
                 Capabilities
               </a>
               <a 
                 href="#science-drivers" 
-                className="px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors rounded-lg" 
+                className="px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors " 
                 onClick={(e) => handleNavClick(e, "science-drivers")}
               >
                 Science Drivers
               </a>
               <a 
                 href="#architecture" 
-                className="px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors rounded-lg" 
+                className="px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors " 
                 onClick={(e) => handleNavClick(e, "architecture")}
               >
                 Architecture
               </a>
               <a 
                 href="#workforce-development" 
-                className="px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors rounded-lg" 
+                className="px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors " 
                 onClick={(e) => handleNavClick(e, "workforce-development")}
               >
                 Workforce
               </a>
               <div className="pt-4 border-t border-white/20 mt-4">
-                <ShimmerButton className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-xl text-sm font-medium shadow-lg w-full">
+                <ShimmerButton className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5  text-sm font-medium shadow-lg w-full">
                   Contact Us
                 </ShimmerButton>
               </div>
@@ -1303,7 +1301,7 @@ export default function HomePage() {
         )}
 
         {/* Main Content */}
-        <main className="relative z-10 flex flex-col items-center min-h-screen max-w-[1200px] mx-auto px-6 lg:px-16 pt-32 sm:pt-36 lg:pt-40">
+        <main className="relative z-10 flex flex-col items-center min-h-screen max-w-[75rem] mx-auto px-6 lg:px-16 pt-32 sm:pt-36 lg:pt-40">
           {/* Spotlight effect behind hero text */}
           <div 
             className="absolute pointer-events-none"
@@ -1311,7 +1309,8 @@ export default function HomePage() {
               top: 'calc(20vh + 2rem)',
               left: '50%',
               transform: 'translateX(-50%)',
-              width: '120%',
+              width: '100%',
+              maxWidth: '90rem',
               height: '200px',
               background: 'radial-gradient(ellipse 80% 100% at 50% 50%, rgba(255, 107, 0, 0.25) 0%, rgba(255, 107, 0, 0.12) 30%, transparent 70%)',
               filter: 'blur(40px)',
@@ -1333,12 +1332,13 @@ export default function HomePage() {
             <div className="h-16 sm:h-20"></div>
 
 
-          <h1 className="text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-4 sm:mb-6 whitespace-nowrap text-center mt-4 sm:mt-6">
-            HiveLab: A Safe and Programmable Cloud Laboratory
+          <h1 className="text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-4 sm:mb-6 text-center mt-4 sm:mt-6">
+           AI Accelerated Experimentation
           </h1>
 
           <p className="text-white/70 text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-10 max-w-2xl text-pretty leading-relaxed text-center">
-            Accelerated autonomous experimentation
+          HiveLab: A Safe,  Programmable Cloud Laboratory.
+
           </p>
 
           <form 
@@ -1351,28 +1351,70 @@ export default function HomePage() {
             <input
               type="email"
               placeholder="Enter your email"
-              className="flex-1 bg-white/5 backdrop-blur-sm border border-white/20 rounded-lg px-4 sm:px-6 py-2.5 sm:py-3 text-white placeholder:text-white/40 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/30 transition-all duration-300"
+              className="flex-1 bg-white/5 backdrop-blur-sm border border-white/20  px-4 sm:px-6 py-2.5 sm:py-3 text-white placeholder:text-white/40 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/30 transition-all duration-300"
               required
             />
             <button
               type="submit"
-              className="group relative bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base font-semibold flex items-center justify-center gap-2 backdrop-blur-sm border border-orange-400/30 shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 whitespace-nowrap"
+              className="group relative bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 sm:px-8 py-2.5 sm:py-3  text-sm sm:text-base font-semibold flex items-center justify-center gap-2 backdrop-blur-sm border border-orange-400/30 shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 whitespace-nowrap"
             >
               Join the waiting list
               <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 group-hover:-rotate-12 transition-transform duration-300" />
-              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0  bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </button>
           </form>
         </main>
       </div>
 
+      {/* Network Visualization Section */}
+      <section className="relative z-10 py-24 lg:py-32 bg-[var(--tera-bg)] section-connector">
+        <div className="section-connector-line left-1"></div>
+        <div className="section-connector-line right-1"></div>
+        {/* Horizontal separator line - connects to vertical lines */}
+        <div 
+          className="absolute pointer-events-none"
+          style={{ 
+            height: '1px', 
+            background: 'rgba(255, 255, 255, 0.2)',
+            left: 'max(1.5rem, calc((100% - 75rem) / 2))',
+            right: 'max(1.5rem, calc((100% - 75rem) / 2))',
+            top: 0,
+            zIndex: 21
+          }}
+        ></div>
+        <div className="max-w-[75rem] mx-auto px-6 lg:px-16">
+          {/* Header Text */}
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-6">
+              Utilize A Network of Nodes To Scale Your Experiments
+            </h2>
+            <p className="text-white/70 text-lg lg:text-xl max-w-2xl mx-auto mb-8">
+              When you push code to HiveLab, we make it instantly available across our network of nodes.
+            </p>
+            
+            {/* Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <ShimmerButton className="bg-white/5 hover:bg-white/10 text-white px-6 py-3  font-medium border border-white/20">
+                More about Infrastructure
+              </ShimmerButton>
+              <button className="bg-white/5 backdrop-blur-sm border border-white/20 text-white px-6 py-3  font-medium hover:bg-white/10 transition-all duration-300">
+                Learn about Enterprise
+              </button>
+            </div>
+          </div>
+
+          {/* Network Visualization */}
+          <NetworkVisualization />
+        </div>
+      </section>
+
       {/* Multi-Domain Section */}
       <section id="science-drivers" className="relative z-10 py-0 scroll-mt-20 section-connector">
         <div className="section-connector-line left-1"></div>
         <div className="section-connector-line right-1"></div>
-        <div className="max-w-[1200px] mx-auto px-6 lg:px-16">
+        <div className="max-w-[75rem] mx-auto px-6 lg:px-16">
           <div className="border-t border-b border-white/20 p-8 lg:p-12">
-          <div className="max-w-3xl mb-16 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 lg:p-8">
+          <div className="max-w-3xl mb-16 bg-white/5 backdrop-blur-sm border border-white/10  p-6 lg:p-8">
             <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-8">
               Multi-Domain Science Drivers
             </h2>
@@ -1383,11 +1425,11 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-3 gap-6">
             {/* Science Driver 1 */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
-              <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                 <Zap className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
               </div>
-              <h3 className="text-xl font-semibold text-white uppercase tracking-tight mb-4">
+              <h3 className="text-xl font-semibold text-white tracking-tight mb-4">
                 Semiconductor & Photonic Reliability
               </h3>
               <p className="text-white/70 leading-relaxed">
@@ -1396,8 +1438,8 @@ export default function HomePage() {
             </div>
 
             {/* Science Driver 2 */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
-              <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                 <Microscope className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
               </div>
               <h3 className="text-xl font-semibold text-white uppercase tracking-tight mb-4">
@@ -1409,8 +1451,8 @@ export default function HomePage() {
             </div>
 
             {/* Science Driver 3 */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
-              <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                 <Layers className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
               </div>
               <h3 className="text-xl font-semibold text-white uppercase tracking-tight mb-4">
@@ -1425,378 +1467,200 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Network Visualization Section */}
-      <section className="relative z-10 py-24 lg:py-32 bg-[var(--tera-bg)] section-connector">
-        <div className="section-connector-line left-1"></div>
-        <div className="section-connector-line right-1"></div>
-        {/* Horizontal separator line - connects to vertical lines */}
-        <div 
-          className="absolute pointer-events-none"
-          style={{ 
-            height: '1px', 
-            background: 'rgba(255, 255, 255, 0.2)',
-            left: 'max(1.5rem, calc((100% - 1200px) / 2))',
-            right: 'max(1.5rem, calc((100% - 1200px) / 2))',
-            top: 0,
-            zIndex: 21
-          }}
-        ></div>
-        <div className="max-w-[1200px] mx-auto px-6 lg:px-16">
-          {/* Header Text */}
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-6">
-              Deploy once, deliver everywhere
-            </h2>
-            <p className="text-white/70 text-lg lg:text-xl max-w-2xl mx-auto mb-8">
-              When you push code to HiveLab, we make it instantly available across the globe.
-            </p>
-            
-            {/* Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <ShimmerButton className="bg-white/5 hover:bg-white/10 text-white px-6 py-3 rounded-xl font-medium border border-white/20">
-                More about Infrastructure
-              </ShimmerButton>
-              <button className="bg-white/5 backdrop-blur-sm border border-white/20 text-white px-6 py-3 rounded-xl font-medium hover:bg-white/10 transition-all duration-300">
-                Learn about Enterprise
-              </button>
-            </div>
-          </div>
-
-          {/* Network Visualization */}
-          <NetworkVisualization />
-        </div>
-      </section>
-
-      {/* Layered Architecture Section */}
-      <section id="architecture" className="relative z-10 py-0 bg-black scroll-mt-20 section-connector">
-        <div className="section-connector-line left-1"></div>
-        <div className="section-connector-line right-1"></div>
-        <div className="max-w-[1200px] mx-auto px-6 lg:px-16">
-          <div className="border-t border-b border-white/20 p-8 lg:p-12">
-          <div className="max-w-3xl mb-16">
-            <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-8">
-              Layered Node Architecture
-            </h2>
-            <p className="text-white/70 text-lg leading-relaxed">
-              The Node is layered. All three layers are exposed to users through a cloud portal that supports live observation and human in the loop (HITL) verification and intervention.
-            </p>
-          </div>
-
-          <div className="flex flex-col lg:flex-row gap-12">
-            <div className="lg:w-1/2">
-              <div className="flex flex-col gap-4">
-                <button
-                  onClick={() => setActiveLayer("physical")}
-                  className={`text-left group px-4 py-3 rounded-lg transition-all duration-300 border ${
-                    activeLayer === "physical"
-                      ? "bg-orange-500/10 border-orange-500/30"
-                      : "hover:bg-white/5 border-white/20"
-                  }`}
-                >
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      activeLayer === "physical"
-                        ? "bg-orange-500/20"
-                        : "bg-white/5"
-                    }`}>
-                      <Cpu className={`w-5 h-5 ${
-                        activeLayer === "physical"
-                          ? "text-orange-400"
-                          : "text-white/60"
-                      }`} strokeWidth={1.5} />
-                    </div>
-                    <h3 className={`text-xl font-semibold ${
-                      activeLayer === "physical"
-                        ? "text-white"
-                        : "text-white/70 group-hover:text-white"
-                    }`}>
-                      Physical Layer
-                    </h3>
-                  </div>
-                  <p className={`text-sm leading-relaxed ${
-                    activeLayer === "physical"
-                      ? "text-white/80"
-                      : "text-white/60"
-                  }`}>
-                    Semiconductor instruments, biological assay and imaging systems, microfluidic controllers, soft robotic test rigs, all connected to the cloud using FPGA-enabled edge devices.
-                  </p>
-                </button>
-
-                <button
-                  onClick={() => setActiveLayer("orchestration")}
-                  className={`text-left group px-4 py-3 rounded-lg transition-all duration-300 border ${
-                    activeLayer === "orchestration"
-                      ? "bg-orange-500/10 border-orange-500/30"
-                      : "hover:bg-white/5 border-white/20"
-                  }`}
-                >
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      activeLayer === "orchestration"
-                        ? "bg-orange-500/20"
-                        : "bg-white/5"
-                    }`}>
-                      <Cloud className={`w-5 h-5 ${
-                        activeLayer === "orchestration"
-                          ? "text-orange-400"
-                          : "text-white/60"
-                      }`} strokeWidth={1.5} />
-                    </div>
-                    <h3 className={`text-xl font-semibold ${
-                      activeLayer === "orchestration"
-                        ? "text-white"
-                        : "text-white/70 group-hover:text-white"
-                    }`}>
-                      Orchestration Layer
-                    </h3>
-                  </div>
-                  <p className={`text-sm leading-relaxed ${
-                    activeLayer === "orchestration"
-                      ? "text-white/80"
-                      : "text-white/60"
-                  }`}>
-                    Cloud-hosted orchestration interprets user workflows, schedules instruments, enforces calibration routines, and coordinates metadata.
-                  </p>
-                </button>
-
-                <button
-                  onClick={() => setActiveLayer("analysis")}
-                  className={`text-left group px-4 py-3 rounded-lg transition-all duration-300 border ${
-                    activeLayer === "analysis"
-                      ? "bg-orange-500/10 border-orange-500/30"
-                      : "hover:bg-white/5 border-white/20"
-                  }`}
-                >
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      activeLayer === "analysis"
-                        ? "bg-orange-500/20"
-                        : "bg-white/5"
-                    }`}>
-                      <Brain className={`w-5 h-5 ${
-                        activeLayer === "analysis"
-                          ? "text-orange-400"
-                          : "text-white/60"
-                      }`} strokeWidth={1.5} />
-                    </div>
-                    <h3 className={`text-xl font-semibold ${
-                      activeLayer === "analysis"
-                        ? "text-white"
-                        : "text-white/70 group-hover:text-white"
-                    }`}>
-                      Analysis & Digital Twin Layer
-                    </h3>
-                  </div>
-                  <p className={`text-sm leading-relaxed ${
-                    activeLayer === "analysis"
-                      ? "text-white/80"
-                      : "text-white/60"
-                  }`}>
-                    Models live, comparisons are made, and AI systems operate under strict guardrails. Digital twins provide real-time insights and safety envelopes.
-                  </p>
-                </button>
-              </div>
-            </div>
-
-            <div className="lg:w-1/2 relative rounded-2xl overflow-hidden bg-gradient-to-br from-orange-500/10 via-orange-600/5 to-orange-500/10 border border-white/20 aspect-video">
-              <div className="absolute inset-0 flex items-center justify-center">
-                {/* Physical Layer Visual */}
-                <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
-                  activeLayer === "physical" ? "opacity-100" : "opacity-0"
-                }`}>
-                  <div className="text-center p-8">
-                    <Cpu className="w-16 h-16 text-orange-400 mx-auto mb-4" strokeWidth={1.5} />
-                    <p className="text-white/40 text-sm">Physical Layer Visualization</p>
-                    <p className="text-white/30 text-xs mt-2">FPGA-enabled edge devices connecting instruments</p>
-                  </div>
-                </div>
-
-                {/* Orchestration Layer Visual */}
-                <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
-                  activeLayer === "orchestration" ? "opacity-100" : "opacity-0"
-                }`}>
-                  <div className="text-center p-8">
-                    <Cloud className="w-16 h-16 text-orange-400 mx-auto mb-4" strokeWidth={1.5} />
-                    <p className="text-white/40 text-sm">Orchestration Layer Visualization</p>
-                    <p className="text-white/30 text-xs mt-2">Cloud-hosted workflow scheduling and metadata coordination</p>
-                  </div>
-                </div>
-
-                {/* Analysis Layer Visual */}
-                <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
-                  activeLayer === "analysis" ? "opacity-100" : "opacity-0"
-                }`}>
-                  <div className="text-center p-8">
-                    <Brain className="w-16 h-16 text-orange-400 mx-auto mb-4" strokeWidth={1.5} />
-                    <p className="text-white/40 text-sm">Analysis & Digital Twin Visualization</p>
-                    <p className="text-white/30 text-xs mt-2">AI systems with guardrails and digital twin models</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          </div>
-        </div>
-      </section>
-
       {/* Node Capabilities Section */}
-      <section id="node-capabilities" className="relative z-10 py-0 scroll-mt-20 section-connector">
+      <section id="architecture" className="relative z-10 py-0 scroll-mt-20 section-connector">
         <div className="section-connector-line left-1"></div>
         <div className="section-connector-line right-1"></div>
-        <div className="max-w-[1200px] mx-auto px-6 lg:px-16">
+        <div className="max-w-[75rem] mx-auto px-6 lg:px-16">
           <div className="border-t border-b border-white/20 p-8 lg:p-12">
-          <div className="max-w-3xl mb-16 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 lg:p-8">
+          <div className="max-w-3xl mb-16 bg-white/5 backdrop-blur-sm border border-white/10  p-6 lg:p-8">
             <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-8">
               Node Capabilities
             </h2>
-            <p className="text-white/70 text-lg leading-relaxed mb-4">
-              HiveLab's experimental capabilities were selected to enable both breadth and depth across the three science drivers. Each capability is embedded within the broader architecture and relies on the same principles of reproducibility, model integration, adaptive control, and human oversight.
-            </p>
             <p className="text-white/70 text-lg leading-relaxed">
-              The Node is not merely a collection of instruments. It is a coordinated environment in which each capability is engineered to perform reliably under autonomous workflows while preserving the flexibility to support conventional hands-on experimentation.
+              HiveLab is designed to run many kinds of science experiments with both automation and human oversight. Everything works together as one system. It is not just a collection of tools. It is an environment where instruments, sensors, and software are coordinated so experiments are reliable, repeatable, and easy to control.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {/* Capability 1: Semiconductor and Materials */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
-              <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                 <CircuitBoard className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
               </div>
-              <h3 className="text-xl font-semibold text-white uppercase tracking-tight mb-4">
-                Semiconductor & Materials
+              <h3 className="text-xl font-semibold text-white tracking-tight mb-4">
+                Semiconductor and Materials
               </h3>
               <p className="text-white/70 leading-relaxed text-sm mb-4">
-                High fidelity thermal, electrical, and optical interrogation of semiconductor devices and materials. Microsanj thermal imagers provide submicron resolution temperature mapping, enabling detailed visualization of self heating, hot spot formation, and thermal diffusion.
+                This part of HiveLab studies electronic materials and devices.
               </p>
               <div className="space-y-2">
                 <div className="flex items-start gap-2 text-white/60 text-xs">
                   <Zap className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
-                  <span>Fast electrical characterization with programmable waveforms</span>
+                  <span>Thermal cameras can measure very small temperature changes at tiny scales, smaller than a micron.</span>
                 </div>
                 <div className="flex items-start gap-2 text-white/60 text-xs">
                   <Search className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
-                  <span>Multiple sensing modalities for comprehensive datasets</span>
+                  <span>The system can test electronics using fast and programmable electrical signals.</span>
                 </div>
                 <div className="flex items-start gap-2 text-white/60 text-xs">
                   <Repeat className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
-                  <span>Rapid cycling of stress and recovery conditions</span>
+                  <span>It collects different types of data at the same time, such as electrical, thermal, and optical measurements.</span>
+                </div>
+                <div className="flex items-start gap-2 text-white/60 text-xs">
+                  <Repeat className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <span>It can quickly switch between stressing a device and letting it rest and recover.</span>
                 </div>
               </div>
             </div>
 
             {/* Capability 2: Biotechnology */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
-              <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                 <Beaker className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
               </div>
-              <h3 className="text-xl font-semibold text-white uppercase tracking-tight mb-4">
-                Biotechnology & Microenvironmental Control
+              <h3 className="text-xl font-semibold text-white tracking-tight mb-4">
+                Biotechnology and Microenvironment Control
               </h3>
               <p className="text-white/70 leading-relaxed text-sm mb-4">
-                Precise mechanical, fluidic, thermal, chemical, and optical control systems for biological experiments. Supports controlled environmental chambers, microfluidic devices, automated dispensers, and imaging systems for time-resolved observation of cellular responses.
+                This part supports biological experiments that require precise conditions.
               </p>
               <div className="space-y-2">
                 <div className="flex items-start gap-2 text-white/60 text-xs">
                   <Microscope className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
-                  <span>Automated imaging & biochemical detection systems</span>
+                  <span>It can control temperature, chemicals, light, fluids, and mechanical forces with high precision.</span>
                 </div>
                 <div className="flex items-start gap-2 text-white/60 text-xs">
                   <FlaskConical className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
-                  <span>Fixed or adaptive protocols for long-term assays</span>
+                  <span>It works with microfluidic devices, controlled chambers, automated dispensers, and imaging systems.</span>
                 </div>
                 <div className="flex items-start gap-2 text-white/60 text-xs">
                   <CheckCircle2 className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
-                  <span>Integrated calibration routines for reproducibility</span>
+                  <span>Cameras and sensors can watch cells over time to see how they respond.</span>
+                </div>
+                <div className="flex items-start gap-2 text-white/60 text-xs">
+                  <Repeat className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <span>It can follow fixed protocols or adjust conditions in real time.</span>
+                </div>
+                <div className="flex items-start gap-2 text-white/60 text-xs">
+                  <CheckCircle2 className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <span>Built-in calibration keeps experiments consistent and repeatable.</span>
                 </div>
               </div>
             </div>
 
             {/* Capability 3: Soft Materials */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
-              <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                 <Gauge className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
               </div>
-              <h3 className="text-xl font-semibold text-white uppercase tracking-tight mb-4">
-                Soft Materials & Robotics
+              <h3 className="text-xl font-semibold text-white tracking-tight mb-4">
+                Soft Materials and Robotics
               </h3>
               <p className="text-white/70 leading-relaxed text-sm mb-4">
-                Force sensors, optical trackers, mechanical stages, and high speed cameras to capture deformation, elasticity, damping, and fatigue in soft actuators and compliant materials. Integrated robotic fixtures apply controlled displacements, twisting motions, or cyclic loads.
+                This area studies flexible materials and soft robotic parts.
               </p>
               <div className="space-y-2">
                 <div className="flex items-start gap-2 text-white/60 text-xs">
                   <Layers className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
-                  <span>Systematic parameter sweeps across input patterns</span>
+                  <span>Sensors, trackers, and high-speed cameras measure stretching, bending, damping, and wear.</span>
                 </div>
                 <div className="flex items-start gap-2 text-white/60 text-xs">
                   <Database className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
-                  <span>Datasets for mechanical digital twins validation</span>
+                  <span>Robotic tools can twist, pull, push, or apply repeated forces to materials.</span>
                 </div>
                 <div className="flex items-start gap-2 text-white/60 text-xs">
                   <Brain className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
-                  <span>Machine learning models for actuation regimes</span>
+                  <span>It can run many tests with different settings to understand how materials behave.</span>
+                </div>
+                <div className="flex items-start gap-2 text-white/60 text-xs">
+                  <Database className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <span>The data supports digital twin models that simulate material behavior.</span>
+                </div>
+                <div className="flex items-start gap-2 text-white/60 text-xs">
+                  <Brain className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <span>Machine learning helps identify patterns in how soft actuators perform.</span>
                 </div>
               </div>
             </div>
 
             {/* Capability 4: FPGA Enhanced */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1 md:col-span-2 lg:col-span-1">
-              <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1 md:col-span-2 lg:col-span-1">
+              <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                 <Network className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
               </div>
-              <h3 className="text-xl font-semibold text-white uppercase tracking-tight mb-4">
+              <h3 className="text-xl font-semibold text-white tracking-tight mb-4">
                 FPGA Enhanced Data Pathways
               </h3>
               <p className="text-white/70 leading-relaxed text-sm mb-4">
-                FPGA enhanced edge devices preprocess sensor streams before reaching the cloud. These devices filter signals, extract features, detect events, and reduce bandwidth consumption while preserving fidelity. FPGA kernels can be tuned directly through the cloud interface.
+                FPGA devices are special computer chips placed near the sensors.
               </p>
               <div className="space-y-2">
                 <div className="flex items-start gap-2 text-white/60 text-xs">
                   <Cpu className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
-                  <span>Computationally efficient data pipeline</span>
+                  <span>They clean and filter data before sending it to the cloud.</span>
                 </div>
                 <div className="flex items-start gap-2 text-white/60 text-xs">
                   <Zap className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
-                  <span>Accelerates model inference and anomaly detection</span>
+                  <span>They pick out important features and detect events in real time.</span>
                 </div>
                 <div className="flex items-start gap-2 text-white/60 text-xs">
                   <Cloud className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
-                  <span>Enables workflows limited by network latency</span>
+                  <span>This reduces the amount of data that needs to be transmitted while keeping important details.</span>
+                </div>
+                <div className="flex items-start gap-2 text-white/60 text-xs">
+                  <Zap className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <span>It improves the speed of the workflow when network bandwidth is limited.</span>
+                </div>
+                <div className="flex items-start gap-2 text-white/60 text-xs">
+                  <Cloud className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <span>The FPGA programs can be updated from the cloud.</span>
                 </div>
               </div>
             </div>
 
             {/* Capability 5: Autonomous Execution */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1 md:col-span-2 lg:col-span-2">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1 md:col-span-2 lg:col-span-2">
               <div className="flex items-start gap-6">
-                <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center flex-shrink-0">
                   <PlayCircle className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-white uppercase tracking-tight mb-4">
-                    Autonomous & Semi-Autonomous Experiment Execution
+                  <h3 className="text-xl font-semibold text-white tracking-tight mb-4">
+                    Autonomous and Semi Autonomous Experiment Execution
                   </h3>
                   <p className="text-white/70 leading-relaxed text-sm mb-6">
-                    A defining feature of HiveLab is the ability to execute workflows autonomously while maintaining clear human oversight. Autonomous execution includes routine calibration, long term stability tests, high throughput scans, and adaptive experimental design. Semi autonomous execution allows humans to approve decisions, modify parameters, or pause an experiment at critical moments.
+                    HiveLab can run experiments on its own or with human control.
                   </p>
                   <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="bg-white/5 rounded-lg p-4 border border-white/20">
+                    <div className="bg-white/5  p-4 border border-white/20">
                       <div className="flex items-center gap-2 mb-2">
                         <Repeat className="w-4 h-4 text-orange-400" strokeWidth={1.5} />
-                        <span className="text-white text-sm font-semibold">Autonomous</span>
+                        <span className="text-white text-sm font-semibold">Autonomous Mode</span>
                       </div>
-                      <p className="text-white/60 text-xs leading-relaxed">
-                        Routine calibration, stability tests, high throughput scans, and adaptive experimental design
+                      <p className="text-white/60 text-xs leading-relaxed mb-2">
+                        The system can automatically handle tasks such as:
                       </p>
+                      <ul className="text-white/60 text-xs leading-relaxed space-y-1 list-disc list-inside">
+                        <li>Calibrating equipment</li>
+                        <li>Running long term stability tests</li>
+                        <li>Performing high throughput scans</li>
+                        <li>Adjusting experiments based on results</li>
+                      </ul>
                     </div>
-                    <div className="bg-white/5 rounded-lg p-4 border border-white/20">
+                    <div className="bg-white/5  p-4 border border-white/20">
                       <div className="flex items-center gap-2 mb-2">
                         <Shield className="w-4 h-4 text-orange-400" strokeWidth={1.5} />
-                        <span className="text-white text-sm font-semibold">Semi-Autonomous</span>
+                        <span className="text-white text-sm font-semibold">Semi Autonomous Mode</span>
                       </div>
-                      <p className="text-white/60 text-xs leading-relaxed">
-                        Human approval, parameter modification, and pause capabilities at critical moments
+                      <p className="text-white/60 text-xs leading-relaxed mb-2">
+                        Humans stay involved in key decisions. They can:
                       </p>
+                      <ul className="text-white/60 text-xs leading-relaxed space-y-1 list-disc list-inside">
+                        <li>Approve changes</li>
+                        <li>Adjust experimental parameters</li>
+                        <li>Pause or stop experiments when necessary</li>
+                      </ul>
                     </div>
                   </div>
                 </div>
@@ -1807,13 +1671,14 @@ export default function HomePage() {
         </div>
       </section>
 
+
       {/* Workforce Development Section */}
       <section id="workforce-development" className="relative z-10 py-0 scroll-mt-20 section-connector">
         <div className="section-connector-line left-1"></div>
         <div className="section-connector-line right-1"></div>
-        <div className="max-w-[1200px] mx-auto px-6 lg:px-16">
+        <div className="max-w-[75rem] mx-auto px-6 lg:px-16">
           <div className="border-t border-b border-white/20 p-8 lg:p-12">
-            <div className="max-w-3xl mb-16 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 lg:p-8">
+            <div className="max-w-3xl mb-16 bg-white/5 backdrop-blur-sm border border-white/10  p-6 lg:p-8">
               <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-8">
                 Workforce Development
               </h2>
@@ -1827,14 +1692,14 @@ export default function HomePage() {
                 <div className="flex flex-col gap-4">
                   <button
                     onClick={() => setActiveWorkforceTab("technician")}
-                    className={`text-left group px-4 py-3 rounded-lg transition-all duration-300 border ${
+                    className={`text-left group px-4 py-3  transition-all duration-300 border ${
                       activeWorkforceTab === "technician"
                         ? "bg-orange-500/10 border-orange-500/30"
                         : "hover:bg-white/5 border-white/20"
                     }`}
                   >
                     <div className="flex items-center gap-3 mb-2">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      <div className={`w-10 h-10  flex items-center justify-center ${
                         activeWorkforceTab === "technician"
                           ? "bg-orange-500/20"
                           : "bg-white/5"
@@ -1864,14 +1729,14 @@ export default function HomePage() {
 
                   <button
                     onClick={() => setActiveWorkforceTab("undergraduate")}
-                    className={`text-left group px-4 py-3 rounded-lg transition-all duration-300 border ${
+                    className={`text-left group px-4 py-3  transition-all duration-300 border ${
                       activeWorkforceTab === "undergraduate"
                         ? "bg-orange-500/10 border-orange-500/30"
                         : "hover:bg-white/5 border-white/20"
                     }`}
                   >
                     <div className="flex items-center gap-3 mb-2">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      <div className={`w-10 h-10  flex items-center justify-center ${
                         activeWorkforceTab === "undergraduate"
                           ? "bg-orange-500/20"
                           : "bg-white/5"
@@ -1901,14 +1766,14 @@ export default function HomePage() {
 
                   <button
                     onClick={() => setActiveWorkforceTab("graduate")}
-                    className={`text-left group px-4 py-3 rounded-lg transition-all duration-300 border ${
+                    className={`text-left group px-4 py-3  transition-all duration-300 border ${
                       activeWorkforceTab === "graduate"
                         ? "bg-orange-500/10 border-orange-500/30"
                         : "hover:bg-white/5 border-white/20"
                     }`}
                   >
                     <div className="flex items-center gap-3 mb-2">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      <div className={`w-10 h-10  flex items-center justify-center ${
                         activeWorkforceTab === "graduate"
                           ? "bg-orange-500/20"
                           : "bg-white/5"
@@ -1938,14 +1803,14 @@ export default function HomePage() {
 
                   <button
                     onClick={() => setActiveWorkforceTab("professional")}
-                    className={`text-left group px-4 py-3 rounded-lg transition-all duration-300 border ${
+                    className={`text-left group px-4 py-3  transition-all duration-300 border ${
                       activeWorkforceTab === "professional"
                         ? "bg-orange-500/10 border-orange-500/30"
                         : "hover:bg-white/5 border-white/20"
                     }`}
                   >
                     <div className="flex items-center gap-3 mb-2">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      <div className={`w-10 h-10  flex items-center justify-center ${
                         activeWorkforceTab === "professional"
                           ? "bg-orange-500/20"
                           : "bg-white/5"
@@ -1976,14 +1841,14 @@ export default function HomePage() {
               </div>
 
               <div className="lg:w-1/2">
-                <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 lg:p-10 min-h-[400px] relative">
+                <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 lg:p-10 min-h-[400px] relative">
                   {/* Technician Pipeline Content */}
                   <div className={`transition-all duration-300 ${
                     activeWorkforceTab === "technician" 
                       ? "opacity-100 relative z-10" 
                       : "opacity-0 absolute inset-0 z-0 pointer-events-none p-8 lg:p-10"
                   }`}>
-                    <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+                    <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                       <Users className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                     </div>
                     <h3 className="text-2xl font-semibold text-white uppercase tracking-tight mb-4">
@@ -2018,7 +1883,7 @@ export default function HomePage() {
                       ? "opacity-100 relative z-10" 
                       : "opacity-0 absolute inset-0 z-0 pointer-events-none p-8 lg:p-10"
                   }`}>
-                    <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+                    <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                       <BookOpen className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                     </div>
                     <h3 className="text-2xl font-semibold text-white uppercase tracking-tight mb-4">
@@ -2057,7 +1922,7 @@ export default function HomePage() {
                       ? "opacity-100 relative z-10" 
                       : "opacity-0 absolute inset-0 z-0 pointer-events-none p-8 lg:p-10"
                   }`}>
-                    <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+                    <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                       <GraduationCap className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                     </div>
                     <h3 className="text-2xl font-semibold text-white uppercase tracking-tight mb-4">
@@ -2092,7 +1957,7 @@ export default function HomePage() {
                       ? "opacity-100 relative z-10" 
                       : "opacity-0 absolute inset-0 z-0 pointer-events-none p-8 lg:p-10"
                   }`}>
-                    <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+                    <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
                       <Briefcase className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
                     </div>
                     <h3 className="text-2xl font-semibold text-white uppercase tracking-tight mb-4">
@@ -2136,8 +2001,8 @@ export default function HomePage() {
       <section id="capabilities" className="relative z-10 py-24 lg:py-32 scroll-mt-20 section-connector">
         <div className="section-connector-line left-1"></div>
         <div className="section-connector-line right-1"></div>
-        <div className="max-w-[1200px] mx-auto px-6 lg:px-16 py-8 lg:py-12">
-            <div className="max-w-3xl mb-16 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 lg:p-8">
+        <div className="max-w-[75rem] mx-auto px-6 lg:px-16 py-8 lg:py-12">
+            <div className="max-w-3xl mb-16 bg-white/5 backdrop-blur-sm border border-white/10  p-6 lg:p-8">
               <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-8">
                 Accessible to Every Researcher
               </h2>
@@ -2148,11 +2013,11 @@ export default function HomePage() {
 
             <div className="grid md:grid-cols-2 gap-8 mt-8">
               {/* Use Case 1: Parameter Exploration */}
-              <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
                 <h3 className="text-2xl font-semibold text-white uppercase tracking-tight mb-4">
                   Explore Parameter Spaces
                 </h3>
-                <div className="w-full h-[300px] bg-gradient-to-br from-orange-500/10 via-orange-600/5 to-orange-500/10 rounded-xl flex items-center justify-center text-white/40 text-sm mb-6 border border-white/20">
+                <div className="w-full h-[300px] bg-gradient-to-br from-orange-500/10 via-orange-600/5 to-orange-500/10  flex items-center justify-center text-white/40 text-sm mb-6 border border-white/20">
                   Parameter Space Visualization
                 </div>
                 <p className="text-white/70 leading-relaxed mb-6">
@@ -2172,17 +2037,17 @@ export default function HomePage() {
                     <span>Reproducible</span>
                   </div>
                 </div>
-                <a href="#" className="inline-flex items-center justify-center px-5 h-9 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold tracking-wider uppercase rounded-full hover:from-orange-600 hover:to-orange-700 transition-all hover:-translate-y-0.5">
+                <a href="#" className="inline-flex items-center justify-center px-5 h-9 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold tracking-wider uppercase  hover:from-orange-600 hover:to-orange-700 transition-all hover:-translate-y-0.5">
                   Learn More
                 </a>
               </div>
 
               {/* Use Case 2: Critical Validation */}
-              <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="bg-white/5 backdrop-blur-sm border border-white/20  p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
                 <h3 className="text-2xl font-semibold text-white uppercase tracking-tight mb-4">
                   Validate Critical Experiments
                 </h3>
-                <div className="w-full h-[300px] bg-gradient-to-br from-orange-500/10 via-orange-600/5 to-orange-500/10 rounded-xl flex items-center justify-center text-white/40 text-sm mb-6 border border-white/20">
+                <div className="w-full h-[300px] bg-gradient-to-br from-orange-500/10 via-orange-600/5 to-orange-500/10  flex items-center justify-center text-white/40 text-sm mb-6 border border-white/20">
                   Safety Envelope Visualization
                 </div>
                 <p className="text-white/70 leading-relaxed mb-6">
@@ -2202,7 +2067,7 @@ export default function HomePage() {
                     <span>Audit trail</span>
                   </div>
                 </div>
-                <a href="#" className="inline-flex items-center justify-center px-5 h-9 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold tracking-wider uppercase rounded-full hover:from-orange-600 hover:to-orange-700 transition-all hover:-translate-y-0.5">
+                <a href="#" className="inline-flex items-center justify-center px-5 h-9 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold tracking-wider uppercase  hover:from-orange-600 hover:to-orange-700 transition-all hover:-translate-y-0.5">
                   Learn More
                 </a>
               </div>

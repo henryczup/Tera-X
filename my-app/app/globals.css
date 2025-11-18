@@ -245,13 +245,13 @@
 
 /* Left side line - align with grid lines */
 .section-connector-line.left-1 {
-  left: max(1.5rem, calc((100% - 1200px) / 2));
+  left: max(1.5rem, calc((100% - 75rem) / 2));
   height: 100%;
 }
 
 /* Right side line - mirror left line position */
 .section-connector-line.right-1 {
-  right: max(1.5rem, calc((100% - 1200px) / 2));
+  right: max(1.5rem, calc((100% - 75rem) / 2));
   height: 100%;
 }
 
