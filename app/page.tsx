@@ -400,7 +400,7 @@ export default function HomePage() {
           {/* Full-width background gradients and spotlight - Absolute (contained in hero section) */}
          <div className="absolute inset-0 z-[1] pointer-events-none">
            <svg
-             className="absolute inset-0 w-full h-full"
+             className="absolute inset-0 w-full h-full hero-animation-svg"
              viewBox="0 0 1200 800"
              fill="none"
              xmlns="http://www.w3.org/2000/svg"
@@ -528,7 +528,7 @@ export default function HomePage() {
          <div className="absolute inset-0 z-[2] flex justify-center pointer-events-none">
            <div className="relative w-full max-w-[75rem] px-6 lg:px-16 h-screen">
              <svg
-               className="absolute inset-0 w-full h-full"
+               className="absolute inset-0 w-full h-full hero-animation-svg"
                viewBox="0 0 1200 800"
                fill="none"
                xmlns="http://www.w3.org/2000/svg"

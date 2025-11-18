@@ -262,3 +262,13 @@
     right: 1.5rem;
   }
 }
+
+@media (max-width: 768px) {
+  .hero-animation-svg circle {
+    display: none;
+  }
+}
+
+svg path, svg circle {
+  transition: all 1s ease;
+}
