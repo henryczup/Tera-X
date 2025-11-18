@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Menu, FlaskConical, Shield, Database, Repeat, Search, CheckCircle2, Cpu, Cloud, Brain, Zap, Microscope, Layers, X, CircuitBoard, Beaker, Gauge, Network, PlayCircle, GraduationCap, Users, BookOpen, Briefcase, Triangle } from "lucide-react"
 import { LineShadowText } from "@/components/line-shadow-text"
@@ -1365,6 +1366,94 @@ export default function HomePage() {
           </form>
         </main>
       </div>
+
+      {/* Trusted by section */}
+      <section className="relative z-10 py-16 lg:py-20 bg-[var(--tera-bg)] section-connector">
+        <div className="section-connector-line left-1"></div>
+        <div className="section-connector-line right-1"></div>
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            height: "1px",
+            background: "rgba(255, 255, 255, 0.2)",
+            left: "max(1.5rem, calc((100% - 75rem) / 2))",
+            right: "max(1.5rem, calc((100% - 75rem) / 2))",
+            top: 0,
+            zIndex: 21,
+          }}
+        ></div>
+        <div className="max-w-[75rem] mx-auto">
+          <div className="text-center mb-10 lg:mb-12 px-6 lg:px-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-4">
+              Trusted by forward-looking teams
+            </h2>
+            <p className="text-white/70 text-sm sm:text-base md:text-lg max-w-2xl mx-auto">
+              Organizations building the next generation of experimental platforms.
+            </p>
+          </div>
+          <div className="grid grid-cols-3 border border-white/20 bg-white/5/0">
+            {[
+              {
+                name: "Logo 1",
+                src: "/logo/648a3efbb2ac3008cadec94e_logo-1-col-invert.svg",
+              },
+              {
+                name: "Elephas",
+                src: "/logo/elephas-logo.svg",
+              },
+              {
+                name: "URP Park",
+                src: "/logo/URP_Park_logo_CMYK_white-text-whiteoutline-1 (1).png",
+              },
+              {
+                name: "Output 1",
+                src: "/logo/output-onlinepngtools.png",
+              },
+              {
+                name: "Output 2",
+                src: "/logo/output-onlinepngtools (1).png",
+              },
+              {
+                name: "Design",
+                src: "/logo/Untitled design (1).png",
+              },
+              {
+                name: "Generated",
+                src: "/logo/Generated Image November 18, 2025 - 10_25AM.png",
+              },
+              {
+                name: "Horizontal Reversed",
+                src: "/logo/Horizontal_ReversedOut_width_143px.png",
+              },
+              {
+                name: "UConn",
+                src: "/logo/uconn-wordmark-stacked-white.png",
+              },
+            ].map((logo) => (
+              <div
+                key={logo.src}
+                className="flex items-center justify-center border border-white/10 bg-black/40 px-6 py-6 sm:px-8 sm:py-8"
+              >
+                <div
+                  className="relative w-full flex items-center justify-center opacity-90"
+                  style={{
+                    maxWidth: logo.name === "Design" ? 220 : 180,
+                    height: logo.name === "Design" ? 96 : 64,
+                  }}
+                >
+                  <Image
+                    src={logo.src}
+                    alt={logo.name}
+                    fill
+                    sizes="(min-width: 1024px) 140px, 33vw"
+                    className="object-contain"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Network Visualization Section */}
       <section className="relative z-10 py-24 lg:py-32 bg-[var(--tera-bg)] section-connector">
