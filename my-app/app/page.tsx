@@ -1,0 +1,2214 @@
+"use client"
+
+import { Button } from "@/components/ui/button"
+import { ArrowRight, Menu, FlaskConical, Shield, Database, Repeat, Search, CheckCircle2, Cpu, Cloud, Brain, Zap, Microscope, Layers, X, CircuitBoard, Beaker, Gauge, Network, PlayCircle, GraduationCap, Users, BookOpen, Briefcase, Triangle } from "lucide-react"
+import { LineShadowText } from "@/components/line-shadow-text"
+import { ShimmerButton } from "@/components/shimmer-button"
+import { useState, useEffect, useRef } from "react"
+import { gsap } from "gsap"
+
+function NetworkVisualization() {
+  const [glowingLines, setGlowingLines] = useState<Array<{id: number, type: 'horizontal' | 'vertical', lineIndex: number, duration: number, delay: number, yPos?: number, xPos?: number}>>([])
+  const svgRef = useRef<SVGSVGElement>(null)
+  const orangeLineRefs = useRef<Map<number, SVGPathElement>>(new Map())
+  const gridLineRefs = useRef<Map<string, SVGPathElement>>(new Map())
+
+  // Generate random glowing lines on grid - DISABLED: orange lines only appear on button click
+  useEffect(() => {
+    // Disable automatic glowing lines - orange lines only appear on deploy button click
+    setGlowingLines([])
+  }, [])
+
+  // Animate all orange lines with GSAP - loops continuously with collapse animation
+  useEffect(() => {
+    const orangeLines = Array.from(orangeLineRefs.current.entries())
+    
+    orangeLines.forEach(([index, path]) => {
+      if (path) {
+        // Wait for path to be rendered
+        requestAnimationFrame(() => {
+          const fullPathLength = path.getTotalLength()
+          
+          if (fullPathLength === 0 || !isFinite(fullPathLength)) {
+            return
+          }
+          
+          // Random end point between 50% and 90% of the path
+          const endRatio = 0.5 + Math.random() * 0.4
+          const endPathLength = fullPathLength * endRatio
+          
+          // Set initial state - line is fully hidden
+          // strokeDasharray format: "dash gap" - we want dash to be the length, gap to be large
+          gsap.set(path, {
+            strokeDasharray: `${endPathLength} ${fullPathLength}`,
+            strokeDashoffset: endPathLength,
+            opacity: 1,
+            visibility: 'visible'
+          })
+          
+          // Random delay for each line to create staggered effect
+          const delay = index * 0.2 + Math.random() * 0.3
+          
+          // Create timeline that loops infinitely
+          const tl = gsap.timeline({ repeat: -1 })
+          
+          // Animate the line drawing to the random end point
+          tl.to(path, {
+            strokeDashoffset: 0,
+            duration: 2,
+            ease: "power2.inOut",
+            delay: delay
+          })
+          // Pause at the end point
+          .to({}, { duration: 1 })
+          // Reset back to start
+          .set(path, {
+            strokeDasharray: `${endPathLength} ${fullPathLength}`,
+            strokeDashoffset: endPathLength
+          })
+          .to({}, { duration: 0.3 })
+        })
+      }
+    })
+  }, [])
+
+  // Animate grid lines with random movement
+  useEffect(() => {
+    const lines = Array.from(gridLineRefs.current.values())
+    
+    lines.forEach((line) => {
+      if (line) {
+        // Random delay between 0 and 2 seconds
+        const delay = Math.random() * 2
+        // Random duration between 3 and 6 seconds
+        const duration = 3 + Math.random() * 3
+        // Random movement amount (small subtle movement)
+        const moveX = (Math.random() - 0.5) * 4
+        const moveY = (Math.random() - 0.5) * 4
+        
+        // Create random animation for each line
+        gsap.to(line, {
+          x: moveX,
+          y: moveY,
+          duration: duration,
+          delay: delay,
+          ease: "sine.inOut",
+          repeat: -1,
+          yoyo: true
+        })
+      }
+    })
+    
+    return () => {
+      // Cleanup animations on unmount
+      lines.forEach(line => {
+        if (line) {
+          gsap.killTweensOf(line)
+        }
+      })
+    }
+  }, [])
+
+  // Calculate positions on horizontal gridlines
+  // Grid parameters match the SVG viewBox
+  const centerX = 400
+  const centerY = 250
+  const radiusX = 300
+  const radiusY = 200
+  const numHorizontal = 7
+  const numVertical = 13
+  const poleY = centerY - radiusY
+  
+
+  return (
+    <div className="relative w-full h-96 mt-20">
+      {/* Globe grid background */}
+      <div className="absolute inset-0 opacity-40">
+        <svg 
+          ref={svgRef}
+          className="w-full h-full" 
+          viewBox="0 0 800 400" 
+          preserveAspectRatio="xMidYMid meet"
+        >
+          <defs>
+            <linearGradient id="glowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#f97316" stopOpacity="0" />
+              <stop offset="50%" stopColor="#f97316" stopOpacity="1" />
+              <stop offset="100%" stopColor="#f97316" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          {(() => {
+            const centerX = 400
+            const centerY = 250
+            const radiusX = 300
+            const radiusY = 200
+            const numVertical = 13
+            const numHorizontal = 7
+            
+            const lines: React.ReactElement[] = []
+            const poleX = centerX
+            const poleY = centerY - radiusY
+
+            // Horizontal latitude lines
+            for (let i = 1; i < numHorizontal; i++) {
+              const latRatio = i / numHorizontal
+              const y = poleY + (latRatio * radiusY * 2)
+              const angle = Math.asin((y - centerY) / radiusY)
+              const xWidth = radiusX * Math.cos(angle)
+              
+              if (xWidth > 0) {
+                const pathD = `M ${centerX - xWidth},${y} A ${xWidth},${xWidth * 0.2} 0 0,0 ${centerX + xWidth},${y}`
+                const isGlowing = glowingLines.some(line => 
+                  line.type === 'horizontal' && Math.abs((line.yPos || 0) - y) < 20
+                )
+                
+                const lineKey = `lat-${i}`
+                lines.push(
+                  <g key={lineKey}>
+                    <path
+                      ref={(el) => { if (el) gridLineRefs.current.set(lineKey, el) }}
+                      d={pathD}
+                      fill="none"
+                      stroke="rgba(255, 255, 255, 0.6)"
+                      strokeWidth="1.5"
+                      opacity={1}
+                    />
+                    {isGlowing && (
+                      <path
+                        className="glow-line"
+                        d={pathD}
+                        fill="none"
+                        stroke="url(#glowGradient)"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        style={{
+                          filter: 'drop-shadow(0 0 6px rgba(249, 115, 22, 0.8))'
+                        }}
+                      />
+                    )}
+                  </g>
+                )
+              }
+            }
+
+            // Vertical longitude lines - show every other line
+            for (let i = 0; i < numVertical; i++) {
+              // Skip every other line (show only even indices: 0, 2, 4, 6, 8, 10, 12)
+              if (i % 2 !== 0) continue
+              
+              const lonRatio = (i / (numVertical - 1))
+              const lonAngle = (lonRatio - 0.5) * Math.PI
+              const points: string[] = []
+              
+              for (let j = 0; j <= 20; j++) {
+                const latRatio = j / 20
+                const latAngle = (latRatio - 0.5) * Math.PI
+                const x = centerX + radiusX * Math.cos(latAngle) * Math.sin(lonAngle)
+                const y = centerY + radiusY * Math.sin(latAngle)
+                points.push(`${x},${y}`)
+              }
+              
+              const pathD = `M ${points.join(' L ')}`
+              const isGlowing = glowingLines.some(line => 
+                line.type === 'vertical' && Math.abs((line.xPos || 0) - (100 + i * 50)) < 30
+              )
+              
+              const lineKey = `lon-${i}`
+              lines.push(
+                <g key={lineKey}>
+                  <path
+                    ref={(el) => { if (el) gridLineRefs.current.set(lineKey, el) }}
+                    d={pathD}
+                    fill="none"
+                    stroke="rgba(255, 255, 255, 0.6)"
+                    strokeWidth="1.5"
+                    opacity={1}
+                  />
+                  {isGlowing && (
+                    <path
+                      className="glow-line"
+                      d={pathD}
+                      fill="none"
+                      stroke="url(#glowGradient)"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      style={{
+                        filter: 'drop-shadow(0 0 6px rgba(249, 115, 22, 0.8))'
+                      }}
+                    />
+                  )}
+                </g>
+              )
+            }
+            
+            return lines
+          })()}
+          
+          {/* Orange lines from north pole following all vertical grid lines */}
+          {(() => {
+            const centerX = 400
+            const centerY = 250
+            const radiusX = 300
+            const radiusY = 200
+            const poleY = centerY - radiusY
+            const numVertical = 13
+            const orangeLines: React.ReactElement[] = []
+            
+            // Create orange line for each visible vertical grid line (every other one)
+            for (let i = 0; i < numVertical; i++) {
+              // Only create orange lines for visible gridlines (even indices)
+              if (i % 2 !== 0) continue
+              
+              const lonRatio = i / (numVertical - 1)
+              const lonAngle = (lonRatio - 0.5) * Math.PI
+              
+              // Create full path from north pole to bottom (will be truncated in animation)
+              const points: string[] = []
+              const startY = poleY
+              const endY = centerY + radiusY * 0.9 // Full path to 90% down
+              
+              for (let j = 0; j <= 20; j++) {
+                const latRatio = j / 20
+                const y = startY + (latRatio * (endY - startY))
+                const latAngle = Math.asin((y - centerY) / radiusY)
+                const x = centerX + radiusX * Math.cos(latAngle) * Math.sin(lonAngle)
+                points.push(`${x},${y}`)
+              }
+              
+              const pathD = `M ${points.join(' L ')}`
+              
+              orangeLines.push(
+                <g key={`orange-line-${i}`}>
+                  <path
+                    ref={(el) => { if (el) orangeLineRefs.current.set(i, el) }}
+                    d={pathD}
+                    fill="none"
+                    stroke="#ff6b00"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    style={{
+                      filter: 'drop-shadow(0 0 8px rgba(255, 107, 0, 0.9))'
+                    }}
+                  />
+                </g>
+              )
+            }
+            
+            return orangeLines
+          })()}
+        </svg>
+      </div>
+
+    </div>
+  )
+}
+
+export default function HomePage() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [activeLayer, setActiveLayer] = useState("physical")
+  const [activeWorkforceTab, setActiveWorkforceTab] = useState("technician")
+  const [scrolled, setScrolled] = useState(false)
+  const [networkAnimationActive, setNetworkAnimationActive] = useState(false)
+  const [highlightedLinePath, setHighlightedLinePath] = useState<string | null>(null)
+  const [highlightedLineKey, setHighlightedLineKey] = useState(0)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    e.preventDefault()
+    const element = document.getElementById(targetId)
+    if (element) {
+      const headerOffset = 80 // Fixed header height
+      const elementPosition = element.getBoundingClientRect().top
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      })
+    }
+    setMobileMenuOpen(false)
+  }
+
+  return (
+    <div id="top" className="min-h-screen relative overflow-hidden">
+      <div className="absolute inset-0 bg-[var(--tera-bg)]"></div>
+      
+
+      {/* Hero Section with Background */}
+      <div className="relative min-h-screen overflow-hidden section-connector bg-transparent">
+        {/* Dark overlay outside the box - top (between vertical lines) */}
+        <div 
+          className="absolute pointer-events-none"
+          style={{ 
+            top: 0,
+            left: 'max(1.5rem, calc((100% - 1200px) / 2))',
+            right: 'max(1.5rem, calc((100% - 1200px) / 2))',
+            height: 'calc(20vh - 0.5rem)',
+            background: 'rgba(0, 0, 0, 0.3)',
+            zIndex: 15
+          }}
+        ></div>
+        {/* Dark overlay outside the box - left side */}
+        <div 
+          className="absolute top-0 bottom-0 pointer-events-none"
+          style={{ 
+            left: 0,
+            right: 'calc(100% - max(1.5rem, calc((100% - 1200px) / 2)))',
+            background: 'rgba(0, 0, 0, 0.3)',
+            zIndex: 15
+          }}
+        ></div>
+        {/* Dark overlay outside the box - right side */}
+        <div 
+          className="absolute top-0 bottom-0 pointer-events-none"
+          style={{ 
+            left: 'calc(100% - max(1.5rem, calc((100% - 1200px) / 2)))',
+            right: 0,
+            background: 'rgba(0, 0, 0, 0.3)',
+            zIndex: 15
+          }}
+        ></div>
+        <div 
+          className="section-connector-line left-1" 
+          style={{ 
+            zIndex: 20,
+            top: 'calc(20vh - 0.5rem)',
+            height: 'calc(100% - 20vh + 0.5rem)'
+          }}
+        ></div>
+        <div 
+          className="section-connector-line right-1" 
+          style={{ 
+            zIndex: 20,
+            top: 'calc(20vh - 0.5rem)',
+            height: 'calc(100% - 20vh + 0.5rem)'
+          }}
+        ></div>
+        {/* Horizontal separator line - full width like section separators - only visible when scrolled */}
+        {scrolled && (
+          <div 
+            className="absolute top-16 lg:top-20 left-0 right-0 pointer-events-none"
+            style={{ 
+              height: '1px', 
+              background: 'rgba(255, 255, 255, 0.2)',
+              zIndex: 20
+            }}
+          ></div>
+        )}
+        {/* Horizontal line at shading cutoff - connects to vertical lines */}
+        <div 
+          className="absolute pointer-events-none"
+          style={{ 
+            height: '1px', 
+            background: 'rgba(255, 255, 255, 0.2)',
+            left: 'max(1.5rem, calc((100% - 1200px) / 2))',
+            right: 'max(1.5rem, calc((100% - 1200px) / 2))',
+            top: 'calc(20vh - 0.5rem)',
+            zIndex: 21
+          }}
+        ></div>
+          {/* Full-width background gradients and spotlight - Fixed */}
+         <div className="fixed inset-0 z-[1] pointer-events-none">
+           <svg
+             className="absolute inset-0 w-full h-full"
+             viewBox="0 0 1200 800"
+             fill="none"
+             xmlns="http://www.w3.org/2000/svg"
+             preserveAspectRatio="none"
+           >
+            <defs>
+              <radialGradient id="neonPulse1" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="rgba(255,255,255,1)" />
+                <stop offset="30%" stopColor="rgba(251,146,60,1)" />
+                <stop offset="70%" stopColor="rgba(249,115,22,0.8)" />
+                <stop offset="100%" stopColor="rgba(249,115,22,0)" />
+              </radialGradient>
+              <radialGradient id="neonPulse2" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="rgba(255,255,255,0.9)" />
+                <stop offset="25%" stopColor="rgba(251,146,60,0.9)" />
+                <stop offset="60%" stopColor="rgba(234,88,12,0.7)" />
+                <stop offset="100%" stopColor="rgba(234,88,12,0)" />
+              </radialGradient>
+              <radialGradient id="neonPulse3" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="rgba(255,255,255,1)" />
+                <stop offset="35%" stopColor="rgba(251,146,60,1)" />
+                <stop offset="75%" stopColor="rgba(234,88,12,0.6)" />
+                <stop offset="100%" stopColor="rgba(234,88,12,0)" />
+              </radialGradient>
+              {/* Adding hero text background gradients and filters */}
+              <radialGradient id="heroTextBg" cx="0%" cy="20%" r="50%">
+                <stop offset="0%" stopColor="rgba(249,115,22,1)" />
+                <stop offset="10%" stopColor="rgba(251,146,60,0.7)" />
+                <stop offset="25%" stopColor="rgba(234,88,12,0.3)" />
+                <stop offset="45%" stopColor="rgba(234,88,12,0.08)" />
+                <stop offset="70%" stopColor="rgba(0,0,0,0.1)" />
+                <stop offset="100%" stopColor="rgba(0,0,0,0.3)" />
+              </radialGradient>
+              <filter id="heroTextBlur" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="20" result="blur" />
+                <feTurbulence baseFrequency="0.7" numOctaves="4" result="noise" />
+                <feColorMatrix in="noise" type="saturate" values="0" result="monoNoise" />
+                <feComponentTransfer in="monoNoise" result="alphaAdjustedNoise">
+                  <feFuncA type="discrete" tableValues="0.03 0.06 0.09 0.12" />
+                </feComponentTransfer>
+                <feComposite in="blur" in2="alphaAdjustedNoise" operator="multiply" result="noisyBlur" />
+                <feMerge>
+                  <feMergeNode in="noisyBlur" />
+                </feMerge>
+              </filter>
+              <radialGradient id="backgroundFade1" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="rgba(249,115,22,0.15)" />
+                <stop offset="50%" stopColor="rgba(249,115,22,0.15)" />
+                <stop offset="100%" stopColor="rgba(249,115,22,0.15)" />
+              </radialGradient>
+              <radialGradient id="backgroundFade2" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="rgba(251,146,60,0.12)" />
+                <stop offset="50%" stopColor="rgba(251,146,60,0.12)" />
+                <stop offset="100%" stopColor="rgba(251,146,60,0.12)" />
+              </radialGradient>
+              <radialGradient id="backgroundFade3" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="rgba(234,88,12,0.18)" />
+                <stop offset="50%" stopColor="rgba(234,88,12,0.18)" />
+                <stop offset="100%" stopColor="rgba(234,88,12,0.18)" />
+              </radialGradient>
+              <linearGradient id="threadFade1" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="rgba(0,0,0,1)" />
+                <stop offset="15%" stopColor="rgba(249,115,22,0.8)" />
+                <stop offset="85%" stopColor="rgba(249,115,22,0.8)" />
+                <stop offset="100%" stopColor="rgba(0,0,0,1)" />
+              </linearGradient>
+              <linearGradient id="threadFade2" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="rgba(0,0,0,1)" />
+                <stop offset="12%" stopColor="rgba(251,146,60,0.7)" />
+                <stop offset="88%" stopColor="rgba(251,146,60,0.7)" />
+                <stop offset="100%" stopColor="rgba(0,0,0,1)" />
+              </linearGradient>
+              <linearGradient id="threadFade3" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="rgba(0,0,0,1)" />
+                <stop offset="18%" stopColor="rgba(234,88,12,0.8)" />
+                <stop offset="82%" stopColor="rgba(234,88,12,0.8)" />
+                <stop offset="100%" stopColor="rgba(0,0,0,1)" />
+              </linearGradient>
+              <filter id="backgroundBlur" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="8" result="blur" />
+                <feTurbulence baseFrequency="0.9" numOctaves="3" result="noise" />
+                <feColorMatrix in="noise" type="saturate" values="0" result="monoNoise" />
+                <feComponentTransfer in="monoNoise" result="alphaAdjustedNoise">
+                  <feFuncA type="discrete" tableValues="0.05 0.1 0.15 0.2" />
+                </feComponentTransfer>
+                <feComposite in="blur" in2="alphaAdjustedNoise" operator="multiply" result="noisyBlur" />
+                <feMerge>
+                  <feMergeNode in="noisyBlur" />
+                </feMerge>
+              </filter>
+              <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            <g>
+              {/* Spotlight glow for hero text - hugging left side */}
+              <ellipse
+                cx="200"
+                cy="200"
+                rx="1100"
+                ry="280"
+                fill="url(#heroTextBg)"
+                filter="url(#heroTextBlur)"
+                opacity="0.8"
+              />
+              <ellipse
+                cx="150"
+                cy="180"
+                rx="1150"
+                ry="320"
+                fill="url(#heroTextBg)"
+                filter="url(#heroTextBlur)"
+                opacity="0.6"
+              />
+              </g>
+            </svg>
+          </div>
+
+          {/* Constrained line animations - Fixed */}
+         <div className="fixed inset-0 z-[2] flex justify-center pointer-events-none">
+           <div className="relative w-full max-w-[1200px] px-6 lg:px-16 h-screen">
+             <svg
+               className="absolute inset-0 w-full h-full"
+               viewBox="0 0 1200 800"
+               fill="none"
+               xmlns="http://www.w3.org/2000/svg"
+               preserveAspectRatio="none"
+             >
+            <defs>
+              <radialGradient id="neonPulse1" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="rgba(255,255,255,1)" />
+                <stop offset="30%" stopColor="rgba(251,146,60,1)" />
+                <stop offset="70%" stopColor="rgba(249,115,22,0.8)" />
+                <stop offset="100%" stopColor="rgba(249,115,22,0)" />
+              </radialGradient>
+              <radialGradient id="neonPulse2" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="rgba(255,255,255,0.9)" />
+                <stop offset="25%" stopColor="rgba(251,146,60,0.9)" />
+                <stop offset="60%" stopColor="rgba(234,88,12,0.7)" />
+                <stop offset="100%" stopColor="rgba(234,88,12,0)" />
+              </radialGradient>
+              <radialGradient id="neonPulse3" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="rgba(255,255,255,1)" />
+                <stop offset="35%" stopColor="rgba(251,146,60,1)" />
+                <stop offset="75%" stopColor="rgba(234,88,12,0.6)" />
+                <stop offset="100%" stopColor="rgba(234,88,12,0)" />
+              </radialGradient>
+              <linearGradient id="threadFade1" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="rgba(0,0,0,1)" />
+                <stop offset="15%" stopColor="rgba(249,115,22,0.8)" />
+                <stop offset="85%" stopColor="rgba(249,115,22,0.8)" />
+                <stop offset="100%" stopColor="rgba(0,0,0,1)" />
+              </linearGradient>
+              <linearGradient id="threadFade2" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="rgba(0,0,0,1)" />
+                <stop offset="12%" stopColor="rgba(251,146,60,0.7)" />
+                <stop offset="88%" stopColor="rgba(251,146,60,0.7)" />
+                <stop offset="100%" stopColor="rgba(0,0,0,1)" />
+              </linearGradient>
+              <linearGradient id="threadFade3" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="rgba(0,0,0,1)" />
+                <stop offset="18%" stopColor="rgba(234,88,12,0.8)" />
+                <stop offset="82%" stopColor="rgba(234,88,12,0.8)" />
+                <stop offset="100%" stopColor="rgba(0,0,0,1)" />
+              </linearGradient>
+              <filter id="backgroundBlur" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="8" result="blur" />
+                <feTurbulence baseFrequency="0.9" numOctaves="3" result="noise" />
+                <feColorMatrix in="noise" type="saturate" values="0" result="monoNoise" />
+                <feComponentTransfer in="monoNoise" result="alphaAdjustedNoise">
+                  <feFuncA type="discrete" tableValues="0.05 0.1 0.15 0.2" />
+                </feComponentTransfer>
+                <feComposite in="blur" in2="alphaAdjustedNoise" operator="multiply" result="noisyBlur" />
+                <feMerge>
+                  <feMergeNode in="noisyBlur" />
+                </feMerge>
+              </filter>
+              <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            <g>
+              {/* Thread 1 - Smooth S-curve from bottom-left to right */}
+              <path
+                id="thread1"
+                d="M-100 720 Q200 590 350 540 Q500 490 650 520 Q800 550 950 460 Q1100 370 1200 340"
+                stroke="url(#threadFade1)"
+                strokeWidth="0.8"
+                fill="none"
+                opacity="0.8"
+              />
+              <circle r="2" fill="url(#neonPulse1)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="16s" repeatCount="indefinite">
+                  <mpath href="#thread1" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 2 - Gentle wave flow */}
+              <path
+                id="thread2"
+                d="M-120 730 Q250 620 400 570 Q550 520 700 550 Q850 580 1000 490 Q1150 400 1300 370"
+                stroke="url(#threadFade2)"
+                strokeWidth="1.5"
+                fill="none"
+                opacity="0.7"
+              />
+              <circle r="3" fill="url(#neonPulse2)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="20s" repeatCount="indefinite">
+                  <mpath href="#thread2" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 3 - Organic curve */}
+              <path
+                id="thread3"
+                d="M-150 710 Q180 580 320 530 Q460 480 600 510 Q740 540 880 450 Q1020 360 1200 330"
+                stroke="url(#threadFade3)"
+                strokeWidth="1.2"
+                fill="none"
+                opacity="0.8"
+              />
+              <circle r="2.5" fill="url(#neonPulse1)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="18s" repeatCount="indefinite">
+                  <mpath href="#thread3" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 4 - Flowing curve */}
+              <path
+                id="thread4"
+                d="M-80 740 Q280 640 450 590 Q620 540 770 570 Q920 600 1070 510 Q1220 420 1350 390"
+                stroke="url(#threadFade1)"
+                strokeWidth="0.6"
+                fill="none"
+                opacity="0.6"
+              />
+              <circle r="1.5" fill="url(#neonPulse3)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="22s" repeatCount="indefinite">
+                  <mpath href="#thread4" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 5 - Natural wave */}
+              <path
+                id="thread5"
+                d="M-130 725 Q220 600 380 550 Q540 500 680 530 Q820 560 960 470 Q1100 380 1280 350"
+                stroke="url(#threadFade2)"
+                strokeWidth="1.0"
+                fill="none"
+                opacity="0.7"
+              />
+              <circle r="2.2" fill="url(#neonPulse2)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="16.8s" repeatCount="indefinite">
+                  <mpath href="#thread5" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 6 - Smooth flow */}
+              <path
+                id="thread6"
+                d="M-50 735 Q300 660 480 610 Q660 560 800 590 Q940 620 1080 530 Q1220 440 1400 410"
+                stroke="url(#threadFade3)"
+                strokeWidth="1.3"
+                fill="none"
+                opacity="0.6"
+              />
+              <circle r="2.8" fill="url(#neonPulse1)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="20.8s" repeatCount="indefinite">
+                  <mpath href="#thread6" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 7 - Organic S-curve */}
+              <path
+                id="thread7"
+                d="M-140 715 Q190 585 340 535 Q490 485 630 515 Q770 545 910 455 Q1050 365 1250 335"
+                stroke="url(#threadFade1)"
+                strokeWidth="0.9"
+                fill="none"
+                opacity="0.8"
+              />
+              <circle r="2" fill="url(#neonPulse3)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="19.2s" repeatCount="indefinite">
+                  <mpath href="#thread7" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 8 - Gentle wave */}
+              <path
+                id="thread8"
+                d="M-100 728 Q260 630 420 580 Q580 530 720 560 Q860 590 1000 500 Q1140 410 1320 380"
+                stroke="url(#threadFade2)"
+                strokeWidth="1.4"
+                fill="none"
+                opacity="0.7"
+              />
+              <circle r="3" fill="url(#neonPulse2)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="23.2s" repeatCount="indefinite">
+                  <mpath href="#thread8" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 9 - Thin flowing curve */}
+              <path
+                id="thread9"
+                d="M-160 722 Q170 595 310 545 Q450 495 590 525 Q730 555 870 465 Q1010 375 1180 345"
+                stroke="url(#threadFade3)"
+                strokeWidth="0.5"
+                fill="none"
+                opacity="0.6"
+              />
+              <circle r="1.2" fill="url(#neonPulse1)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="24s" repeatCount="indefinite">
+                  <mpath href="#thread9" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 10 - Medium thick wave */}
+              <path
+                id="thread10"
+                d="M-110 732 Q240 625 390 575 Q540 525 680 555 Q820 585 960 495 Q1100 405 1300 375"
+                stroke="url(#threadFade1)"
+                strokeWidth="1.1"
+                fill="none"
+                opacity="0.8"
+              />
+              <circle r="2.5" fill="url(#neonPulse3)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="17.2s" repeatCount="indefinite">
+                  <mpath href="#thread10" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 11 - Very thin thread */}
+              <path
+                id="thread11"
+                d="M-130 727 Q210 605 360 555 Q510 505 650 535 Q790 565 930 475 Q1070 385 1260 355"
+                stroke="url(#threadFade2)"
+                strokeWidth="0.4"
+                fill="none"
+                opacity="0.5"
+              />
+              <circle r="1" fill="url(#neonPulse2)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="22.8s" repeatCount="indefinite">
+                  <mpath href="#thread11" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 12 - Thick flowing line */}
+              <path
+                id="thread12"
+                d="M-90 738 Q270 645 430 595 Q590 545 730 575 Q870 605 1010 515 Q1150 425 1380 395"
+                stroke="url(#threadFade3)"
+                strokeWidth="1.5"
+                fill="none"
+                opacity="0.7"
+              />
+              <circle r="3.2" fill="url(#neonPulse1)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="18.8s" repeatCount="indefinite">
+                  <mpath href="#thread12" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 13 - Thin organic curve */}
+              <path
+                id="thread13"
+                d="M-145 718 Q185 588 325 538 Q465 488 605 518 Q745 548 885 458 Q1025 368 1220 338"
+                stroke="url(#threadFade1)"
+                strokeWidth="0.7"
+                fill="none"
+                opacity="0.6"
+              />
+              <circle r="1.8" fill="url(#neonPulse3)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="21.2s" repeatCount="indefinite">
+                  <mpath href="#thread13" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 14 - Medium wave */}
+              <path
+                id="thread14"
+                d="M-70 721 Q290 630 460 580 Q630 530 770 560 Q910 590 1050 500 Q1190 410 1350 380"
+                stroke="url(#threadFade2)"
+                strokeWidth="1.0"
+                fill="none"
+                opacity="0.8"
+              />
+              <circle r="2.3" fill="url(#neonPulse2)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="19.6s" repeatCount="indefinite">
+                  <mpath href="#thread14" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 15 - Very thin delicate line */}
+              <path
+                id="thread15"
+                d="M-165 713 Q165 583 305 533 Q445 483 585 513 Q725 543 865 453 Q1005 363 1200 333"
+                stroke="url(#threadFade3)"
+                strokeWidth="0.3"
+                fill="none"
+                opacity="0.4"
+              />
+              <circle r="0.8" fill="url(#neonPulse1)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="24.8s" repeatCount="indefinite">
+                  <mpath href="#thread15" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 16 - Thick prominent thread */}
+              <path
+                id="thread16"
+                d="M-115 719 Q235 605 385 555 Q535 505 675 535 Q815 565 955 475 Q1095 385 1320 355"
+                stroke="url(#threadFade1)"
+                strokeWidth="1.5"
+                fill="none"
+                opacity="0.9"
+              />
+              <circle r="3.2" fill="url(#neonPulse2)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="16.4s" repeatCount="indefinite">
+                  <mpath href="#thread16" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 17 */}
+              <path
+                id="thread17"
+                d="M-100 720 Q180 660 320 620 Q460 580 600 600 Q740 620 880 560 Q1020 500 1200 340"
+                stroke="url(#threadFade2)"
+                strokeWidth="0.6"
+                fill="none"
+                opacity="0.5"
+              />
+              <circle r="1.5" fill="url(#neonPulse1)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="20.4s" repeatCount="indefinite">
+                  <mpath href="#thread17" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 18 */}
+              <path
+                id="thread18"
+                d="M-100 720 Q200 680 350 640 Q500 600 650 620 Q800 640 950 580 Q1100 520 1200 340"
+                stroke="url(#threadFade3)"
+                strokeWidth="1.2"
+                fill="none"
+                opacity="0.7"
+              />
+              <circle r="2.8" fill="url(#neonPulse2)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="18.4s" repeatCount="indefinite">
+                  <mpath href="#thread18" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 19 */}
+              <path
+                id="thread19"
+                d="M-100 720 Q160 670 280 630 Q400 590 540 610 Q680 630 820 570 Q960 510 1200 340"
+                stroke="url(#threadFade1)"
+                strokeWidth="0.8"
+                fill="none"
+                opacity="0.6"
+              />
+              <circle r="2" fill="url(#neonPulse3)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="21.6s" repeatCount="indefinite">
+                  <mpath href="#thread19" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 20 */}
+              <path
+                id="thread20"
+                d="M-100 720 Q220 690 380 650 Q540 610 680 630 Q820 650 960 590 Q1100 530 1200 340"
+                stroke="url(#threadFade2)"
+                strokeWidth="1.4"
+                fill="none"
+                opacity="0.8"
+              />
+              <circle r="3" fill="url(#neonPulse1)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="17.6s" repeatCount="indefinite">
+                  <mpath href="#thread20" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 21 */}
+              <path
+                id="thread21"
+                d="M-100 720 Q170 675 300 635 Q430 595 570 615 Q710 635 850 575 Q990 515 1200 340"
+                stroke="url(#threadFade3)"
+                strokeWidth="0.5"
+                fill="none"
+                opacity="0.4"
+              />
+              <circle r="1.2" fill="url(#neonPulse2)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="23.6s" repeatCount="indefinite">
+                  <mpath href="#thread21" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 22 */}
+              <path
+                id="thread22"
+                d="M-100 720 Q190 745 340 705 Q490 665 630 685 Q770 705 910 645 Q1050 585 1200 340"
+                stroke="url(#threadFade1)"
+                strokeWidth="1.1"
+                fill="none"
+                opacity="0.7"
+              />
+              <circle r="2.5" fill="url(#neonPulse3)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="19.2s" repeatCount="indefinite">
+                  <mpath href="#thread22" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 23 */}
+              <path
+                id="thread23"
+                d="M-100 720 Q150 725 270 685 Q390 645 530 665 Q670 685 810 625 Q950 565 1200 340"
+                stroke="url(#threadFade2)"
+                strokeWidth="0.9"
+                fill="none"
+                opacity="0.6"
+              />
+              <circle r="2.2" fill="url(#neonPulse1)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="20.8s" repeatCount="indefinite">
+                  <mpath href="#thread23" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 24 */}
+              <path
+                id="thread24"
+                d="M-100 720 Q210 755 370 715 Q530 675 670 695 Q810 715 950 655 Q1090 595 1200 340"
+                stroke="url(#threadFade3)"
+                strokeWidth="1.3"
+                fill="none"
+                opacity="0.8"
+              />
+              <circle r="2.9" fill="url(#neonPulse2)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="16.8s" repeatCount="indefinite">
+                  <mpath href="#thread24" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 25 */}
+              <path
+                id="thread25"
+                d="M-100 720 Q165 730 290 690 Q415 650 555 670 Q695 690 835 630 Q975 570 1200 340"
+                stroke="url(#threadFade1)"
+                strokeWidth="0.7"
+                fill="none"
+                opacity="0.5"
+              />
+              <circle r="1.8" fill="url(#neonPulse3)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="22.4s" repeatCount="indefinite">
+                  <mpath href="#thread25" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 26 */}
+              <path
+                id="thread26"
+                d="M-100 720 Q230 760 390 720 Q550 680 690 700 Q830 720 970 660 Q1110 600 1200 340"
+                stroke="url(#threadFade2)"
+                strokeWidth="1.0"
+                fill="none"
+                opacity="0.7"
+              />
+              <circle r="2.4" fill="url(#neonPulse1)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="18.8s" repeatCount="indefinite">
+                  <mpath href="#thread26" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 27 */}
+              <path
+                id="thread27"
+                d="M-100 720 Q175 740 310 700 Q445 660 585 680 Q725 700 865 640 Q1005 580 1200 340"
+                stroke="url(#threadFade3)"
+                strokeWidth="0.4"
+                fill="none"
+                opacity="0.4"
+              />
+              <circle r="1" fill="url(#neonPulse2)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="24.4s" repeatCount="indefinite">
+                  <mpath href="#thread27" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 28 */}
+              <path
+                id="thread28"
+                d="M-100 720 Q195 750 350 710 Q505 670 645 690 Q785 710 925 650 Q1065 590 1200 340"
+                stroke="url(#threadFade1)"
+                strokeWidth="1.5"
+                fill="none"
+                opacity="0.9"
+              />
+              <circle r="3.1" fill="url(#neonPulse3)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="17.2s" repeatCount="indefinite">
+                  <mpath href="#thread28" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 29 */}
+              <path
+                id="thread29"
+                d="M-100 720 Q155 735 285 695 Q415 655 555 675 Q695 695 835 635 Q975 575 1200 340"
+                stroke="url(#threadFade2)"
+                strokeWidth="0.8"
+                fill="none"
+                opacity="0.6"
+              />
+              <circle r="2" fill="url(#neonPulse1)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="21.2s" repeatCount="indefinite">
+                  <mpath href="#thread29" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 30 */}
+              <path
+                id="thread30"
+                d="M-100 720 Q215 765 375 725 Q535 685 675 705 Q815 725 955 665 Q1095 605 1200 340"
+                stroke="url(#threadFade3)"
+                strokeWidth="1.2"
+                fill="none"
+                opacity="0.8"
+              />
+              <circle r="2.7" fill="url(#neonPulse2)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="18s" repeatCount="indefinite">
+                  <mpath href="#thread30" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 31 */}
+              <path
+                id="thread31"
+                d="M-100 720 Q185 745 325 705 Q465 665 605 685 Q745 705 885 645 Q1025 585 1200 340"
+                stroke="url(#threadFade1)"
+                strokeWidth="0.6"
+                fill="none"
+                opacity="0.5"
+              />
+              <circle r="1.5" fill="url(#neonPulse3)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="23.2s" repeatCount="indefinite">
+                  <mpath href="#thread31" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 32 */}
+              <path
+                id="thread32"
+                d="M-100 720 Q205 755 365 715 Q525 675 665 695 Q805 715 945 655 Q1085 595 1200 340"
+                stroke="url(#threadFade2)"
+                strokeWidth="1.4"
+                fill="none"
+                opacity="0.8"
+              />
+              <circle r="3" fill="url(#neonPulse1)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="16.4s" repeatCount="indefinite">
+                  <mpath href="#thread32" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 33 */}
+              <path
+                id="thread33"
+                d="M-100 720 Q160 730 295 690 Q430 650 570 670 Q710 690 850 630 Q990 570 1200 340"
+                stroke="url(#threadFade3)"
+                strokeWidth="0.9"
+                fill="none"
+                opacity="0.6"
+              />
+              <circle r="2.1" fill="url(#neonPulse2)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="20.4s" repeatCount="indefinite">
+                  <mpath href="#thread33" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 34 */}
+              <path
+                id="thread34"
+                d="M-100 720 Q225 770 385 730 Q545 690 685 710 Q825 730 965 670 Q1105 610 1200 340"
+                stroke="url(#threadFade1)"
+                strokeWidth="1.1"
+                fill="none"
+                opacity="0.7"
+              />
+              <circle r="2.6" fill="url(#neonPulse3)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="19.6s" repeatCount="indefinite">
+                  <mpath href="#thread34" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 35 */}
+              <path
+                id="thread35"
+                d="M-100 720 Q170 740 305 700 Q440 660 580 680 Q720 700 860 640 Q1000 580 1200 340"
+                stroke="url(#threadFade2)"
+                strokeWidth="0.3"
+                fill="none"
+                opacity="0.4"
+              />
+              <circle r="0.8" fill="url(#neonPulse1)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="25.2s" repeatCount="indefinite">
+                  <mpath href="#thread35" />
+                </animateMotion>
+              </circle>
+
+              {/* Thread 36 */}
+              <path
+                id="thread36"
+                d="M-100 720 Q240 715 400 675 Q560 635 700 655 Q840 675 980 615 Q1120 555 1200 340"
+                stroke="url(#threadFade3)"
+                strokeWidth="1.5"
+                fill="none"
+                opacity="0.9"
+              />
+              <circle r="3.2" fill="url(#neonPulse2)" opacity="1" filter="url(#neonGlow)">
+                <animateMotion dur="16s" repeatCount="indefinite">
+                  <mpath href="#thread36" />
+                </animateMotion>
+              </circle>
+              </g>
+            </svg>
+           </div>
+         </div>
+
+        <style jsx>{`
+          @keyframes flow {
+            0%, 100% {
+              opacity: 0.3;
+              stroke-dasharray: 0 100;
+              stroke-dashoffset: 0;
+            }
+            50% {
+              opacity: 0.8;
+              stroke-dasharray: 50 50;
+              stroke-dashoffset: -25;
+            }
+          }
+
+          @keyframes pulse1 {
+            0%, 100% { opacity: 0.4; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+          }
+          @keyframes pulse2 {
+            0%, 100% { opacity: 0.3; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.1); }
+          }
+          @keyframes pulse3 {
+            0%, 100% { opacity: 0.5; transform: scale(0.7); }
+            50% { opacity: 1; transform: scale(1.3); }
+          }
+        `}</style>
+
+        {/* Header Navigation */}
+        <header 
+          className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+            scrolled ? "border-b border-white/20 backdrop-blur-md bg-[var(--tera-bg)]/80" : ""
+          }`}
+        >
+          <div className="w-full flex items-center justify-between px-4 sm:px-4 lg:px-6 h-16 lg:h-20">
+            <a 
+              href="#top" 
+              onClick={(e) => {
+                e.preventDefault()
+                window.scrollTo({ top: 0, behavior: "smooth" })
+              }}
+              className="text-white text-2xl sm:text-3xl tracking-tighter hover:text-white/80 transition-colors"
+            >
+              <LineShadowText className="italic font-light" shadowColor="white">
+                Tera
+              </LineShadowText>
+              -
+              <LineShadowText className="italic font-light" shadowColor="white">
+                X
+              </LineShadowText>
+            </a>
+
+            <nav className="hidden md:flex items-center space-x-1">
+              <a 
+                href="#capabilities" 
+                onClick={(e) => handleNavClick(e, "capabilities")}
+                className="px-4 py-2 text-white/80 hover:text-white transition-colors text-sm lg:text-base rounded-lg hover:bg-white/5"
+              >
+                Capabilities
+              </a>
+              <a 
+                href="#science-drivers" 
+                onClick={(e) => handleNavClick(e, "science-drivers")}
+                className="px-4 py-2 text-white/80 hover:text-white transition-colors text-sm lg:text-base rounded-lg hover:bg-white/5"
+              >
+                Science Drivers
+              </a>
+              <a 
+                href="#architecture" 
+                onClick={(e) => handleNavClick(e, "architecture")}
+                className="px-4 py-2 text-white/80 hover:text-white transition-colors text-sm lg:text-base rounded-lg hover:bg-white/5"
+              >
+                Architecture
+              </a>
+              <a 
+                href="#workforce-development" 
+                onClick={(e) => handleNavClick(e, "workforce-development")}
+                className="px-4 py-2 text-white/80 hover:text-white transition-colors text-sm lg:text-base rounded-lg hover:bg-white/5"
+              >
+                Workforce
+              </a>
+            </nav>
+
+            <div className="flex items-center gap-3">
+              <ShimmerButton className="hidden md:flex bg-orange-500 hover:bg-orange-600 text-white px-4 lg:px-6 py-2 rounded-xl text-sm lg:text-base font-medium shadow-lg">
+                Contact Us
+              </ShimmerButton>
+
+              {/* Mobile menu button */}
+              <button 
+                className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition-colors" 
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {mobileMenuOpen && (
+          <div className={`md:hidden fixed top-16 lg:top-20 left-0 right-0 backdrop-blur-md border-b border-white/20 z-40 shadow-xl transition-all duration-300 ${
+            scrolled 
+              ? "bg-transparent" 
+              : "bg-[var(--tera-bg)]/95"
+          }`}>
+            <nav className="flex flex-col px-6 py-6 space-y-1">
+              <a 
+                href="#capabilities" 
+                className="px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors rounded-lg" 
+                onClick={(e) => handleNavClick(e, "capabilities")}
+              >
+                Capabilities
+              </a>
+              <a 
+                href="#science-drivers" 
+                className="px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors rounded-lg" 
+                onClick={(e) => handleNavClick(e, "science-drivers")}
+              >
+                Science Drivers
+              </a>
+              <a 
+                href="#architecture" 
+                className="px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors rounded-lg" 
+                onClick={(e) => handleNavClick(e, "architecture")}
+              >
+                Architecture
+              </a>
+              <a 
+                href="#workforce-development" 
+                className="px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors rounded-lg" 
+                onClick={(e) => handleNavClick(e, "workforce-development")}
+              >
+                Workforce
+              </a>
+              <div className="pt-4 border-t border-white/20 mt-4">
+                <ShimmerButton className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-xl text-sm font-medium shadow-lg w-full">
+                  Contact Us
+                </ShimmerButton>
+              </div>
+            </nav>
+          </div>
+        )}
+
+        {/* Main Content */}
+        <main className="relative z-10 flex flex-col items-center min-h-screen max-w-[1200px] mx-auto px-6 lg:px-16 pt-32 sm:pt-36 lg:pt-40">
+          {/* Spotlight effect behind hero text */}
+          <div 
+            className="absolute pointer-events-none"
+            style={{
+              top: 'calc(20vh + 2rem)',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '120%',
+              height: '200px',
+              background: 'radial-gradient(ellipse 80% 100% at 50% 50%, rgba(255, 107, 0, 0.25) 0%, rgba(255, 107, 0, 0.12) 30%, transparent 70%)',
+              filter: 'blur(40px)',
+              zIndex: 1
+            }}
+          />
+          {/* Trial Badge - positioned below horizontal line, attached with no padding */}
+            <div 
+              className="absolute"
+              style={{
+                top: 'calc(20vh - 0.5rem)',
+                marginTop: '1px'
+              }}
+            >
+              <div className="inline-flex items-center bg-transparent backdrop-blur-sm border-x border-b border-white/20 px-3 sm:px-4 py-2">
+                <span className="text-white text-xs md:text-xs">Coming Soon.</span>
+              </div>
+            </div>
+            <div className="h-16 sm:h-20"></div>
+
+
+          <h1 className="text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-4 sm:mb-6 whitespace-nowrap text-center mt-4 sm:mt-6">
+            HiveLab: A Safe and Programmable Cloud Laboratory
+          </h1>
+
+          <p className="text-white/70 text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-10 max-w-2xl text-pretty leading-relaxed text-center">
+            Accelerated autonomous experimentation
+          </p>
+
+          <form 
+            className="flex flex-col sm:flex-row gap-3 w-full max-w-md mb-6 sm:mb-8"
+            onSubmit={(e) => {
+              e.preventDefault()
+              // Handle form submission
+            }}
+          >
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="flex-1 bg-white/5 backdrop-blur-sm border border-white/20 rounded-lg px-4 sm:px-6 py-2.5 sm:py-3 text-white placeholder:text-white/40 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/30 transition-all duration-300"
+              required
+            />
+            <button
+              type="submit"
+              className="group relative bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base font-semibold flex items-center justify-center gap-2 backdrop-blur-sm border border-orange-400/30 shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 whitespace-nowrap"
+            >
+              Join the waiting list
+              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 group-hover:-rotate-12 transition-transform duration-300" />
+              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </button>
+          </form>
+        </main>
+      </div>
+
+      {/* Multi-Domain Section */}
+      <section id="science-drivers" className="relative z-10 py-0 scroll-mt-20 section-connector">
+        <div className="section-connector-line left-1"></div>
+        <div className="section-connector-line right-1"></div>
+        <div className="max-w-[1200px] mx-auto px-6 lg:px-16">
+          <div className="border-t border-b border-white/20 p-8 lg:p-12">
+          <div className="max-w-3xl mb-16 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 lg:p-8">
+            <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-8">
+              Multi-Domain Science Drivers
+            </h2>
+            <p className="text-white/70 text-lg leading-relaxed">
+              HiveLab is explicitly multi-domain. It is not a narrowly scoped test stand, but rather a programmable environment where three science drivers intersect.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Science Driver 1 */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+                <Zap className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
+              </div>
+              <h3 className="text-xl font-semibold text-white uppercase tracking-tight mb-4">
+                Semiconductor & Photonic Reliability
+              </h3>
+              <p className="text-white/70 leading-relaxed">
+                Thermal and electrical reliability in semiconductor and photonic devices.
+              </p>
+            </div>
+
+            {/* Science Driver 2 */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+                <Microscope className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
+              </div>
+              <h3 className="text-xl font-semibold text-white uppercase tracking-tight mb-4">
+                Biological Systems
+              </h3>
+              <p className="text-white/70 leading-relaxed">
+                Microenvironmental control and functional readouts in biological systems.
+              </p>
+            </div>
+
+            {/* Science Driver 3 */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+                <Layers className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
+              </div>
+              <h3 className="text-xl font-semibold text-white uppercase tracking-tight mb-4">
+                Soft Actuators & Materials
+              </h3>
+              <p className="text-white/70 leading-relaxed">
+                Nonlinear behavior and failure envelopes in soft actuators and compliant materials.
+              </p>
+            </div>
+          </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Network Visualization Section */}
+      <section className="relative z-10 py-24 lg:py-32 bg-[var(--tera-bg)] section-connector">
+        <div className="section-connector-line left-1"></div>
+        <div className="section-connector-line right-1"></div>
+        {/* Horizontal separator line - connects to vertical lines */}
+        <div 
+          className="absolute pointer-events-none"
+          style={{ 
+            height: '1px', 
+            background: 'rgba(255, 255, 255, 0.2)',
+            left: 'max(1.5rem, calc((100% - 1200px) / 2))',
+            right: 'max(1.5rem, calc((100% - 1200px) / 2))',
+            top: 0,
+            zIndex: 21
+          }}
+        ></div>
+        <div className="max-w-[1200px] mx-auto px-6 lg:px-16">
+          {/* Header Text */}
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-6">
+              Deploy once, deliver everywhere
+            </h2>
+            <p className="text-white/70 text-lg lg:text-xl max-w-2xl mx-auto mb-8">
+              When you push code to HiveLab, we make it instantly available across the globe.
+            </p>
+            
+            {/* Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <ShimmerButton className="bg-white/5 hover:bg-white/10 text-white px-6 py-3 rounded-xl font-medium border border-white/20">
+                More about Infrastructure
+              </ShimmerButton>
+              <button className="bg-white/5 backdrop-blur-sm border border-white/20 text-white px-6 py-3 rounded-xl font-medium hover:bg-white/10 transition-all duration-300">
+                Learn about Enterprise
+              </button>
+            </div>
+          </div>
+
+          {/* Network Visualization */}
+          <NetworkVisualization />
+        </div>
+      </section>
+
+      {/* Layered Architecture Section */}
+      <section id="architecture" className="relative z-10 py-0 bg-black scroll-mt-20 section-connector">
+        <div className="section-connector-line left-1"></div>
+        <div className="section-connector-line right-1"></div>
+        <div className="max-w-[1200px] mx-auto px-6 lg:px-16">
+          <div className="border-t border-b border-white/20 p-8 lg:p-12">
+          <div className="max-w-3xl mb-16">
+            <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-8">
+              Layered Node Architecture
+            </h2>
+            <p className="text-white/70 text-lg leading-relaxed">
+              The Node is layered. All three layers are exposed to users through a cloud portal that supports live observation and human in the loop (HITL) verification and intervention.
+            </p>
+          </div>
+
+          <div className="flex flex-col lg:flex-row gap-12">
+            <div className="lg:w-1/2">
+              <div className="flex flex-col gap-4">
+                <button
+                  onClick={() => setActiveLayer("physical")}
+                  className={`text-left group px-4 py-3 rounded-lg transition-all duration-300 border ${
+                    activeLayer === "physical"
+                      ? "bg-orange-500/10 border-orange-500/30"
+                      : "hover:bg-white/5 border-white/20"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      activeLayer === "physical"
+                        ? "bg-orange-500/20"
+                        : "bg-white/5"
+                    }`}>
+                      <Cpu className={`w-5 h-5 ${
+                        activeLayer === "physical"
+                          ? "text-orange-400"
+                          : "text-white/60"
+                      }`} strokeWidth={1.5} />
+                    </div>
+                    <h3 className={`text-xl font-semibold ${
+                      activeLayer === "physical"
+                        ? "text-white"
+                        : "text-white/70 group-hover:text-white"
+                    }`}>
+                      Physical Layer
+                    </h3>
+                  </div>
+                  <p className={`text-sm leading-relaxed ${
+                    activeLayer === "physical"
+                      ? "text-white/80"
+                      : "text-white/60"
+                  }`}>
+                    Semiconductor instruments, biological assay and imaging systems, microfluidic controllers, soft robotic test rigs, all connected to the cloud using FPGA-enabled edge devices.
+                  </p>
+                </button>
+
+                <button
+                  onClick={() => setActiveLayer("orchestration")}
+                  className={`text-left group px-4 py-3 rounded-lg transition-all duration-300 border ${
+                    activeLayer === "orchestration"
+                      ? "bg-orange-500/10 border-orange-500/30"
+                      : "hover:bg-white/5 border-white/20"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      activeLayer === "orchestration"
+                        ? "bg-orange-500/20"
+                        : "bg-white/5"
+                    }`}>
+                      <Cloud className={`w-5 h-5 ${
+                        activeLayer === "orchestration"
+                          ? "text-orange-400"
+                          : "text-white/60"
+                      }`} strokeWidth={1.5} />
+                    </div>
+                    <h3 className={`text-xl font-semibold ${
+                      activeLayer === "orchestration"
+                        ? "text-white"
+                        : "text-white/70 group-hover:text-white"
+                    }`}>
+                      Orchestration Layer
+                    </h3>
+                  </div>
+                  <p className={`text-sm leading-relaxed ${
+                    activeLayer === "orchestration"
+                      ? "text-white/80"
+                      : "text-white/60"
+                  }`}>
+                    Cloud-hosted orchestration interprets user workflows, schedules instruments, enforces calibration routines, and coordinates metadata.
+                  </p>
+                </button>
+
+                <button
+                  onClick={() => setActiveLayer("analysis")}
+                  className={`text-left group px-4 py-3 rounded-lg transition-all duration-300 border ${
+                    activeLayer === "analysis"
+                      ? "bg-orange-500/10 border-orange-500/30"
+                      : "hover:bg-white/5 border-white/20"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      activeLayer === "analysis"
+                        ? "bg-orange-500/20"
+                        : "bg-white/5"
+                    }`}>
+                      <Brain className={`w-5 h-5 ${
+                        activeLayer === "analysis"
+                          ? "text-orange-400"
+                          : "text-white/60"
+                      }`} strokeWidth={1.5} />
+                    </div>
+                    <h3 className={`text-xl font-semibold ${
+                      activeLayer === "analysis"
+                        ? "text-white"
+                        : "text-white/70 group-hover:text-white"
+                    }`}>
+                      Analysis & Digital Twin Layer
+                    </h3>
+                  </div>
+                  <p className={`text-sm leading-relaxed ${
+                    activeLayer === "analysis"
+                      ? "text-white/80"
+                      : "text-white/60"
+                  }`}>
+                    Models live, comparisons are made, and AI systems operate under strict guardrails. Digital twins provide real-time insights and safety envelopes.
+                  </p>
+                </button>
+              </div>
+            </div>
+
+            <div className="lg:w-1/2 relative rounded-2xl overflow-hidden bg-gradient-to-br from-orange-500/10 via-orange-600/5 to-orange-500/10 border border-white/20 aspect-video">
+              <div className="absolute inset-0 flex items-center justify-center">
+                {/* Physical Layer Visual */}
+                <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
+                  activeLayer === "physical" ? "opacity-100" : "opacity-0"
+                }`}>
+                  <div className="text-center p-8">
+                    <Cpu className="w-16 h-16 text-orange-400 mx-auto mb-4" strokeWidth={1.5} />
+                    <p className="text-white/40 text-sm">Physical Layer Visualization</p>
+                    <p className="text-white/30 text-xs mt-2">FPGA-enabled edge devices connecting instruments</p>
+                  </div>
+                </div>
+
+                {/* Orchestration Layer Visual */}
+                <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
+                  activeLayer === "orchestration" ? "opacity-100" : "opacity-0"
+                }`}>
+                  <div className="text-center p-8">
+                    <Cloud className="w-16 h-16 text-orange-400 mx-auto mb-4" strokeWidth={1.5} />
+                    <p className="text-white/40 text-sm">Orchestration Layer Visualization</p>
+                    <p className="text-white/30 text-xs mt-2">Cloud-hosted workflow scheduling and metadata coordination</p>
+                  </div>
+                </div>
+
+                {/* Analysis Layer Visual */}
+                <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
+                  activeLayer === "analysis" ? "opacity-100" : "opacity-0"
+                }`}>
+                  <div className="text-center p-8">
+                    <Brain className="w-16 h-16 text-orange-400 mx-auto mb-4" strokeWidth={1.5} />
+                    <p className="text-white/40 text-sm">Analysis & Digital Twin Visualization</p>
+                    <p className="text-white/30 text-xs mt-2">AI systems with guardrails and digital twin models</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Node Capabilities Section */}
+      <section id="node-capabilities" className="relative z-10 py-0 scroll-mt-20 section-connector">
+        <div className="section-connector-line left-1"></div>
+        <div className="section-connector-line right-1"></div>
+        <div className="max-w-[1200px] mx-auto px-6 lg:px-16">
+          <div className="border-t border-b border-white/20 p-8 lg:p-12">
+          <div className="max-w-3xl mb-16 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 lg:p-8">
+            <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-8">
+              Node Capabilities
+            </h2>
+            <p className="text-white/70 text-lg leading-relaxed mb-4">
+              HiveLab's experimental capabilities were selected to enable both breadth and depth across the three science drivers. Each capability is embedded within the broader architecture and relies on the same principles of reproducibility, model integration, adaptive control, and human oversight.
+            </p>
+            <p className="text-white/70 text-lg leading-relaxed">
+              The Node is not merely a collection of instruments. It is a coordinated environment in which each capability is engineered to perform reliably under autonomous workflows while preserving the flexibility to support conventional hands-on experimentation.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {/* Capability 1: Semiconductor and Materials */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+                <CircuitBoard className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
+              </div>
+              <h3 className="text-xl font-semibold text-white uppercase tracking-tight mb-4">
+                Semiconductor & Materials
+              </h3>
+              <p className="text-white/70 leading-relaxed text-sm mb-4">
+                High fidelity thermal, electrical, and optical interrogation of semiconductor devices and materials. Microsanj thermal imagers provide submicron resolution temperature mapping, enabling detailed visualization of self heating, hot spot formation, and thermal diffusion.
+              </p>
+              <div className="space-y-2">
+                <div className="flex items-start gap-2 text-white/60 text-xs">
+                  <Zap className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <span>Fast electrical characterization with programmable waveforms</span>
+                </div>
+                <div className="flex items-start gap-2 text-white/60 text-xs">
+                  <Search className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <span>Multiple sensing modalities for comprehensive datasets</span>
+                </div>
+                <div className="flex items-start gap-2 text-white/60 text-xs">
+                  <Repeat className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <span>Rapid cycling of stress and recovery conditions</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Capability 2: Biotechnology */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+                <Beaker className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
+              </div>
+              <h3 className="text-xl font-semibold text-white uppercase tracking-tight mb-4">
+                Biotechnology & Microenvironmental Control
+              </h3>
+              <p className="text-white/70 leading-relaxed text-sm mb-4">
+                Precise mechanical, fluidic, thermal, chemical, and optical control systems for biological experiments. Supports controlled environmental chambers, microfluidic devices, automated dispensers, and imaging systems for time-resolved observation of cellular responses.
+              </p>
+              <div className="space-y-2">
+                <div className="flex items-start gap-2 text-white/60 text-xs">
+                  <Microscope className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <span>Automated imaging & biochemical detection systems</span>
+                </div>
+                <div className="flex items-start gap-2 text-white/60 text-xs">
+                  <FlaskConical className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <span>Fixed or adaptive protocols for long-term assays</span>
+                </div>
+                <div className="flex items-start gap-2 text-white/60 text-xs">
+                  <CheckCircle2 className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <span>Integrated calibration routines for reproducibility</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Capability 3: Soft Materials */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+              <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+                <Gauge className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
+              </div>
+              <h3 className="text-xl font-semibold text-white uppercase tracking-tight mb-4">
+                Soft Materials & Robotics
+              </h3>
+              <p className="text-white/70 leading-relaxed text-sm mb-4">
+                Force sensors, optical trackers, mechanical stages, and high speed cameras to capture deformation, elasticity, damping, and fatigue in soft actuators and compliant materials. Integrated robotic fixtures apply controlled displacements, twisting motions, or cyclic loads.
+              </p>
+              <div className="space-y-2">
+                <div className="flex items-start gap-2 text-white/60 text-xs">
+                  <Layers className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <span>Systematic parameter sweeps across input patterns</span>
+                </div>
+                <div className="flex items-start gap-2 text-white/60 text-xs">
+                  <Database className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <span>Datasets for mechanical digital twins validation</span>
+                </div>
+                <div className="flex items-start gap-2 text-white/60 text-xs">
+                  <Brain className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <span>Machine learning models for actuation regimes</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Capability 4: FPGA Enhanced */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1 md:col-span-2 lg:col-span-1">
+              <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+                <Network className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
+              </div>
+              <h3 className="text-xl font-semibold text-white uppercase tracking-tight mb-4">
+                FPGA Enhanced Data Pathways
+              </h3>
+              <p className="text-white/70 leading-relaxed text-sm mb-4">
+                FPGA enhanced edge devices preprocess sensor streams before reaching the cloud. These devices filter signals, extract features, detect events, and reduce bandwidth consumption while preserving fidelity. FPGA kernels can be tuned directly through the cloud interface.
+              </p>
+              <div className="space-y-2">
+                <div className="flex items-start gap-2 text-white/60 text-xs">
+                  <Cpu className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <span>Computationally efficient data pipeline</span>
+                </div>
+                <div className="flex items-start gap-2 text-white/60 text-xs">
+                  <Zap className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <span>Accelerates model inference and anomaly detection</span>
+                </div>
+                <div className="flex items-start gap-2 text-white/60 text-xs">
+                  <Cloud className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  <span>Enables workflows limited by network latency</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Capability 5: Autonomous Execution */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1 md:col-span-2 lg:col-span-2">
+              <div className="flex items-start gap-6">
+                <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center flex-shrink-0">
+                  <PlayCircle className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-white uppercase tracking-tight mb-4">
+                    Autonomous & Semi-Autonomous Experiment Execution
+                  </h3>
+                  <p className="text-white/70 leading-relaxed text-sm mb-6">
+                    A defining feature of HiveLab is the ability to execute workflows autonomously while maintaining clear human oversight. Autonomous execution includes routine calibration, long term stability tests, high throughput scans, and adaptive experimental design. Semi autonomous execution allows humans to approve decisions, modify parameters, or pause an experiment at critical moments.
+                  </p>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="bg-white/5 rounded-lg p-4 border border-white/20">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Repeat className="w-4 h-4 text-orange-400" strokeWidth={1.5} />
+                        <span className="text-white text-sm font-semibold">Autonomous</span>
+                      </div>
+                      <p className="text-white/60 text-xs leading-relaxed">
+                        Routine calibration, stability tests, high throughput scans, and adaptive experimental design
+                      </p>
+                    </div>
+                    <div className="bg-white/5 rounded-lg p-4 border border-white/20">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Shield className="w-4 h-4 text-orange-400" strokeWidth={1.5} />
+                        <span className="text-white text-sm font-semibold">Semi-Autonomous</span>
+                      </div>
+                      <p className="text-white/60 text-xs leading-relaxed">
+                        Human approval, parameter modification, and pause capabilities at critical moments
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Workforce Development Section */}
+      <section id="workforce-development" className="relative z-10 py-0 scroll-mt-20 section-connector">
+        <div className="section-connector-line left-1"></div>
+        <div className="section-connector-line right-1"></div>
+        <div className="max-w-[1200px] mx-auto px-6 lg:px-16">
+          <div className="border-t border-b border-white/20 p-8 lg:p-12">
+            <div className="max-w-3xl mb-16 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 lg:p-8">
+              <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-8">
+                Workforce Development
+              </h2>
+              <p className="text-white/70 text-lg leading-relaxed">
+                Workforce development is a defining strength of HiveLab because it integrates professional, academic, and technical training across multiple institutions.
+              </p>
+            </div>
+
+            <div className="flex flex-col lg:flex-row gap-12">
+              <div className="lg:w-1/2">
+                <div className="flex flex-col gap-4">
+                  <button
+                    onClick={() => setActiveWorkforceTab("technician")}
+                    className={`text-left group px-4 py-3 rounded-lg transition-all duration-300 border ${
+                      activeWorkforceTab === "technician"
+                        ? "bg-orange-500/10 border-orange-500/30"
+                        : "hover:bg-white/5 border-white/20"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                        activeWorkforceTab === "technician"
+                          ? "bg-orange-500/20"
+                          : "bg-white/5"
+                      }`}>
+                        <Users className={`w-5 h-5 ${
+                          activeWorkforceTab === "technician"
+                            ? "text-orange-400"
+                            : "text-white/60"
+                        }`} strokeWidth={1.5} />
+                      </div>
+                      <h3 className={`text-xl font-semibold ${
+                        activeWorkforceTab === "technician"
+                          ? "text-white"
+                          : "text-white/70 group-hover:text-white"
+                      }`}>
+                        Technician Pipeline
+                      </h3>
+                    </div>
+                    <p className={`text-sm leading-relaxed ${
+                      activeWorkforceTab === "technician"
+                        ? "text-white/80"
+                        : "text-white/60"
+                    }`}>
+                      Through Madison College and MOSAIC
+                    </p>
+                  </button>
+
+                  <button
+                    onClick={() => setActiveWorkforceTab("undergraduate")}
+                    className={`text-left group px-4 py-3 rounded-lg transition-all duration-300 border ${
+                      activeWorkforceTab === "undergraduate"
+                        ? "bg-orange-500/10 border-orange-500/30"
+                        : "hover:bg-white/5 border-white/20"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                        activeWorkforceTab === "undergraduate"
+                          ? "bg-orange-500/20"
+                          : "bg-white/5"
+                      }`}>
+                        <BookOpen className={`w-5 h-5 ${
+                          activeWorkforceTab === "undergraduate"
+                            ? "text-orange-400"
+                            : "text-white/60"
+                        }`} strokeWidth={1.5} />
+                      </div>
+                      <h3 className={`text-xl font-semibold ${
+                        activeWorkforceTab === "undergraduate"
+                          ? "text-white"
+                          : "text-white/70 group-hover:text-white"
+                      }`}>
+                        Undergraduate Education
+                      </h3>
+                    </div>
+                    <p className={`text-sm leading-relaxed ${
+                      activeWorkforceTab === "undergraduate"
+                        ? "text-white/80"
+                        : "text-white/60"
+                    }`}>
+                      Workflow design, data interpretation, and digital twins
+                    </p>
+                  </button>
+
+                  <button
+                    onClick={() => setActiveWorkforceTab("graduate")}
+                    className={`text-left group px-4 py-3 rounded-lg transition-all duration-300 border ${
+                      activeWorkforceTab === "graduate"
+                        ? "bg-orange-500/10 border-orange-500/30"
+                        : "hover:bg-white/5 border-white/20"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                        activeWorkforceTab === "graduate"
+                          ? "bg-orange-500/20"
+                          : "bg-white/5"
+                      }`}>
+                        <GraduationCap className={`w-5 h-5 ${
+                          activeWorkforceTab === "graduate"
+                            ? "text-orange-400"
+                            : "text-white/60"
+                        }`} strokeWidth={1.5} />
+                      </div>
+                      <h3 className={`text-xl font-semibold ${
+                        activeWorkforceTab === "graduate"
+                          ? "text-white"
+                          : "text-white/70 group-hover:text-white"
+                      }`}>
+                        Graduate Training
+                      </h3>
+                    </div>
+                    <p className={`text-sm leading-relaxed ${
+                      activeWorkforceTab === "graduate"
+                        ? "text-white/80"
+                        : "text-white/60"
+                    }`}>
+                      Cross-institutional collaboration and high-throughput studies
+                    </p>
+                  </button>
+
+                  <button
+                    onClick={() => setActiveWorkforceTab("professional")}
+                    className={`text-left group px-4 py-3 rounded-lg transition-all duration-300 border ${
+                      activeWorkforceTab === "professional"
+                        ? "bg-orange-500/10 border-orange-500/30"
+                        : "hover:bg-white/5 border-white/20"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                        activeWorkforceTab === "professional"
+                          ? "bg-orange-500/20"
+                          : "bg-white/5"
+                      }`}>
+                        <Briefcase className={`w-5 h-5 ${
+                          activeWorkforceTab === "professional"
+                            ? "text-orange-400"
+                            : "text-white/60"
+                        }`} strokeWidth={1.5} />
+                      </div>
+                      <h3 className={`text-xl font-semibold ${
+                        activeWorkforceTab === "professional"
+                          ? "text-white"
+                          : "text-white/70 group-hover:text-white"
+                      }`}>
+                        Professional Development
+                      </h3>
+                    </div>
+                    <p className={`text-sm leading-relaxed ${
+                      activeWorkforceTab === "professional"
+                        ? "text-white/80"
+                        : "text-white/60"
+                    }`}>
+                      Workshops for scientists and engineers
+                    </p>
+                  </button>
+                </div>
+              </div>
+
+              <div className="lg:w-1/2">
+                <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 lg:p-10 min-h-[400px] relative">
+                  {/* Technician Pipeline Content */}
+                  <div className={`transition-all duration-300 ${
+                    activeWorkforceTab === "technician" 
+                      ? "opacity-100 relative z-10" 
+                      : "opacity-0 absolute inset-0 z-0 pointer-events-none p-8 lg:p-10"
+                  }`}>
+                    <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+                      <Users className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
+                    </div>
+                    <h3 className="text-2xl font-semibold text-white uppercase tracking-tight mb-4">
+                      Technician Pipeline through Madison College and MOSAIC
+                    </h3>
+                    <p className="text-white/70 leading-relaxed mb-6">
+                      HiveLab is housed in Element Labs, which also houses the MOSAIC program. Students from Madison College learn on the same platforms that support national research workflows. This ensures that technician training aligns with actual industry practice, including automated test systems, microelectronics handling, biological workflows, and robotics.
+                    </p>
+                    <div className="flex flex-wrap gap-4">
+                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                        <Cpu className="w-4 h-4" strokeWidth={1.5} />
+                        <span>Automated test systems</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                        <CircuitBoard className="w-4 h-4" strokeWidth={1.5} />
+                        <span>Microelectronics handling</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                        <Beaker className="w-4 h-4" strokeWidth={1.5} />
+                        <span>Biological workflows</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                        <Gauge className="w-4 h-4" strokeWidth={1.5} />
+                        <span>Robotics</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Undergraduate Education Content */}
+                  <div className={`transition-all duration-300 ${
+                    activeWorkforceTab === "undergraduate" 
+                      ? "opacity-100 relative z-10" 
+                      : "opacity-0 absolute inset-0 z-0 pointer-events-none p-8 lg:p-10"
+                  }`}>
+                    <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+                      <BookOpen className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
+                    </div>
+                    <h3 className="text-2xl font-semibold text-white uppercase tracking-tight mb-4">
+                      Undergraduate Education
+                    </h3>
+                    <p className="text-white/70 leading-relaxed mb-6">
+                      HiveLab supports undergraduate modules on workflow design, data interpretation, digital twins, hardware interfacing, and scientific reproducibility. Because the Node is accessible through the cloud, undergraduates can operate instruments safely and remotely while learning about automation and modeling.
+                    </p>
+                    <div className="flex flex-wrap gap-4">
+                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                        <Repeat className="w-4 h-4" strokeWidth={1.5} />
+                        <span>Workflow design</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                        <Database className="w-4 h-4" strokeWidth={1.5} />
+                        <span>Data interpretation</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                        <Layers className="w-4 h-4" strokeWidth={1.5} />
+                        <span>Digital twins</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                        <Cpu className="w-4 h-4" strokeWidth={1.5} />
+                        <span>Hardware interfacing</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                        <CheckCircle2 className="w-4 h-4" strokeWidth={1.5} />
+                        <span>Scientific reproducibility</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Graduate Training Content */}
+                  <div className={`transition-all duration-300 ${
+                    activeWorkforceTab === "graduate" 
+                      ? "opacity-100 relative z-10" 
+                      : "opacity-0 absolute inset-0 z-0 pointer-events-none p-8 lg:p-10"
+                  }`}>
+                    <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+                      <GraduationCap className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
+                    </div>
+                    <h3 className="text-2xl font-semibold text-white uppercase tracking-tight mb-4">
+                      Graduate Training and Cross-Institutional Collaboration
+                    </h3>
+                    <p className="text-white/70 leading-relaxed mb-6">
+                      Graduate students from UW-Madison, UConn, and partner institutions will use HiveLab to conduct high throughput studies and perform model integrated experiments. This training prepares them to lead autonomous laboratory environments in industry or academia.
+                    </p>
+                    <div className="flex flex-wrap gap-4">
+                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                        <Zap className="w-4 h-4" strokeWidth={1.5} />
+                        <span>High throughput studies</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                        <Brain className="w-4 h-4" strokeWidth={1.5} />
+                        <span>Model integrated experiments</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                        <Network className="w-4 h-4" strokeWidth={1.5} />
+                        <span>Cross-institutional collaboration</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                        <PlayCircle className="w-4 h-4" strokeWidth={1.5} />
+                        <span>Autonomous laboratory leadership</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Professional Development Content */}
+                  <div className={`transition-all duration-300 ${
+                    activeWorkforceTab === "professional" 
+                      ? "opacity-100 relative z-10" 
+                      : "opacity-0 absolute inset-0 z-0 pointer-events-none p-8 lg:p-10"
+                  }`}>
+                    <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-6">
+                      <Briefcase className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
+                    </div>
+                    <h3 className="text-2xl font-semibold text-white uppercase tracking-tight mb-4">
+                      Professional Development for Scientists and Engineers
+                    </h3>
+                    <p className="text-white/70 leading-relaxed mb-6">
+                      HiveLab hosts workshops on AI governance, metadata design, scientific communication, and reproducible automation. These learning opportunities are aligned with the national need for a workforce capable of building and operating trustworthy autonomous laboratories.
+                    </p>
+                    <div className="flex flex-wrap gap-4">
+                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                        <Brain className="w-4 h-4" strokeWidth={1.5} />
+                        <span>AI governance</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                        <Database className="w-4 h-4" strokeWidth={1.5} />
+                        <span>Metadata design</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                        <Search className="w-4 h-4" strokeWidth={1.5} />
+                        <span>Scientific communication</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                        <Repeat className="w-4 h-4" strokeWidth={1.5} />
+                        <span>Reproducible automation</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                        <Shield className="w-4 h-4" strokeWidth={1.5} />
+                        <span>Trustworthy autonomous labs</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      {/* Capabilities Section */}
+      <section id="capabilities" className="relative z-10 py-24 lg:py-32 scroll-mt-20 section-connector">
+        <div className="section-connector-line left-1"></div>
+        <div className="section-connector-line right-1"></div>
+        <div className="max-w-[1200px] mx-auto px-6 lg:px-16 py-8 lg:py-12">
+            <div className="max-w-3xl mb-16 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 lg:p-8">
+              <h2 className="text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight mb-8">
+                Accessible to Every Researcher
+              </h2>
+              <p className="text-white/70 text-lg leading-relaxed">
+                Any qualified researcher, regardless of institution type, can log into HiveLab, build a workflow around real, calibrated instruments, run it under a digital twin informed safety envelope, and walk away with high-quality, well-documented data that can be replayed, audited, and reproduced.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 mt-8">
+              {/* Use Case 1: Parameter Exploration */}
+              <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+                <h3 className="text-2xl font-semibold text-white uppercase tracking-tight mb-4">
+                  Explore Parameter Spaces
+                </h3>
+                <div className="w-full h-[300px] bg-gradient-to-br from-orange-500/10 via-orange-600/5 to-orange-500/10 rounded-xl flex items-center justify-center text-white/40 text-sm mb-6 border border-white/20">
+                  Parameter Space Visualization
+                </div>
+                <p className="text-white/70 leading-relaxed mb-6">
+                  For some users, this may mean exploring parameter spaces that would take months, if ever, to scan manually. HiveLab enables rapid iteration across vast experimental landscapes, accelerating discovery through intelligent automation.
+                </p>
+                <div className="flex flex-wrap gap-4 mb-6">
+                  <div className="flex items-center gap-2 text-white/60 text-sm">
+                    <FlaskConical className="w-4 h-4" strokeWidth={1.5} />
+                    <span>Automated workflows</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-white/60 text-sm">
+                    <Database className="w-4 h-4" strokeWidth={1.5} />
+                    <span>High-throughput</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-white/60 text-sm">
+                    <Repeat className="w-4 h-4" strokeWidth={1.5} />
+                    <span>Reproducible</span>
+                  </div>
+                </div>
+                <a href="#" className="inline-flex items-center justify-center px-5 h-9 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold tracking-wider uppercase rounded-full hover:from-orange-600 hover:to-orange-700 transition-all hover:-translate-y-0.5">
+                  Learn More
+                </a>
+              </div>
+
+              {/* Use Case 2: Critical Validation */}
+              <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+                <h3 className="text-2xl font-semibold text-white uppercase tracking-tight mb-4">
+                  Validate Critical Experiments
+                </h3>
+                <div className="w-full h-[300px] bg-gradient-to-br from-orange-500/10 via-orange-600/5 to-orange-500/10 rounded-xl flex items-center justify-center text-white/40 text-sm mb-6 border border-white/20">
+                  Safety Envelope Visualization
+                </div>
+                <p className="text-white/70 leading-relaxed mb-6">
+                  For others, it may mean validating a single critical experiment under conditions that must not be misconfigured, such as a thermal reliability test on a new power device or a live cell assay with precious biological material.
+                </p>
+                <div className="flex flex-wrap gap-4 mb-6">
+                  <div className="flex items-center gap-2 text-white/60 text-sm">
+                    <Shield className="w-4 h-4" strokeWidth={1.5} />
+                    <span>Safety envelope</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-white/60 text-sm">
+                    <CheckCircle2 className="w-4 h-4" strokeWidth={1.5} />
+                    <span>Validated configs</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-white/60 text-sm">
+                    <Database className="w-4 h-4" strokeWidth={1.5} />
+                    <span>Audit trail</span>
+                  </div>
+                </div>
+                <a href="#" className="inline-flex items-center justify-center px-5 h-9 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold tracking-wider uppercase rounded-full hover:from-orange-600 hover:to-orange-700 transition-all hover:-translate-y-0.5">
+                  Learn More
+                </a>
+              </div>
+            </div>
+        </div>
+      </section>
+    </div>
+  )
+}
