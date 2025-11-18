@@ -1410,12 +1410,12 @@ export default function HomePage() {
             },
             {
               name: "Redwood EDA",
-              src: "/logo/redwood_eda_logo.png",
+              src: "/logo/redwood_eda_logo-removebg-preview.png",
               href: "https://www.redwoodeda.com/",
             },
             {
               name: "Liquid Instruments",
-              src: "/logo/liquid_inst_logo.png",
+              src: "/logo/liquid_inst_logo-removebg-preview.png",
               href: "https://liquidinstruments.com/",
             },
             {
@@ -1430,7 +1430,7 @@ export default function HomePage() {
             },
             {
               name: "Microsanj",
-              src: "/logo/microsanj_logo.png",
+              src: "/logo/microsanj_logo-removebg-preview.png",
               href: "https://microsanj.com/",
             },
             ].map((logo) => (
