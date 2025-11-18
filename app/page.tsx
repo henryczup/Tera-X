@@ -1232,6 +1232,7 @@ export default function HomePage() {
             </nav>
 
             <div className="flex items-center gap-3">
+              <ThemeToggle />
               <ShimmerButton className="hidden md:flex bg-orange-500 hover:bg-orange-600 text-white dark:text-white px-4 lg:px-6 py-2  text-sm lg:text-base font-medium shadow-lg">
                 Contact Us
               </ShimmerButton>
