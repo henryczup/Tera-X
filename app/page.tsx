@@ -1601,10 +1601,18 @@ export default function HomePage() {
                 <span className="text-foreground text-xs md:text-xs">Coming Soon.</span>
               </div>
             </div>
-            <div className="h-20 sm:h-24 md:h-28 lg:h-32"></div>
+            <div className="h-12 sm:h-16 md:h-20 lg:h-24"></div>
 
 
-          <h1 className="text-foreground text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight mb-4 sm:mb-6 text-center">
+          <h1 
+            className="text-foreground text-center"
+            style={{
+              fontSize: '36px',
+              fontWeight: 700,
+              lineHeight: '45px',
+              margin: '24px 0px'
+            }}
+          >
            AI Accelerated Experimentation
           </h1>
 
@@ -1751,18 +1759,6 @@ export default function HomePage() {
       <section className="relative z-10 py-12 sm:py-16 md:py-20 lg:py-24 xl:py-32 bg-[var(--tera-bg)] section-connector">
         <div className="section-connector-line left-1"></div>
         <div className="section-connector-line right-1"></div>
-        {/* Horizontal separator line - connects to vertical lines */}
-        <div 
-          className="absolute pointer-events-none"
-          style={{ 
-            height: '1px', 
-            background: 'var(--border)',
-            left: 'max(1.5rem, calc((100% - 75rem) / 2))',
-            right: 'max(1.5rem, calc((100% - 75rem) / 2))',
-            top: 0,
-            zIndex: 21
-          }}
-        ></div>
         <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-6 sm:px-6 md:px-8 lg:px-12 xl:px-16">
           {/* Header Text */}
           <div className="text-center mb-16">
@@ -1863,18 +1859,6 @@ export default function HomePage() {
       <section id="architecture" className="relative z-10 py-0 scroll-mt-20 section-connector">
         <div className="section-connector-line left-1"></div>
         <div className="section-connector-line right-1"></div>
-        {/* Horizontal separator line - connects to vertical lines */}
-        <div 
-          className="absolute pointer-events-none"
-          style={{ 
-            height: '1px', 
-            background: 'var(--border)',
-            left: 'max(1.5rem, calc((100% - 75rem) / 2))',
-            right: 'max(1.5rem, calc((100% - 75rem) / 2))',
-            top: 0,
-            zIndex: 21
-          }}
-        ></div>
         <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
           <div className="border-b border-border p-8 lg:p-12">
           <div className="mb-16 bg-accent/50 backdrop-blur-sm border border-border/50  p-6 lg:p-8">
