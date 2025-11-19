@@ -1622,7 +1622,7 @@ export default function HomePage() {
           </p>
 
           <form 
-            className="flex flex-col sm:flex-row gap-3 w-full max-w-md mb-6 sm:mb-8"
+            className="flex flex-col sm:flex-row gap-3 w-full max-w-md mb-6 sm:mb-8 mx-auto"
             style={{ maxWidth: 'min(100%, 28rem)' }}
             onSubmit={(e) => {
               e.preventDefault()
@@ -1762,40 +1762,40 @@ export default function HomePage() {
         <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-6 sm:px-6 md:px-8 lg:px-12 xl:px-16">
           {/* Header Text */}
           <div className="text-center mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-foreground leading-tight tracking-tight mb-6">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-normal text-foreground leading-tight tracking-tight mb-6">
               Utilize A Network of Nodes To Scale Your Experiments
             </h2>
             <p className="text-muted-foreground text-lg lg:text-xl max-w-2xl mx-auto mb-8">
               When you push code to HiveLab, we make it instantly available across our network of nodes.
             </p>
-            
-            {/* Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 w-full max-w-full overflow-hidden">
-              <ShimmerButton 
-                background="var(--accent)" 
-                borderRadius="0" 
-                className="hover:bg-black/5 dark:hover:bg-white/10 text-foreground dark:text-white px-3 sm:px-6 py-3 min-h-[44px] sm:min-h-0 font-medium border border-border rounded-none shrink-0 text-xs sm:text-base whitespace-nowrap"
-                onClick={(e) => {
-                  e.preventDefault()
-                  document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })
-                }}
-              >
-                More about Infrastructure
-              </ShimmerButton>
-              <button 
-                className="bg-accent/50 backdrop-blur-sm border border-border text-foreground dark:text-white px-3 sm:px-6 py-3 min-h-[44px] sm:min-h-0 font-medium hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 shrink-0 text-xs sm:text-base whitespace-nowrap"
-                onClick={(e) => {
-                  e.preventDefault()
-                  document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })
-                }}
-              >
-                Learn about Enterprise
-              </button>
-            </div>
           </div>
 
           {/* Network Visualization */}
           <NetworkVisualization />
+
+          {/* Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 w-full max-w-full overflow-hidden">
+            <ShimmerButton 
+              background="var(--accent)" 
+              borderRadius="0" 
+              className="hover:bg-black/5 dark:hover:bg-white/10 text-foreground dark:text-white px-3 sm:px-6 py-3 min-h-[44px] sm:min-h-0 font-medium border border-border rounded-none shrink-0 text-xs sm:text-base whitespace-nowrap"
+              onClick={(e) => {
+                e.preventDefault()
+                document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })
+              }}
+            >
+              More about Infrastructure
+            </ShimmerButton>
+            <button 
+              className="bg-accent/50 backdrop-blur-sm border border-border text-foreground dark:text-white px-3 sm:px-6 py-3 min-h-[44px] sm:min-h-0 font-medium hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 shrink-0 text-xs sm:text-base whitespace-nowrap"
+              onClick={(e) => {
+                e.preventDefault()
+                document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })
+              }}
+            >
+              Learn about Enterprise
+            </button>
+          </div>
         </div>
       </section>
 
@@ -2454,7 +2454,7 @@ export default function HomePage() {
           <div className="section-connector-line left-1"></div>
           <div className="section-connector-line right-1"></div>
           <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-6 sm:px-6 md:px-8 lg:px-12 xl:px-16">
-            <div className=" py-10 lg:py-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+            <div className=" py-10 lg:py-14 flex flex-col md:flex-row items-start md:items-center justify-center gap-8">
               <div className="max-w-xl pl-4 sm:pl-0">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-foreground leading-tight tracking-tight mb-4">
                   Bring model-informed automation to your next experiment.
@@ -2464,7 +2464,7 @@ export default function HomePage() {
                 </p>
               </div>
               <form
-                className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto max-w-full overflow-hidden"
+                className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto max-w-md mx-auto md:mx-0"
                 onSubmit={(e) => {
                   e.preventDefault()
                   // Handle form submission
