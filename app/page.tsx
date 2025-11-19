@@ -6,29 +6,92 @@ import { Menu, FlaskConical, Shield, Database, Repeat, Search, CheckCircle2, Cpu
 import { LineShadowText } from "@/components/line-shadow-text"
 import { ShimmerButton } from "@/components/shimmer-button"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 import { gsap } from "gsap"
 
+// Globe configuration constants
+const GLOBE_CONFIG = {
+  viewBoxWidth: 800,
+  viewBoxHeight: 500,
+  get centerX() { return this.viewBoxWidth / 2 }, // 400
+  get centerY() { return this.viewBoxHeight / 2 }, // 250
+  radiusX: 300,
+  radiusY: 200,
+  numVertical: 13,
+  numHorizontal: 7,
+  get poleY() { return this.centerY - this.radiusY },
+  pathSegments: 20
+} as const
+
+// Animation configuration constants
+const ANIMATION_CONFIG = {
+  // Flow animation config
+  flowDashRatio: 0.4, // 40% of path for dash length (doubled from 0.2)
+  flowGapRatio: 3.0, // 300% of path for gap (increased from 1.5)
+  flowDuration: 5, // Base duration for full flow (seconds)
+  flowSpeedSegments: 20, // Number of segments for speed variation
+  flowSpeedMin: 0.3, // Minimum speed multiplier (at poles)
+  flowSpeedMax: 2.0, // Maximum speed multiplier (at equator)
+  // Grid animation config
+  bottomTaperThreshold: 0.1, // 10% of radiusY
+  gridMoveRange: 4, // pixels
+  gridDelayMax: 2, // seconds
+  gridDurationMin: 3, // seconds
+  gridDurationMax: 6 // seconds
+} as const
+
+// Helper function to build globe path from north to south pole
+function buildGlobePath(
+  centerX: number,
+  centerY: number,
+  radiusX: number,
+  radiusY: number,
+  lonAngle: number,
+  pathSegments: number,
+  ensureSouthPole: boolean = false
+): string {
+  const pathParts: string[] = []
+  for (let j = 0; j <= pathSegments; j++) {
+    const latRatio = j / pathSegments
+    const latAngle = (latRatio - 0.5) * Math.PI
+    const x = centerX + radiusX * Math.cos(latAngle) * Math.sin(lonAngle)
+    let y = centerY + radiusY * Math.sin(latAngle)
+    
+    // Ensure the last point is exactly at the south pole if requested
+    if (ensureSouthPole && j === pathSegments) {
+      y = centerY + radiusY
+    }
+    
+    if (j === 0) {
+      pathParts.push(`M ${x.toFixed(2)},${y.toFixed(2)}`)
+    } else {
+      pathParts.push(`L ${x.toFixed(2)},${y.toFixed(2)}`)
+    }
+  }
+  return pathParts.join(' ')
+}
+
 function NetworkVisualization() {
-  const [glowingLines, setGlowingLines] = useState<Array<{id: number, type: 'horizontal' | 'vertical', lineIndex: number, duration: number, delay: number, yPos?: number, xPos?: number}>>([])
   const svgRef = useRef<SVGSVGElement>(null)
   const orangeLineRefs = useRef<Map<number, SVGPathElement>>(new Map())
+  const orangeCircleRefs = useRef<Map<number, SVGCircleElement>>(new Map())
   const gridLineRefs = useRef<Map<string, SVGPathElement>>(new Map())
 
-  // Generate random glowing lines on grid - DISABLED: orange lines only appear on button click
-  useEffect(() => {
-    // Disable automatic glowing lines - orange lines only appear on deploy button click
-    setGlowingLines([])
-  }, [])
+  // Note: glowingLines functionality is currently disabled
+  // The glowing line checks in gridLines useMemo are kept for future implementation
+  // but currently always evaluate to false since glowingLines is empty
+  const glowingLines: Array<{id: number, type: 'horizontal' | 'vertical', lineIndex: number, duration: number, delay: number, yPos?: number, xPos?: number}> = []
 
   // Animate all orange lines with GSAP - loops continuously
   useEffect(() => {
     const orangeLines = Array.from(orangeLineRefs.current.entries())
+    const timelines: gsap.core.Timeline[] = []
+    const rafCallbacks: number[] = []
     
     orangeLines.forEach(([index, path]) => {
       if (path) {
         // Wait for path to be rendered
-        requestAnimationFrame(() => {
+        const rafId = requestAnimationFrame(() => {
           const fullPathLength = path.getTotalLength()
           
           if (fullPathLength === 0 || !isFinite(fullPathLength)) {
@@ -36,59 +99,222 @@ function NetworkVisualization() {
             return
           }
           
-          // Random end point between 50% and 90% of the path
-          const endRatio = 0.5 + Math.random() * 0.4
-          const endPathLength = fullPathLength * endRatio
+          // Get corresponding circle
+          const circle = orangeCircleRefs.current.get(index)
           
-          // Set initial state - line is fully hidden
-          // Use strokeDasharray with the visible length, and strokeDashoffset to hide it initially
+          // Flow animation from north pole to south pole with speed variation by latitude
+          // Speed is faster at equator, slower at poles (like real-world flow)
+          const dashLength = fullPathLength * ANIMATION_CONFIG.flowDashRatio
+          const gapLength = fullPathLength * ANIMATION_CONFIG.flowGapRatio
+          const numSegments = ANIMATION_CONFIG.flowSpeedSegments
+          const segmentLength = fullPathLength / numSegments
+          
+          // Set initial state - dash pattern starts hidden at north pole
+          // Start with dash positioned before the path start (hidden) and opacity 0 for smooth fade-in
+          const initialOffset = gapLength // Position dash before start so it's hidden
+          
+          // Helper function to update circle position based on dash offset
+          // Circle is at the trailing edge (end) of the dash
+          const updateCirclePosition = (offset: number) => {
+            if (!circle) return
+            // Calculate position along path: when offset is negative, trailing edge is at -offset + dashLength
+            // When offset is positive, dash hasn't started yet - circle stays at north pole
+            let position = 0
+            if (offset <= 0) {
+              // Dash is visible, trailing edge is at -offset + dashLength distance from start
+              position = -offset + dashLength
+            } else {
+              // Dash is still hidden, circle stays at north pole (position 0)
+              position = 0
+            }
+            
+            // Clamp to path length
+            position = Math.max(0, Math.min(position, fullPathLength))
+            
+            // Get point on path at this position
+            const point = path.getPointAtLength(position)
+            gsap.set(circle, {
+              attr: { cx: point.x, cy: point.y },
+              x: 0,
+              y: 0,
+              transform: 'none'
+            })
+          }
+          
+          // Track current offset for circle updates
+          let currentDashOffset = initialOffset
           gsap.set(path, {
-            strokeDasharray: endPathLength,
-            strokeDashoffset: endPathLength,
-            opacity: 1
+            strokeDasharray: `${dashLength} ${gapLength}`,
+            strokeDashoffset: initialOffset,
+            opacity: 0, // Start invisible for smooth fade-in
+            x: 0,
+            y: 0,
+            transform: 'none'
           })
           
-          // Random delay for each line to create staggered effect
-          const delay = index * 0.2 + Math.random() * 0.3
+          // Set initial circle state
+          if (circle) {
+            updateCirclePosition(initialOffset)
+            gsap.set(circle, { opacity: 0 })
+          }
+          
+          // No delay - all lines animate in parallel
+          const delay = 0
           
           // Create timeline that loops infinitely
           const tl = gsap.timeline({ repeat: -1 })
+          timelines.push(tl)
           
-          // Animate the line drawing to the random end point
+          // Phase 1: Draw forward from north pole (dash appears smoothly)
+          // Fade in opacity while the dash appears from hidden to visible
           tl.to(path, {
             strokeDashoffset: 0,
-            duration: 2,
-            ease: "power2.inOut",
-            delay: delay
+            opacity: 1,
+            duration: ANIMATION_CONFIG.flowDuration * 0.25, // 25% of total time for smooth appearance
+            ease: "power2.out",
+            onUpdate: function() {
+              currentDashOffset = gsap.getProperty(path, "strokeDashoffset") as number
+              updateCirclePosition(currentDashOffset)
+            }
           })
-          // Pause at the end point
-          .to({}, { duration: 1 })
-          // Reset back to start
-          .set(path, {
-            strokeDashoffset: endPathLength
+          
+          // Animate circle fade in and position
+          if (circle) {
+            tl.to(circle, {
+              opacity: 1,
+              duration: ANIMATION_CONFIG.flowDuration * 0.25,
+              ease: "power2.out"
+            }, "<") // Start at same time as path animation
+          }
+          
+          // Phase 2: Flow from north pole to south pole with speed variation
+          // Calculate speed variation based on latitude
+          // Speed is faster at equator (middle segments), slower at poles (end segments)
+          // Use cosine curve to create smooth speed variation
+          let currentOffset = 0
+          
+          // Pre-calculate all segment durations to normalize total duration
+          const segmentDurations: number[] = []
+          let totalNormalizedDuration = 0
+          
+          for (let i = 0; i < numSegments; i++) {
+            // Calculate position at midpoint of segment for more accurate speed
+            const pathRatio = (i + 0.5) / numSegments
+            
+            // Calculate latitude angle (-π/2 at north pole, 0 at equator, π/2 at south pole)
+            const latAngle = (pathRatio - 0.5) * Math.PI
+            
+            // Calculate speed multiplier using cosine
+            // cos(0) = 1 at equator (fastest), cos(±π/2) = 0 at poles (slowest)
+            // Map from [0, 1] to [minSpeed, maxSpeed]
+            const cosValue = Math.abs(Math.cos(latAngle))
+            const speedMultiplier = ANIMATION_CONFIG.flowSpeedMin + 
+              (cosValue * (ANIMATION_CONFIG.flowSpeedMax - ANIMATION_CONFIG.flowSpeedMin))
+            
+            // Calculate duration for this segment
+            // Faster speed = shorter duration for same distance
+            const baseSegmentDuration = 1 / numSegments // Normalized to 1
+            const segmentDuration = baseSegmentDuration / speedMultiplier
+            segmentDurations.push(segmentDuration)
+            totalNormalizedDuration += segmentDuration
+          }
+          
+          // Normalize durations to match remaining flowDuration (80% of total)
+          const flowDuration = ANIMATION_CONFIG.flowDuration * 0.8
+          const durationMultiplier = flowDuration / totalNormalizedDuration
+          
+          // Animate through each segment with varying speeds
+          // Decrease offset (go negative) to move dash forward along path (from north to south)
+          for (let i = 0; i < numSegments; i++) {
+            const nextOffset = currentOffset - segmentLength
+            const normalizedDuration = segmentDurations[i] * durationMultiplier
+            
+            tl.to(path, {
+              strokeDashoffset: nextOffset,
+              duration: normalizedDuration,
+              ease: "none", // Linear within each segment
+              onUpdate: function() {
+                currentDashOffset = gsap.getProperty(path, "strokeDashoffset") as number
+                updateCirclePosition(currentDashOffset)
+              }
+            })
+            
+            currentOffset = nextOffset
+          }
+          
+          // Phase 3: Collapse into south pole (dash disappears with fade out)
+          // Animate from visible at end to hidden beyond end, fading out as it disappears
+          const finalOffset = -(fullPathLength + dashLength)
+          tl.to(path, {
+            strokeDashoffset: finalOffset,
+            opacity: 0, // Fade out as the dash disappears
+            duration: ANIMATION_CONFIG.flowDuration * 0.15, // 15% of total time to disappear
+            ease: "power2.in",
+            onUpdate: function() {
+              updateCirclePosition(this.targets()[0].style.strokeDashoffset || 0)
+            }
           })
-          .to({}, { duration: 0.3 })
+          
+          // Fade out circle
+          if (circle) {
+            tl.to(circle, {
+              opacity: 0,
+              duration: ANIMATION_CONFIG.flowDuration * 0.15,
+              ease: "power2.in"
+            }, "<") // Start at same time as path fade out
+          }
+          
+          // Smooth reset transition - smoothly return to hidden state at north pole
+          // Reset offset while keeping opacity at 0 (dash is hidden)
+          tl.to(path, {
+            strokeDashoffset: initialOffset,
+            opacity: 0, // Keep invisible during reset
+            duration: ANIMATION_CONFIG.flowDuration * 0.05, // 5% of total time for smooth reset
+            ease: "power1.inOut",
+            immediateRender: false,
+            onUpdate: function() {
+              updateCirclePosition(this.targets()[0].style.strokeDashoffset || 0)
+            }
+          })
+          
+          // Reset circle position
+          if (circle) {
+            tl.to(circle, {
+              opacity: 0,
+              duration: ANIMATION_CONFIG.flowDuration * 0.05,
+              ease: "power1.inOut",
+              immediateRender: false
+            }, "<")
+          }
         })
+        rafCallbacks.push(rafId)
       }
     })
+    
+    // Cleanup: kill all timelines and cancel RAF callbacks
+    return () => {
+      timelines.forEach(tl => tl.kill())
+      rafCallbacks.forEach(id => cancelAnimationFrame(id))
+    }
   }, [])
 
   // Animate grid lines with random movement
   useEffect(() => {
     const lines = Array.from(gridLineRefs.current.values())
+    const gridAnimations: gsap.core.Tween[] = []
     
     lines.forEach((line) => {
       if (line) {
-        // Random delay between 0 and 2 seconds
-        const delay = Math.random() * 2
-        // Random duration between 3 and 6 seconds
-        const duration = 3 + Math.random() * 3
+        // Random delay between 0 and configured max
+        const delay = Math.random() * ANIMATION_CONFIG.gridDelayMax
+        // Random duration between configured min and max
+        const duration = ANIMATION_CONFIG.gridDurationMin + Math.random() * (ANIMATION_CONFIG.gridDurationMax - ANIMATION_CONFIG.gridDurationMin)
         // Random movement amount (small subtle movement)
-        const moveX = (Math.random() - 0.5) * 4
-        const moveY = (Math.random() - 0.5) * 4
+        const moveX = (Math.random() - 0.5) * ANIMATION_CONFIG.gridMoveRange
+        const moveY = (Math.random() - 0.5) * ANIMATION_CONFIG.gridMoveRange
         
-        // Create random animation for each line
-        gsap.to(line, {
+        // Create random animation for each line and store reference
+        const anim = gsap.to(line, {
           x: moveX,
           y: moveY,
           duration: duration,
@@ -97,58 +323,59 @@ function NetworkVisualization() {
           repeat: -1,
           yoyo: true
         })
+        gridAnimations.push(anim)
       }
     })
     
     return () => {
-      // Cleanup animations on unmount
-      lines.forEach(line => {
-        if (line) {
-          gsap.killTweensOf(line)
-        }
-      })
+      // Cleanup animations on unmount - kill all stored animations
+      gridAnimations.forEach(anim => anim.kill())
     }
   }, [])
 
-  return (
-    <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem] mt-12 sm:mt-16 md:mt-20">
-      {/* Globe grid background */}
-      <div className="absolute inset-0 opacity-40">
-        <svg 
-          ref={svgRef}
-          className="w-full h-full" 
-          viewBox="0 0 800 400" 
-          preserveAspectRatio="xMidYMid meet"
-        >
-          <defs>
-            <linearGradient id="glowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="var(--tera-accent)" stopOpacity="0" />
-              <stop offset="50%" stopColor="var(--tera-accent)" stopOpacity="1" />
-              <stop offset="100%" stopColor="var(--tera-accent)" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          {(() => {
-            const centerX = 400
-            const centerY = 250
-            const radiusX = 300
-            const radiusY = 200
-            const numVertical = 13
-            const numHorizontal = 7
+  // Memoize grid lines generation - only recalculate if glowingLines changes
+  const gridLines = useMemo(() => {
+            // Use globe configuration constants
+            const { centerX, centerY, radiusX, radiusY, numVertical, numHorizontal, poleY } = GLOBE_CONFIG
             
             const lines: React.ReactElement[] = []
-            const poleY = centerY - radiusY
 
             // Horizontal latitude lines
             for (let i = 1; i < numHorizontal; i++) {
               const latRatio = i / numHorizontal
               const y = poleY + (latRatio * radiusY * 2)
-              const angle = Math.asin((y - centerY) / radiusY)
-              const xWidth = radiusX * Math.cos(angle)
               
-              if (xWidth > 0) {
-                const pathD = `M ${centerX - xWidth},${y} A ${xWidth},${xWidth * 0.2} 0 0,0 ${centerX + xWidth},${y}`
+              // Clamp y to valid range to prevent bottom line from extending too far
+              // Match the vertical line calculation: they end at centerY + radiusY
+              const maxY = centerY + radiusY
+              const clampedY = Math.min(Math.max(y, centerY - radiusY), maxY)
+              
+              // Calculate angle and width - ensure it matches vertical line endpoints
+              // Use the same calculation as vertical lines to ensure they align
+              const latAngle = Math.asin((clampedY - centerY) / radiusY)
+              
+              // Calculate xWidth using the same formula as vertical lines use for x
+              // At any y, the maximum x extent is at the equator (lonAngle = 0 or π)
+              // x = centerX + radiusX * Math.cos(latAngle) * Math.sin(lonAngle)
+              // Maximum x extent = radiusX * Math.cos(latAngle) when sin(lonAngle) = ±1
+              let xWidth = radiusX * Math.cos(latAngle)
+              
+              // Ensure the line doesn't extend past where vertical lines end
+              // Vertical lines end at centerY + radiusY (when latAngle = π/2)
+              // At that point, all vertical lines converge to centerX, so xWidth should be 0
+              // Taper the width as we approach the bottom to match vertical line convergence
+              const distanceFromBottom = maxY - clampedY
+              const taperThreshold = radiusY * ANIMATION_CONFIG.bottomTaperThreshold
+              if (distanceFromBottom < taperThreshold) {
+                // Within threshold of bottom - taper width to match vertical line convergence
+                xWidth = xWidth * (distanceFromBottom / taperThreshold)
+              }
+              
+              // Only draw if the line is within the globe bounds and has valid width
+              if (xWidth > 0 && clampedY >= centerY - radiusY && clampedY <= maxY) {
+                const pathD = `M ${centerX - xWidth},${clampedY} A ${xWidth},${xWidth * 0.2} 0 0,0 ${centerX + xWidth},${clampedY}`
                 const isGlowing = glowingLines.some(line => 
-                  line.type === 'horizontal' && Math.abs((line.yPos || 0) - y) < 20
+                  line.type === 'horizontal' && Math.abs((line.yPos || 0) - clampedY) < 20
                 )
                 
                 const lineKey = `lat-${i}`
@@ -158,9 +385,15 @@ function NetworkVisualization() {
                       ref={(el) => { if (el) gridLineRefs.current.set(lineKey, el) }}
                       d={pathD}
                       fill="none"
-                      stroke="var(--border)"
+                      stroke="var(--foreground)"
                       strokeWidth="1.5"
-                      opacity={1}
+                      strokeLinecap="butt"
+                      shapeRendering="geometricPrecision"
+                      style={{
+                        stroke: 'var(--foreground)',
+                        opacity: 1,
+                        shapeRendering: 'geometricPrecision'
+                      }}
                     />
                     {isGlowing && (
                       <path
@@ -170,8 +403,10 @@ function NetworkVisualization() {
                         stroke="url(#glowGradient)"
                         strokeWidth="2.5"
                         strokeLinecap="round"
+                        shapeRendering="geometricPrecision"
                         style={{
-                          filter: 'drop-shadow(0 0 6px var(--tera-accent))'
+                          filter: 'drop-shadow(0 0 6px var(--tera-accent))',
+                          shapeRendering: 'geometricPrecision'
                         }}
                       />
                     )}
@@ -187,17 +422,17 @@ function NetworkVisualization() {
               
               const lonRatio = (i / (numVertical - 1))
               const lonAngle = (lonRatio - 0.5) * Math.PI
-              const points: string[] = []
               
-              for (let j = 0; j <= 20; j++) {
-                const latRatio = j / 20
-                const latAngle = (latRatio - 0.5) * Math.PI
-                const x = centerX + radiusX * Math.cos(latAngle) * Math.sin(lonAngle)
-                const y = centerY + radiusY * Math.sin(latAngle)
-                points.push(`${x.toFixed(2)},${y.toFixed(2)}`)
-              }
-              
-              const pathD = `M ${points.join(' L ')}`
+              // Build path using shared helper function
+              const pathD = buildGlobePath(
+                centerX,
+                centerY,
+                radiusX,
+                radiusY,
+                lonAngle,
+                GLOBE_CONFIG.pathSegments,
+                false // Grid lines use calculated south pole
+              )
               const isGlowing = glowingLines.some(line => 
                 line.type === 'vertical' && Math.abs((line.xPos || 0) - (100 + i * 50)) < 30
               )
@@ -209,9 +444,15 @@ function NetworkVisualization() {
                     ref={(el) => { if (el) gridLineRefs.current.set(lineKey, el) }}
                     d={pathD}
                     fill="none"
-                    stroke="rgba(255, 255, 255, 0.6)"
+                    stroke="var(--foreground)"
                     strokeWidth="1.5"
-                    opacity={1}
+                    strokeLinecap="butt"
+                    shapeRendering="geometricPrecision"
+                    style={{
+                      stroke: 'var(--foreground)',
+                      opacity: 1,
+                      shapeRendering: 'geometricPrecision'
+                    }}
                   />
                   {isGlowing && (
                     <path
@@ -221,8 +462,10 @@ function NetworkVisualization() {
                       stroke="url(#glowGradient)"
                       strokeWidth="2.5"
                       strokeLinecap="round"
+                      shapeRendering="geometricPrecision"
                       style={{
-                        filter: 'drop-shadow(0 0 6px rgba(249, 115, 22, 0.8))'
+                        filter: 'drop-shadow(0 0 6px rgba(249, 115, 22, 0.8))',
+                        shapeRendering: 'geometricPrecision'
                       }}
                     />
                   )}
@@ -231,60 +474,91 @@ function NetworkVisualization() {
             }
             
             return lines
-          })()}
-          
-          {/* Orange lines from north pole following all vertical grid lines */}
-          {(() => {
-            const centerX = 400
-            const centerY = 250
-            const radiusX = 300
-            const radiusY = 200
-            const poleY = centerY - radiusY
-            const numVertical = 13
-            const orangeLines: React.ReactElement[] = []
-            
-            // Create orange line for each visible vertical grid line (every other one)
-            for (let i = 0; i < numVertical; i++) {
-              // Only create orange lines for visible gridlines (even indices)
-              if (i % 2 !== 0) continue
-              
-              const lonRatio = i / (numVertical - 1)
-              const lonAngle = (lonRatio - 0.5) * Math.PI
-              
-              // Create full path from north pole to bottom (will be truncated in animation)
-              const points: string[] = []
-              const startY = poleY
-              const endY = centerY + radiusY * 0.9 // Full path to 90% down
-              
-              for (let j = 0; j <= 20; j++) {
-                const latRatio = j / 20
-                const y = startY + (latRatio * (endY - startY))
-                const latAngle = Math.asin((y - centerY) / radiusY)
-                const x = centerX + radiusX * Math.cos(latAngle) * Math.sin(lonAngle)
-                points.push(`${x.toFixed(2)},${y.toFixed(2)}`)
-              }
-              
-              const pathD = `M ${points.join(' L ')}`
-              
-              orangeLines.push(
-                <g key={`orange-line-${i}`}>
-                  <path
-                    ref={(el) => { if (el) orangeLineRefs.current.set(i, el) }}
-                    d={pathD}
-                    fill="none"
-                    stroke="var(--tera-accent)"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    style={{
-                      filter: 'drop-shadow(0 0 8px var(--tera-accent))'
-                    }}
-                  />
-                </g>
-              )
-            }
-            
-            return orangeLines
-          })()}
+  }, [glowingLines])
+
+  // Memoize orange lines generation - static, no dependencies
+  const orangeLines = useMemo(() => {
+    // Use globe configuration constants for perfect alignment
+    const { centerX, centerY, radiusX, radiusY, numVertical, pathSegments } = GLOBE_CONFIG
+    const orangeLinesArray: React.ReactElement[] = []
+    
+    // Create orange line for each visible vertical grid line (every other one)
+    for (let i = 0; i < numVertical; i++) {
+      // Only create orange lines for visible gridlines (even indices)
+      if (i % 2 !== 0) continue
+      
+      const lonRatio = i / (numVertical - 1)
+      const lonAngle = (lonRatio - 0.5) * Math.PI
+      
+      // Create full path from north pole to south pole
+      // Use the same calculation as vertical grid lines for perfect alignment
+      // Ensure path extends fully to south pole for animation
+      const pathD = buildGlobePath(
+        centerX,
+        centerY,
+        radiusX,
+        radiusY,
+        lonAngle,
+        pathSegments,
+        true // Orange lines explicitly set south pole coordinate
+      )
+      
+      orangeLinesArray.push(
+        <g key={`orange-line-${i}`} className="orange-line-flow" style={{ transform: 'none' }}>
+          <path
+            ref={(el) => { if (el) orangeLineRefs.current.set(i, el) }}
+            d={pathD}
+            fill="none"
+            stroke="#fb923c"
+            strokeWidth="3"
+            strokeLinecap="round"
+            shapeRendering="geometricPrecision"
+            style={{
+              stroke: '#fb923c', // orange-400 - brighter orange
+              shapeRendering: 'geometricPrecision',
+              transform: 'none',
+              transition: 'none'
+            }}
+          />
+          <circle
+            ref={(el) => { if (el) orangeCircleRefs.current.set(i, el) }}
+            r="2.5"
+            fill="#fb923c"
+            opacity="0"
+            style={{
+              filter: 'drop-shadow(0 0 4px rgba(251, 146, 60, 0.8))',
+              transform: 'none',
+              transition: 'none'
+            }}
+          />
+        </g>
+      )
+    }
+    
+    return orangeLinesArray
+  }, [])
+
+  return (
+    <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem] mt-4 sm:mt-6 md:mt-8">
+      {/* Globe grid background */}
+      <div className="absolute inset-0 opacity-60 dark:opacity-40" style={{ imageRendering: 'crisp-edges' }}>
+        <svg 
+          ref={svgRef}
+          className="w-full h-full" 
+          viewBox={`0 0 ${GLOBE_CONFIG.viewBoxWidth} ${GLOBE_CONFIG.viewBoxHeight}`}
+          preserveAspectRatio="xMidYMid meet"
+          shapeRendering="geometricPrecision"
+          style={{ shapeRendering: 'geometricPrecision' }}
+        >
+          <defs>
+            <linearGradient id="glowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="var(--tera-accent)" stopOpacity="0" />
+              <stop offset="50%" stopColor="var(--tera-accent)" stopOpacity="1" />
+              <stop offset="100%" stopColor="var(--tera-accent)" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          {gridLines}
+          {orangeLines}
         </svg>
       </div>
     </div>
@@ -1299,7 +1573,7 @@ export default function HomePage() {
         )}
 
         {/* Main Content */}
-        <main className="relative z-10 flex flex-col items-center min-h-screen max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 pt-32 sm:pt-36 lg:pt-40">
+        <main className="relative z-10 flex flex-col items-center min-h-screen max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-6 sm:px-6 md:px-8 lg:px-12 xl:px-16 pt-32 sm:pt-36 lg:pt-40">
           {/* Spotlight effect behind hero text */}
           <div 
             className="absolute pointer-events-none"
@@ -1341,6 +1615,7 @@ export default function HomePage() {
 
           <form 
             className="flex flex-col sm:flex-row gap-3 w-full max-w-md mb-6 sm:mb-8"
+            style={{ maxWidth: 'min(100%, 28rem)' }}
             onSubmit={(e) => {
               e.preventDefault()
               // Handle form submission
@@ -1354,7 +1629,7 @@ export default function HomePage() {
             />
             <button
               type="submit"
-              className="group relative bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 sm:px-8 py-2.5 sm:py-3 min-h-[44px] sm:min-h-0 text-sm sm:text-base font-semibold flex items-center justify-center gap-2 backdrop-blur-sm border border-orange-400/30 shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 whitespace-nowrap"
+              className="group relative bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-4 sm:px-8 py-2.5 sm:py-3 min-h-[44px] sm:min-h-0 text-sm sm:text-base font-semibold flex items-center justify-center gap-2 backdrop-blur-sm border border-orange-400/30 shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 whitespace-nowrap shrink-0"
             >
               Join the waiting list
               <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 group-hover:-rotate-12 transition-transform duration-300" />
@@ -1488,7 +1763,7 @@ export default function HomePage() {
             zIndex: 21
           }}
         ></div>
-        <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+        <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-6 sm:px-6 md:px-8 lg:px-12 xl:px-16">
           {/* Header Text */}
           <div className="text-center mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-foreground leading-tight tracking-tight mb-6">
@@ -1499,11 +1774,25 @@ export default function HomePage() {
             </p>
             
             {/* Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <ShimmerButton background="var(--accent)" className="hover:bg-black/5 dark:hover:bg-white/10 text-foreground dark:text-white px-6 py-3 min-h-[44px] sm:min-h-0 font-medium border border-border">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 w-full max-w-full overflow-hidden">
+              <ShimmerButton 
+                background="var(--accent)" 
+                borderRadius="0" 
+                className="hover:bg-black/5 dark:hover:bg-white/10 text-foreground dark:text-white px-3 sm:px-6 py-3 min-h-[44px] sm:min-h-0 font-medium border border-border rounded-none shrink-0 text-xs sm:text-base whitespace-nowrap"
+                onClick={(e) => {
+                  e.preventDefault()
+                  document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })
+                }}
+              >
                 More about Infrastructure
               </ShimmerButton>
-              <button className="bg-accent/50 backdrop-blur-sm border border-border text-foreground dark:text-white px-6 py-3 min-h-[44px] sm:min-h-0 font-medium hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300">
+              <button 
+                className="bg-accent/50 backdrop-blur-sm border border-border text-foreground dark:text-white px-3 sm:px-6 py-3 min-h-[44px] sm:min-h-0 font-medium hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 shrink-0 text-xs sm:text-base whitespace-nowrap"
+                onClick={(e) => {
+                  e.preventDefault()
+                  document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })
+                }}
+              >
                 Learn about Enterprise
               </button>
             </div>
@@ -1520,7 +1809,7 @@ export default function HomePage() {
         <div className="section-connector-line right-1"></div>
         <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
           <div className="border-t border-b border-border p-8 lg:p-12">
-            <div className="max-w-3xl mb-16 bg-accent/50 backdrop-blur-sm border border-border/50  p-6 lg:p-8">
+            <div className="mb-16 bg-accent/50 backdrop-blur-sm border border-border/50  p-6 lg:p-8">
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-foreground leading-tight tracking-tight mb-8">
                 Multi-Domain Science Drivers
               </h2>
@@ -1574,9 +1863,21 @@ export default function HomePage() {
       <section id="architecture" className="relative z-10 py-0 scroll-mt-20 section-connector">
         <div className="section-connector-line left-1"></div>
         <div className="section-connector-line right-1"></div>
+        {/* Horizontal separator line - connects to vertical lines */}
+        <div 
+          className="absolute pointer-events-none"
+          style={{ 
+            height: '1px', 
+            background: 'var(--border)',
+            left: 'max(1.5rem, calc((100% - 75rem) / 2))',
+            right: 'max(1.5rem, calc((100% - 75rem) / 2))',
+            top: 0,
+            zIndex: 21
+          }}
+        ></div>
         <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
-          <div className="border-t border-b border-border p-8 lg:p-12">
-          <div className="max-w-3xl mb-16 bg-accent/50 backdrop-blur-sm border border-border/50  p-6 lg:p-8">
+          <div className="border-b border-border p-8 lg:p-12">
+          <div className="mb-16 bg-accent/50 backdrop-blur-sm border border-border/50  p-6 lg:p-8">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-foreground leading-tight tracking-tight mb-8">
               Node Capabilities
             </h2>
@@ -1780,8 +2081,8 @@ export default function HomePage() {
         <div className="section-connector-line left-1"></div>
         <div className="section-connector-line right-1"></div>
         <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
-          <div className="border-t border-b border-border p-8 lg:p-12">
-            <div className="max-w-3xl mb-16 bg-accent/50 backdrop-blur-sm border border-border/50  p-6 lg:p-8">
+          <div className="p-8 lg:p-12">
+            <div className="mb-16 bg-accent/50 backdrop-blur-sm border border-border/50  p-6 lg:p-8">
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-foreground leading-tight tracking-tight mb-8">
                 Workforce Development
               </h2>
@@ -1790,9 +2091,9 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-12">
-              <div className="lg:w-1/2">
-                <div className="flex flex-col gap-4">
+            <div className="flex flex-col lg:flex-row gap-12 lg:items-stretch">
+              <div className="lg:w-1/2 flex flex-col">
+                <div className="flex flex-col gap-4 flex-1">
                   <button
                     onClick={() => setActiveWorkforceTab("technician")}
                     className={`text-left group px-4 py-3  transition-all duration-300 border ${
@@ -1801,7 +2102,7 @@ export default function HomePage() {
                         : "hover:bg-accent/50 border-border"
                     }`}
                   >
-                    <div className="flex items-center gap-3 mb-2">
+                    <div className="flex items-center gap-3">
                       <div className={`w-10 h-10  flex items-center justify-center ${
                         activeWorkforceTab === "technician"
                           ? "bg-orange-500/20"
@@ -1821,13 +2122,6 @@ export default function HomePage() {
                         Technician Pipeline
                       </h3>
                     </div>
-                    <p className={`text-sm leading-relaxed ${
-                      activeWorkforceTab === "technician"
-                        ? "text-muted-foreground"
-                        : "text-muted-foreground"
-                    }`}>
-                      Through Madison College and MOSAIC
-                    </p>
                   </button>
 
                   <button
@@ -1838,7 +2132,7 @@ export default function HomePage() {
                         : "hover:bg-accent/50 border-border"
                     }`}
                   >
-                    <div className="flex items-center gap-3 mb-2">
+                    <div className="flex items-center gap-3">
                       <div className={`w-10 h-10  flex items-center justify-center ${
                         activeWorkforceTab === "undergraduate"
                           ? "bg-orange-500/20"
@@ -1858,13 +2152,6 @@ export default function HomePage() {
                         Undergraduate Education
                       </h3>
                     </div>
-                    <p className={`text-sm leading-relaxed ${
-                      activeWorkforceTab === "undergraduate"
-                        ? "text-muted-foreground"
-                        : "text-muted-foreground"
-                    }`}>
-                      Workflow design, data interpretation, and digital twins
-                    </p>
                   </button>
 
                   <button
@@ -1875,7 +2162,7 @@ export default function HomePage() {
                         : "hover:bg-accent/50 border-border"
                     }`}
                   >
-                    <div className="flex items-center gap-3 mb-2">
+                    <div className="flex items-center gap-3">
                       <div className={`w-10 h-10  flex items-center justify-center ${
                         activeWorkforceTab === "graduate"
                           ? "bg-orange-500/20"
@@ -1895,13 +2182,6 @@ export default function HomePage() {
                         Graduate Training
                       </h3>
                     </div>
-                    <p className={`text-sm leading-relaxed ${
-                      activeWorkforceTab === "graduate"
-                        ? "text-muted-foreground"
-                        : "text-muted-foreground"
-                    }`}>
-                      Cross-institutional collaboration and high-throughput studies
-                    </p>
                   </button>
 
                   <button
@@ -1912,7 +2192,7 @@ export default function HomePage() {
                         : "hover:bg-accent/50 border-border"
                     }`}
                   >
-                    <div className="flex items-center gap-3 mb-2">
+                    <div className="flex items-center gap-3">
                       <div className={`w-10 h-10  flex items-center justify-center ${
                         activeWorkforceTab === "professional"
                           ? "bg-orange-500/20"
@@ -1932,29 +2212,19 @@ export default function HomePage() {
                         Professional Development
                       </h3>
                     </div>
-                    <p className={`text-sm leading-relaxed ${
-                      activeWorkforceTab === "professional"
-                        ? "text-muted-foreground"
-                        : "text-muted-foreground"
-                    }`}>
-                      Workshops for scientists and engineers
-                    </p>
                   </button>
                 </div>
               </div>
 
-              <div className="lg:w-1/2">
-                <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 lg:p-10 min-h-[400px] relative">
+              <div className="lg:w-1/2 flex flex-col">
+                <div className="bg-accent/50 backdrop-blur-sm border border-border relative overflow-hidden flex-1">
                   {/* Technician Pipeline Content */}
-                  <div className={`transition-all duration-300 ${
+                  <div className={`absolute inset-0 p-8 lg:p-10 transition-opacity duration-300 ease-in-out overflow-y-auto ${
                     activeWorkforceTab === "technician" 
-                      ? "opacity-100 relative z-10" 
-                      : "opacity-0 absolute inset-0 z-0 pointer-events-none p-8 lg:p-10"
+                      ? "opacity-100 visible z-10" 
+                      : "opacity-0 invisible z-0 pointer-events-none"
                   }`}>
-                    <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
-                      <Users className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
-                    </div>
-                    <h3 className="text-2xl font-semibold text-foreground tracking-tight mb-4">
+                    <h3 className="text-xl sm:text-2xl font-semibold text-foreground tracking-tight mb-4">
                       Technician Pipeline through Madison College and MOSAIC
                     </h3>
                     <p className="text-muted-foreground leading-relaxed mb-6">
@@ -1981,15 +2251,12 @@ export default function HomePage() {
                   </div>
 
                   {/* Undergraduate Education Content */}
-                  <div className={`transition-all duration-300 ${
+                  <div className={`absolute inset-0 p-8 lg:p-10 transition-opacity duration-300 ease-in-out overflow-y-auto ${
                     activeWorkforceTab === "undergraduate" 
-                      ? "opacity-100 relative z-10" 
-                      : "opacity-0 absolute inset-0 z-0 pointer-events-none p-8 lg:p-10"
+                      ? "opacity-100 visible z-10" 
+                      : "opacity-0 invisible z-0 pointer-events-none"
                   }`}>
-                    <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
-                      <BookOpen className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
-                    </div>
-                    <h3 className="text-2xl font-semibold text-foreground tracking-tight mb-4">
+                    <h3 className="text-xl sm:text-2xl font-semibold text-foreground tracking-tight mb-4">
                       Undergraduate Education
                     </h3>
                     <p className="text-muted-foreground leading-relaxed mb-6">
@@ -2020,15 +2287,12 @@ export default function HomePage() {
                   </div>
 
                   {/* Graduate Training Content */}
-                  <div className={`transition-all duration-300 ${
+                  <div className={`absolute inset-0 p-8 lg:p-10 transition-opacity duration-300 ease-in-out overflow-y-auto ${
                     activeWorkforceTab === "graduate" 
-                      ? "opacity-100 relative z-10" 
-                      : "opacity-0 absolute inset-0 z-0 pointer-events-none p-8 lg:p-10"
+                      ? "opacity-100 visible z-10" 
+                      : "opacity-0 invisible z-0 pointer-events-none"
                   }`}>
-                    <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
-                      <GraduationCap className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
-                    </div>
-                    <h3 className="text-2xl font-semibold text-foreground tracking-tight mb-4">
+                    <h3 className="text-xl sm:text-2xl font-semibold text-foreground tracking-tight mb-4">
                       Graduate Training and Cross-Institutional Collaboration
                     </h3>
                     <p className="text-muted-foreground leading-relaxed mb-6">
@@ -2055,15 +2319,12 @@ export default function HomePage() {
                   </div>
 
                   {/* Professional Development Content */}
-                  <div className={`transition-all duration-300 ${
+                  <div className={`absolute inset-0 p-8 lg:p-10 transition-opacity duration-300 ease-in-out overflow-y-auto ${
                     activeWorkforceTab === "professional" 
-                      ? "opacity-100 relative z-10" 
-                      : "opacity-0 absolute inset-0 z-0 pointer-events-none p-8 lg:p-10"
+                      ? "opacity-100 visible z-10" 
+                      : "opacity-0 invisible z-0 pointer-events-none"
                   }`}>
-                    <div className="w-12 h-12  bg-orange-500/10 flex items-center justify-center mb-6">
-                      <Briefcase className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
-                    </div>
-                    <h3 className="text-2xl font-semibold text-foreground tracking-tight mb-4">
+                    <h3 className="text-xl sm:text-2xl font-semibold text-foreground tracking-tight mb-4">
                       Professional Development for Scientists and Engineers
                     </h3>
                     <p className="text-muted-foreground leading-relaxed mb-6">
@@ -2104,8 +2365,8 @@ export default function HomePage() {
       <section id="capabilities" className="relative z-10 py-12 sm:py-16 md:py-20 lg:py-24 xl:py-32 scroll-mt-20 section-connector">
         <div className="section-connector-line left-1"></div>
         <div className="section-connector-line right-1"></div>
-        <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-8 lg:py-12">
-            <div className="max-w-3xl mb-16 bg-accent/50 backdrop-blur-sm border border-border/50  p-6 lg:p-8">
+        <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-6 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-8 lg:py-12">
+            <div className="mb-16 bg-accent/50 backdrop-blur-sm border border-border/50  p-4 sm:p-6 lg:p-8">
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-foreground leading-tight tracking-tight mb-8">
                 Accessible to Every Researcher
               </h2>
@@ -2114,10 +2375,10 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mt-8">
               {/* Use Case 1: Parameter Exploration */}
-              <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
-                <h3 className="text-2xl font-semibold text-foreground tracking-tight mb-4">
+              <div className="bg-accent/50 backdrop-blur-sm border border-border  p-4 sm:p-6 md:p-8 hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+                <h3 className="text-xl sm:text-2xl font-semibold text-foreground tracking-tight mb-4">
                   Explore Parameter Spaces
                 </h3>
                 <div className="w-full h-48 sm:h-64 md:h-80 lg:h-[300px] mb-6 border border-border bg-card/60 relative ">
@@ -2139,28 +2400,28 @@ export default function HomePage() {
                 <p className="text-muted-foreground leading-relaxed mb-6">
                   For some users, this may mean exploring parameter spaces that would take months, if ever, to scan manually. HiveLab enables rapid iteration across vast experimental landscapes, accelerating discovery through intelligent automation.
                 </p>
-                <div className="flex flex-wrap gap-4 mb-6">
-                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                    <FlaskConical className="w-4 h-4" strokeWidth={1.5} />
+                <div className="flex flex-wrap gap-3 sm:gap-4 mb-6">
+                  <div className="flex items-center gap-2 text-muted-foreground text-xs sm:text-sm">
+                    <FlaskConical className="w-4 h-4 shrink-0" strokeWidth={1.5} />
                     <span>Automated workflows</span>
                   </div>
-                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                    <Database className="w-4 h-4" strokeWidth={1.5} />
+                  <div className="flex items-center gap-2 text-muted-foreground text-xs sm:text-sm">
+                    <Database className="w-4 h-4 shrink-0" strokeWidth={1.5} />
                     <span>High-throughput</span>
                   </div>
-                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                    <Repeat className="w-4 h-4" strokeWidth={1.5} />
+                  <div className="flex items-center gap-2 text-muted-foreground text-xs sm:text-sm">
+                    <Repeat className="w-4 h-4 shrink-0" strokeWidth={1.5} />
                     <span>Reproducible</span>
                   </div>
                 </div>
-                <a href="#" className="inline-flex items-center justify-center px-5 min-h-[44px] sm:h-9 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold tracking-wider  hover:from-orange-600 hover:to-orange-700 transition-all hover:-translate-y-0.5">
+                <a href="#" className="inline-flex items-center justify-center px-4 sm:px-5 min-h-[44px] sm:h-9 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold tracking-wider hover:from-orange-600 hover:to-orange-700 transition-all hover:-translate-y-0.5">
                   Learn More
                 </a>
               </div>
 
               {/* Use Case 2: Critical Validation */}
-              <div className="bg-accent/50 backdrop-blur-sm border border-border  p-8 hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
-                <h3 className="text-2xl font-semibold text-foreground tracking-tight mb-4">
+              <div className="bg-accent/50 backdrop-blur-sm border border-border  p-4 sm:p-6 md:p-8 hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 hover:border-orange-500/30 hover:-translate-y-1">
+                <h3 className="text-xl sm:text-2xl font-semibold text-foreground tracking-tight mb-4">
                   Validate Critical Experiments
                 </h3>
                 <div className="w-full h-48 sm:h-64 md:h-80 lg:h-[300px] mb-6 border border-border bg-card/60 relative overflow-hidden">
@@ -2182,21 +2443,21 @@ export default function HomePage() {
                 <p className="text-muted-foreground leading-relaxed mb-6">
                   For others, it may mean validating a single critical experiment under conditions that must not be misconfigured, such as a thermal reliability test on a new power device or a live cell assay with precious biological material.
                 </p>
-                <div className="flex flex-wrap gap-4 mb-6">
-                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                    <Shield className="w-4 h-4" strokeWidth={1.5} />
+                <div className="flex flex-wrap gap-3 sm:gap-4 mb-6">
+                  <div className="flex items-center gap-2 text-muted-foreground text-xs sm:text-sm">
+                    <Shield className="w-4 h-4 shrink-0" strokeWidth={1.5} />
                     <span>Safety envelope</span>
                   </div>
-                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                    <CheckCircle2 className="w-4 h-4" strokeWidth={1.5} />
+                  <div className="flex items-center gap-2 text-muted-foreground text-xs sm:text-sm">
+                    <CheckCircle2 className="w-4 h-4 shrink-0" strokeWidth={1.5} />
                     <span>Validated configs</span>
                   </div>
-                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                    <Database className="w-4 h-4" strokeWidth={1.5} />
+                  <div className="flex items-center gap-2 text-muted-foreground text-xs sm:text-sm">
+                    <Database className="w-4 h-4 shrink-0" strokeWidth={1.5} />
                     <span>Audit trail</span>
                   </div>
                 </div>
-                <a href="#" className="inline-flex items-center justify-center px-5 min-h-[44px] sm:h-9 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold tracking-wider uppercase  hover:from-orange-600 hover:to-orange-700 transition-all hover:-translate-y-0.5">
+                <a href="#" className="inline-flex items-center justify-center px-4 sm:px-5 min-h-[44px] sm:h-9 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold tracking-wider uppercase hover:from-orange-600 hover:to-orange-700 transition-all hover:-translate-y-0.5">
                   Learn More
                 </a>
               </div>
@@ -2208,9 +2469,9 @@ export default function HomePage() {
         <section className="relative z-10 py-8 sm:py-12 md:py-16 lg:py-20 xl:py-24 bg-[var(--tera-bg)] section-connector">
           <div className="section-connector-line left-1"></div>
           <div className="section-connector-line right-1"></div>
-          <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+          <div className="max-w-[75rem] xl:max-w-[65rem] 2xl:max-w-[75rem] mx-auto px-6 sm:px-6 md:px-8 lg:px-12 xl:px-16">
             <div className=" py-10 lg:py-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-              <div className="max-w-xl">
+              <div className="max-w-xl pl-4 sm:pl-0">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-foreground leading-tight tracking-tight mb-4">
                   Bring model-informed automation to your next experiment.
                 </h2>
@@ -2219,7 +2480,7 @@ export default function HomePage() {
                 </p>
               </div>
               <form
-                className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto max-w-md"
+                className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto max-w-full overflow-hidden"
                 onSubmit={(e) => {
                   e.preventDefault()
                   // Handle form submission
@@ -2228,12 +2489,12 @@ export default function HomePage() {
                 <input
                   type="email"
                   placeholder="Enter your email"
-                  className="flex-1 bg-accent/50 backdrop-blur-sm border border-border px-4 sm:px-6 py-2.5 sm:py-3 text-foreground placeholder:text-muted-foreground/50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/30 transition-all duration-300"
+                  className="flex-1 bg-accent/50 backdrop-blur-sm border border-border px-4 sm:px-6 py-2.5 sm:py-3 text-foreground placeholder:text-muted-foreground/50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/30 transition-all duration-300 min-w-0"
                   required
                 />
                 <button
                   type="submit"
-                  className="group relative bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 sm:px-8 py-2.5 sm:py-3 min-h-[44px] sm:min-h-0 text-sm sm:text-base font-semibold flex items-center justify-center gap-2 backdrop-blur-sm border border-orange-400/30 shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 whitespace-nowrap"
+                  className="group relative bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-4 sm:px-8 py-2.5 sm:py-3 min-h-[44px] sm:min-h-0 text-sm sm:text-base font-semibold flex items-center justify-center gap-2 backdrop-blur-sm border border-orange-400/30 shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 whitespace-nowrap shrink-0"
                 >
                   Join the waiting list
                   <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 group-hover:-rotate-12 transition-transform duration-300" />

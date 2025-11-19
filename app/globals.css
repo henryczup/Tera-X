@@ -48,6 +48,8 @@
   --tera-border: oklch(0.85 0 0); /* Darker border - increased from 0.9 for better visibility */
   --tera-card-bg: oklch(0.98 0 0); /* Off-white */
   --tera-accent: oklch(0.646 0.222 41.116); /* Orange */
+  --globe-line-opacity: 0.6; /* Globe lines opacity for light mode */
+  --globe-line-color: oklch(0.5 0 0); /* Darker gray for globe lines in light mode */
 }
 
 /* Dark mode (manual toggle support) */
@@ -94,6 +96,8 @@
     --tera-border: oklch(0.2 0 0); /* Dark gray */
     --tera-card-bg: oklch(0.05 0 0); /* Very dark gray */
   --tera-accent: oklch(0.646 0.222 41.116); /* Orange */
+  --globe-line-opacity: 0.8; /* Globe lines opacity for dark mode */
+  --globe-line-color: var(--border); /* Use border color for globe lines in dark mode */
 }
 
 @theme inline {
@@ -275,4 +279,10 @@
 
 svg path, svg circle {
   transition: all 1s ease;
+}
+
+/* Override transition for orange flow lines to prevent bouncing */
+svg .orange-line-flow path {
+  transition: none !important;
+  transform: none !important;
 }
