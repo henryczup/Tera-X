@@ -2,7 +2,6 @@
 
 import Image from "next/image"
 import { Menu, FlaskConical, Shield, Database, Repeat, Search, CheckCircle2, Cpu, Cloud, Brain, Zap, Microscope, Layers, X, CircuitBoard, Beaker, Gauge, Network, PlayCircle, GraduationCap, Users, BookOpen, Briefcase } from "lucide-react"
-import { LineShadowText } from "@/components/line-shadow-text"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { EmailWaitlistForm } from "@/components/email-waitlist-form"
 import { useState, useEffect, useRef } from "react"
@@ -1177,25 +1176,25 @@ export default function HomePage() {
                 e.preventDefault()
                 window.scrollTo({ top: 0, behavior: "smooth" })
               }}
-              className="flex items-center gap-3 text-foreground text-2xl sm:text-3xl tracking-tighter hover:text-muted-foreground transition-colors"
+              className="flex items-center gap-3 text-foreground hover:text-muted-foreground transition-colors"
             >
-              {/* <div className="relative h-8 w-8 sm:h-9 sm:w-9">
+              <div className="relative h-8 sm:h-9 w-auto flex items-center">
                 <Image
-                  src="/tera-x-logo.png"
+                  src="/logo/tera-x-logo-light-removebg-preview.png"
                   alt="Tera-X logo"
-                  fill
-                  sizes="36px"
-                  className="object-contain"
+                  width={140}
+                  height={32}
+                  className="block dark:hidden h-full w-auto object-contain"
+                  priority
                 />
-              </div> */}
-              <div className="flex items-baseline gap-1">
-                <LineShadowText className="italic font-light" shadowColor="white">
-                  Tera
-                </LineShadowText>
-                -
-                <LineShadowText className="italic font-light" shadowColor="white">
-                  X
-                </LineShadowText>
+                <Image
+                  src="/logo/tera-x-logo-dark.png"
+                  alt="Tera-X logo"
+                  width={140}
+                  height={32}
+                  className="hidden dark:block h-full w-auto object-contain"
+                  priority
+                />
               </div>
             </a>
 
