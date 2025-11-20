@@ -1,11 +1,10 @@
 "use client"
 
 import Image from "next/image"
-import { ArrowRight } from "lucide-react"
 import { Menu, FlaskConical, Shield, Database, Repeat, Search, CheckCircle2, Cpu, Cloud, Brain, Zap, Microscope, Layers, X, CircuitBoard, Beaker, Gauge, Network, PlayCircle, GraduationCap, Users, BookOpen, Briefcase } from "lucide-react"
 import { LineShadowText } from "@/components/line-shadow-text"
-import { ShimmerButton } from "@/components/shimmer-button"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { EmailWaitlistForm } from "@/components/email-waitlist-form"
 import { useState, useEffect, useRef } from "react"
 import { gsap } from "gsap"
 
@@ -1233,9 +1232,6 @@ export default function HomePage() {
 
             <div className="flex items-center gap-3">
               <ThemeToggle />
-              <ShimmerButton className="hidden md:flex bg-orange-500 hover:bg-orange-600 text-white dark:text-white px-4 lg:px-6 py-2  text-sm lg:text-base font-medium shadow-lg">
-                Contact Us
-              </ShimmerButton>
 
               {/* Mobile menu button */}
               <button 
@@ -1290,9 +1286,9 @@ export default function HomePage() {
               </a>
               <div className="pt-4 border-t border-border mt-4 flex items-center justify-between gap-4">
                 <ThemeToggle />
-                <ShimmerButton className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5  text-sm font-medium shadow-lg w-full">
+                {/* <ShimmerButton className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5  text-sm font-medium shadow-lg w-full">
                   Contact Us
-                </ShimmerButton>
+                </ShimmerButton> */}
               </div>
             </nav>
           </div>
@@ -1339,28 +1335,7 @@ export default function HomePage() {
 
           </p>
 
-          <form 
-            className="flex flex-col sm:flex-row gap-3 w-full max-w-md mb-6 sm:mb-8"
-            onSubmit={(e) => {
-              e.preventDefault()
-              // Handle form submission
-            }}
-          >
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 bg-accent/50 backdrop-blur-sm border border-border  px-4 sm:px-6 py-2.5 sm:py-3 text-foreground placeholder:text-muted-foreground/50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/30 transition-all duration-300"
-              required
-            />
-            <button
-              type="submit"
-              className="group relative bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 sm:px-8 py-2.5 sm:py-3  text-sm sm:text-base font-semibold flex items-center justify-center gap-2 backdrop-blur-sm border border-orange-400/30 shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 whitespace-nowrap"
-            >
-              Join the waiting list
-              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 group-hover:-rotate-12 transition-transform duration-300" />
-              <div className="absolute inset-0  bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </button>
-          </form>
+          <EmailWaitlistForm className="flex flex-col sm:flex-row gap-3 w-full max-w-md mb-6 sm:mb-8 mx-auto" />
         </main>
       </div>
 
@@ -1491,12 +1466,12 @@ export default function HomePage() {
             
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <ShimmerButton background="var(--accent)" className="hover:bg-white/10 text-foreground dark:text-white px-6 py-3  font-medium border border-border">
+              {/* <ShimmerButton background="var(--accent)" className="hover:bg-white/10 text-foreground dark:text-white px-6 py-3  font-medium border border-border">
                 More about Infrastructure
               </ShimmerButton>
               <button className="bg-accent/50 backdrop-blur-sm border border-border text-foreground dark:text-white px-6 py-3  font-medium hover:bg-white/10 transition-all duration-300">
                 Learn about Enterprise
-              </button>
+              </button> */}
             </div>
           </div>
 
@@ -2209,28 +2184,7 @@ export default function HomePage() {
                   Share a problem you are working on in semiconductors, biotechnology, or soft robotics, and we will explore how HiveLab can host a safe, reproducible workflow around it.
                 </p>
               </div>
-              <form
-                className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto max-w-md"
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  // Handle form submission
-                }}
-              >
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="flex-1 bg-accent/50 backdrop-blur-sm border border-border px-4 sm:px-6 py-2.5 sm:py-3 text-foreground placeholder:text-muted-foreground/50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/30 transition-all duration-300"
-                  required
-                />
-                <button
-                  type="submit"
-                  className="group relative bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base font-semibold flex items-center justify-center gap-2 backdrop-blur-sm border border-orange-400/30 shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 whitespace-nowrap"
-                >
-                  Join the waiting list
-                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 group-hover:-rotate-12 transition-transform duration-300" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </button>
-              </form>
+              <EmailWaitlistForm className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto max-w-md" />
             </div>
           </div>
         </section>
