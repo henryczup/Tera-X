@@ -71,16 +71,16 @@ function buildGlobePath(
   return pathParts.join(' ')
 }
 
+// Note: glowingLines functionality is currently disabled
+// The glowing line checks in gridLines useMemo are kept for future implementation
+// but currently always evaluate to false since glowingLines is empty
+const glowingLines: Array<{id: number, type: 'horizontal' | 'vertical', lineIndex: number, duration: number, delay: number, yPos?: number, xPos?: number}> = []
+
 function NetworkVisualization() {
   const svgRef = useRef<SVGSVGElement>(null)
   const orangeLineRefs = useRef<Map<number, SVGPathElement>>(new Map())
   const orangeCircleRefs = useRef<Map<number, SVGCircleElement>>(new Map())
   const gridLineRefs = useRef<Map<string, SVGPathElement>>(new Map())
-
-  // Note: glowingLines functionality is currently disabled
-  // The glowing line checks in gridLines useMemo are kept for future implementation
-  // but currently always evaluate to false since glowingLines is empty
-  const glowingLines: Array<{id: number, type: 'horizontal' | 'vertical', lineIndex: number, duration: number, delay: number, yPos?: number, xPos?: number}> = []
 
   // Animate all orange lines with GSAP - loops continuously
   useEffect(() => {
@@ -159,7 +159,6 @@ function NetworkVisualization() {
           }
           
           // No delay - all lines animate in parallel
-          const delay = 0
           
           // Create timeline that loops infinitely
           const tl = gsap.timeline({ repeat: -1 })
@@ -474,7 +473,7 @@ function NetworkVisualization() {
             }
             
             return lines
-  }, [glowingLines])
+  }, [])
 
   // Memoize orange lines generation - static, no dependencies
   const orangeLines = useMemo(() => {
