@@ -120,19 +120,20 @@ function RaceMarker({ position, color, isUserPick, isLeader, designId, onHover }
   });
   
   const markerSize = isUserPick ? 0.25 : isLeader ? 0.22 : 0.18;
-  
+  const markerColor = isUserPick ? '#ffffff' : color;
+
   return (
     <group position={[worldPos.x, worldPos.y + 0.3, worldPos.z]}>
       {/* Glow effect */}
       <mesh ref={glowRef}>
         <sphereGeometry args={[markerSize * 1.5, 16, 16]} />
         <meshBasicMaterial
-          color={color}
+          color={markerColor}
           transparent
-          opacity={isUserPick ? 0.4 : 0.2}
+          opacity={isUserPick ? 0.5 : 0.2}
         />
       </mesh>
-      
+
       {/* Main marker */}
       <mesh
         ref={meshRef}
@@ -141,21 +142,13 @@ function RaceMarker({ position, color, isUserPick, isLeader, designId, onHover }
       >
         <sphereGeometry args={[markerSize, 32, 32]} />
         <meshStandardMaterial
-          color={color}
-          emissive={color}
-          emissiveIntensity={isUserPick ? 0.8 : 0.4}
-          metalness={0.8}
-          roughness={0.2}
+          color={markerColor}
+          emissive={markerColor}
+          emissiveIntensity={isUserPick ? 1.0 : 0.4}
+          metalness={isUserPick ? 0.1 : 0.8}
+          roughness={isUserPick ? 0.1 : 0.2}
         />
       </mesh>
-      
-      {/* Ring for user pick */}
-      {isUserPick && (
-        <mesh rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[markerSize * 1.8, 0.03, 16, 32]} />
-          <meshBasicMaterial color="#ffffff" />
-        </mesh>
-      )}
       
       {/* Crown for leader */}
       {isLeader && (
