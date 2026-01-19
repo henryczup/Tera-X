@@ -60,7 +60,7 @@ export const generateS11Curve = (
     // Minimal noise
     const noise = (seededRandom(seed * 100 + idx) - 0.5) * 0.3;
 
-    let value = baseline + mainDip + secondaryTotal + ripple1 + ripple2 + noise;
+    const value = baseline + mainDip + secondaryTotal + ripple1 + ripple2 + noise;
 
     // Clamp to realistic range
     return Math.max(-35, Math.min(-1, value));

@@ -194,40 +194,6 @@ function Trail({ positions, color }: TrailProps) {
   );
 }
 
-// Optimal peak marker
-function OptimalMarker() {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const worldPos = landscapeToWorld(
-    lossLandscape.optimalPosition.x,
-    lossLandscape.optimalPosition.y
-  );
-  
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y = state.clock.elapsedTime * 0.5;
-    }
-  });
-  
-  return (
-    <group position={[worldPos.x, worldPos.y + 0.5, worldPos.z]}>
-      {/* Beacon light */}
-      <pointLight color="#00ffff" intensity={2} distance={3} />
-      
-      {/* Rotating diamond */}
-      <mesh ref={meshRef}>
-        <octahedronGeometry args={[0.15, 0]} />
-        <meshStandardMaterial
-          color="#00ffff"
-          emissive="#00ffff"
-          emissiveIntensity={1}
-          transparent
-          opacity={0.8}
-        />
-      </mesh>
-    </group>
-  );
-}
-
 interface LossLandscapeSceneProps {
   designs: DesignState[];
   userPickId: string | null;
